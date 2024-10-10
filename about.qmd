@@ -2,8 +2,14 @@
 title: "About"
 ---
 
-About this site
+### Declaration of Interests
 
-```{r}
-1 + 1
-```
+Since putting the first tranche of evidence together, a few people have asked me if I have a child that will be affected by the proposed changes. I do. We live very close to both Dorothy Stinger and Vardean Schools and it is absolutely the case that I would consider a few minutes walk to those schools a preferable option for her. As such, be mindful of the risk of bias in what I present and make up your own minds from the evidence. But I would hope that what comes below is as objective as it can be and the questions posed constructive for the inevitable debate such proposals will cause. I am a resident of Brighton and Hove and have a professional interest in how we can make better use of data and evidence to inform public policy.
+
+I will also be very happy to work with the Council to help produce a more comprehensive analysis relative to the proposals presented and should they be willing to share their data with me. Please just get in contact via the email address above.
+
+### About Me
+
+I am Professor of Urban Analytics at the Bartlett Centre for Advanced Spatial Analysis, University College London. My work profile can be accessed here: <https://profiles.ucl.ac.uk/28795-adam-dennett>
+
+I’m a geographer with an interest in using data and quantitative methods to understand how people and the systems they create, work, and to use this information to make better decisions about the places we live in - frequently this draws me to urban contexts and applied settings.
