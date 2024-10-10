@@ -6,6 +6,56 @@ format: html
 editor: visual
 ---
 
+### Terminology
+
+PAN - Published Admission Number. This is the number of pupils a school is permitted to allow to enter a school in Year 7.
+
+FSM - Free School Meals. This is the proportion of pupils in a school or residential area that receive free school meals because their household income is below a certain threshold. It is a widely used measure of social deprivation. In Brighton, the FSM threshold is currently household income below £16,190 - <https://www.brighton-hove.gov.uk/schools-and-learning/free-school-meals>
+
+# Headlines / Executive Summary
+
+-   **PANs are one big driver of the issues. Despite what the Council says, there is no need to reduce PANs for most schools in the City in 2026 - reduction in PANS is necessary for some schools, but analysis below shows even for schools where they justifiably could be reduced, numbers still will be well in excess of their current admission figures and not smaller than the smallest school in the city.**
+
+-   **No change to current catchment boundaries is required in 2026 while still hitting Council PAN reduction targets.**
+
+-   The desired increase in social mixing that the council is currently trialling through allowing FSM pupils from other catchments priority over students within, will in all likelihood lead to some of the outcomes already desired by the council (Social Mixing and achievement improvements). It is a pioneering initiative with potentially very positive outcomes that needs space and time to be fully evaluated. Results will not published until early 2025 - *after* any changes the council might try and push through under the current time table. In the People Overview and Scrutiny Committee held on 9/10/2024, the Council's own expert, Dr Ellen Greaves, University of Exeter, urged the council to wait for the results of this initiative before making any changes to the admissions system. Artificially reducing PANS in high demand schools will amplify problems as out of catchment students attend popular schools.
+
+-   PANS for Academies, Free Schools and Religious schools cannot currently be set by the council. However, in the above meeting, Councillor Haver\* raised a point that a Government White Paper is on the horizon which may give local authorities the power to control ALL PANs in the near future - this could alleviate some of the issues I am about to describe still further.
+
+    \*I think this was her name - audio wasn't perfect
+
+-   The argument that Cllr Taylor and Richard Barker made in the face-to-face meeting was that they would not consider a PAN lower than 180 for Longhill as it would make it unviable. This is demonstrably untrue when comparing similar schools across the country - and even within the City itself! The King's Free school has a PAN of 165 and in a short time has become one of the most successful and thriving schools in the City. Analysis of all similar schools in England and Wales shows out of 1163 similar schools, Longhill ranks 496, with 495 smaller open 11-16 secondary schools in existence today.
+
+-   In the work below, I offer a viable alternative to the proposals presented by the council. Under my proposed 'Kings PAN Scenario':
+
+    -   no detrimental impact is felt across most schools in the city in 2026
+
+    -   a headline city-level PAN reduction is still achieved under the current council modelling scenarios
+
+    -   no school has PANs smaller than the smallest school already thriving in the city - and higher than or equal to their offers in 2024
+
+    -   options for re-use of land and if additional social and/or affordable housing is created in land released by reducing the estate, this could contribute to the social mixing in an otherwise relatively affluent area
+
+-   
+
+# Prelude - a review of where we are at after a busy week
+
+-   There is a real issue of socio-economic deprivation and segregation in the city with residents in the most deprived Eastern parts of the city lacking both quality in education provision and choice. [This is a wider and long-term issue](https://www.theguardian.com/education/2005/aug/09/schools.uk) and has driven initiatives to tackle socio-economic disadvantage through the school system and admissions shake-ups in the past, many of which have failed due to a lack of [systems thinking](https://www.apm.org.uk/resources/find-a-resource/what-is-systems-thinking/).
+
+-   Different to previous attempts to re-draw the catchments, there is an additional challenge this time around of reducing numbers of children in the city, reducing the money available from the government in a system which allocates money according, primarily, pupil numbers and levels of deprivation associated with those pupils.
+
+-   Brighton has what could be described as a 'multiplier effect' whereby the least popular provision is also geographically remote, but nearest to the most deprived children.
+
+-   The Council is faced with a big challenge, but rather than engaging in systems thinking and recognising that schools are a part of an interconnected urban ecosystem which encompasses the social fabric of the city with individual children, families and communities, transport systems, the environment, homes, jobs, and the economy, they are focusing only on the narrow educational dimensions of the problem, which while incredibly important, are no more or less important that the whole city system and cannot be managed in isolation from the rest of the city.
+
+-   Having attended both the in-person consultation and the People Overview and Scrutiny Committee held on 9/10/2024, it is clear that the council is trying to rush through ill-conceived, poorly evidenced proposals that fail to look holistically at the problem. The level of objection from a huge number of families in the city is indicative of this failure.
+
+-   A particularly big failure of process is that not only have the Council neglected the truly interconnected nature of schools and communities in the city, they have failed in their duty to carry out even the most basic evidence gathering process before launching an engagement/consultation process on the residents. Had they have completed this job in advance, they could have understood the problem better and come up with viable alternative, less disruptive solutions - perhaps like the ones I propose below.
+
+-   Nothing has convinced me that the Council is interested in evidence-based creative policy over dogmatism and ideology - I sincerely hope my impressions in person are off the mark and I really do hope this is a mis-characterisation and I would love them to prove me wrong on this!
+
+-   I have repeatedly asked the council to share their data with me and offered my services on multiple occasions to assist them in the evidence gathering I have expertise in. I am still yet to receive data from them, while they have interacted with me over email a little and I took the chance to talk to Cllr Taylor at the face-to-face meeting on Tuesday, this lack of cooperation is saddening.
+
 ```{r, echo=F, message=F, warning=F}
 library(tidyverse)
 library(plotly)
@@ -23,7 +73,14 @@ admissions <- read_csv(here("data", "Yr7_admissions.csv")) %>% clean_names()
 
 admissions_long <- admissions %>% 
   select(school:total_app_count) %>%
-  pivot_longer(pan:total_app_count, names_to = "stat_type", values_to = "stat")
+  pivot_longer(pan2024:total_app_count, names_to = "stat_type", values_to = "stat")
+
+admissions_long_derived <- admissions %>% 
+  select(school, c(first_pref_offer_prop
+:relative_popularity
+)) %>%
+  pivot_longer(first_pref_offer_prop
+:relative_popularity, names_to = "stat_type", values_to = "stat")
 
 ```
 
@@ -43,37 +100,31 @@ variable_list <- as.data.frame(names(edubase_sec_schools))
 
 ```
 
-On this page I will include some additional supporting data visualisations.
+Much of the data presented on this page are taken from a rare example of published and useful data here - <https://www.brighton-hove.gov.uk/allocation-factsheet-year-7-places-september-2024>
 
-Firstly some visualisation of the allocation of Year 7 places across the city
+PANS for 2026 and 2030 are derived from tables in the power point from the consultation website - <https://yourvoice.brighton-hove.gov.uk/en-GB/projects/secondary-school-engagement-exercise/1>
 
-Data taken from here - <https://www.brighton-hove.gov.uk/allocation-factsheet-year-7-places-september-2024>
+## The PAN Problem(s)
 
-**Not much to see here yet, but I will get there with some more interesting bits** - including some spatial interaction / gravity modelling to show how much heavy-lifting the present catchments may already be doing on the equity side of things - hope to get to it by the end of the week.
+### PAN Background
 
-### Terminology and Background
+It has become clearer to me over the last week that one of the big issues in this whole consultation process is the PAN - both the total PAN in different years (which relates to population projections produced by the Council), and the individual school-level PANs (which affect how many pupils a school can admit at year 7). I will explore both of these dimensions, but first some local background:
 
-PAN - Published Admission Number. This is the number of pupils a school is permitted to allow to enter a school in Year 7.
+A school cannot legally admit fewer children than its PAN where pupils wish to attend the school. The PAN is initially determined (initially) by the physical size of the school by the Government's [Net Capacity Assessment Programme](https://www.gov.uk/guidance/net-capacity-assessment-nca-programme), but it is not set in stone and can be reduced or increased according to demand. Physically larger schools may have artificially higher PANs even when lived pupil numbers are low.
 
-FSM - Free School Meals. This is the proportion of pupils in a school or residential area that receive free school meals because their household income is below a certain threshold. It is a widely used measure of social deprivation.
+-   In most secondary schools in Brighton (Stringer, Varndean, Hove Park, Blatchington, Patcham, Longhill) the PAN is set by the council.
 
-## The PAN Problems
+-   Religious and Free Schools such as Cardinal Newman and King's School are allowed to set their own PANs and the council can't (presently) intervene.
 
-It has become clearer to me over the last week that one of the big issues in this whole consultation process is the PAN - both the total PAN in different years, which relates to population projections produced by the Council, and the individual school-level PANs which affect how many pupils a school can admit at year 7. I will take each in turn, but first some local background.
+-   Academies (Brighton Aldridge Community Academy - BACA, and Portslade Aldridge Community Academy - PACA) are also allowed to set their own PANs and the council can't intervene.
 
-In most secondary schools in Brighton (Stringer, Varndean, Hove Park, Blatchington, Patcham, Longhill) the PAN is set by the council.
+One issue is that PANs for all schools contribute to the overall total number of 'places' in the City - but these don't necessarily reflect pupils or their distribution ([see my last paper if you want to know about geographic distribution](https://adamdennett.github.io/BH_Secondary_Admissions_Analysis/BH_Sec_Sch_Analysis.html)). So if the Council is determined to reduce the number of places (PANs) in the city, if the Religious Schools and the Academies refuse to reduce their PANs and the council is wedded to reducing numbers, the only way it can do this is by cutting, proportionally, MORE places from Stringer, Varndean, Hove Park, Blatchington, Patcham, Longhill than it would have done if it could control PANs everywhere. At least, that is the way they are operating at the moment - as we will see below, there are other options.
 
-Religious and Free Schools such as Cardinal Newman and King's School are allowed to set their own PANs.
-
-Academies (Brighton Aldridge Community Academy - BACA, and Portslade Aldridge Community Academy - PACA) are also allowed to set their own PANs.
-
-One issue is that PANs for all schools contribute to the overall total number of places in the City. So if the Council is determined to reduce the number of places (PANs) in the city, if the Religious Schools and the Academies refuse to reduce their PANs and the council is wedded to reducing numbers, the only way it can do this is by cutting, proportionally, MORE places from Stringer, Varndean, Hove Park, Blatchington, Patcham, Longhill than it would have done if it could control PANs in all state funded schools in the City.
-
-In the [People Overview and Scrutiny Committee held on 9/10/2024](https://democracy.brighton-hove.gov.uk/ieListDocuments.aspx?CId=1129&MId=11719&Ver=4), Councillor (Haver\* NB check name, this is what it sounded like live) raised a point that a Government White Paper is on the horizon which may give local authorities the power to control ALL PANs in the near future - this could alleviate some of the issues I am about to describe, but at the moment, nothing can be done.
+In the [People Overview and Scrutiny Committee held on 9/10/2024](https://democracy.brighton-hove.gov.uk/ieListDocuments.aspx?CId=1129&MId=11719&Ver=4), Councillor Haver\* (\*again, I think that was her name) raised a point that a Government White Paper is on the horizon which may give local authorities the power to control ALL PANs in the near future - this could alleviate some of the issues I am about to describe, but at the moment, nothing can be done by the council to affect PANS in some schools in the city.
 
 ## PANS across Brighton
 
-The graph below shows the PANs for 2024 taken from here:
+The graph below in Figure 1 shows the PANs for 2024 taken from here:
 
 <https://www.brighton-hove.gov.uk/allocation-factsheet-year-7-places-september-2024>
 
@@ -82,7 +133,7 @@ The graph below shows the PANs for 2024 taken from here:
 library(ggplot2)
 
 filtered_admissions <- admissions_long %>%
-  filter(stat_type == "pan")
+  filter(stat_type == "pan2024")
 
 average_stat <- mean(filtered_admissions$stat, na.rm = TRUE)
 
@@ -97,17 +148,19 @@ ggplot(filtered_admissions, aes(x = reorder(school, -as.numeric(factor(school)))
   scale_fill_discrete(name = "School Type")
 ```
 
+Figure 1 - PANs by School and Type, Brighton
+
 We can see from this graph that the academy schools and King's School have a relatively low PAN compared to other schools in the City, with Cardinal Newman enjoying a PAN well above average at 360. This represents 14% of the total places available.
 
 As an interesting aside, we know from the 2021 Census that 30.9% of the population of Brighton identify as Christian - <https://www.ons.gov.uk/census/maps/choropleth/identity/religion/religion-tb/christian?lad=E06000043> - if we believe wikipedia - <https://en.wikipedia.org/wiki/Religion_in_the_United_Kingdom> - 13% of Christians in the UK are Catholic. So if we apply that percentage to Brighton, we can expect 3.9% of the population to be Roman Catholic. But 14% of the school places can be reserved for Catholic Children as a priority. I'll just leave that there to sink in!
 
-## PANS vs Applications and Intake
+## PANs vs Applications and Intake
 
-The graph below includes exactly the same numbers as above, but this time contextualises them relative to the total number of applications each school had in 2024 and the number of places that were actually offered to students that year.
+The graph below in Figure 2 includes exactly the same numbers as above, but this time contextualises them relative to the total number of applications each school had in 2024 and the number of places that were actually offered to students that year.
 
-```{r}
+```{r, echo=F, message=F, warning=F}
 filtered_admissions <- admissions_long %>%
-  filter(stat_type %in% c("pan", "total_offer_count", "total_app_count"))
+  filter(stat_type %in% c("pan2024", "total_offer_count", "total_app_count"))
 
 ggplot(filtered_admissions, aes(x = reorder(school, -as.numeric(factor(school))), y = stat)) +
   geom_bar(aes(fill = stat_type), stat = "identity", position = "dodge2") +
@@ -115,10 +168,12 @@ ggplot(filtered_admissions, aes(x = reorder(school, -as.numeric(factor(school)))
   ylab("Count 2024") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   coord_flip() +
-  scale_fill_manual(values = c("pan" = "#1f77b4", "total_offer_count" = "#ff7f0e", "total_app_count" = "#2ca02c"),
-                    labels = c("pan" = "PAN", "total_offer_count" = "Total Offer Count", "total_app_count" = "Total Application Count"))
+  scale_fill_manual(name = "Legend", values = c("pan2024" = "#1f77b4", "total_offer_count" = "#ff7f0e", "total_app_count" = "#2ca02c"),
+                    labels = c("pan2024" = "PAN 2024", "total_offer_count" = "Total Offer Count", "total_app_count" = "Total Application Count"))
 
 ```
+
+Figure 2 - PAN 2024 relative to counts of total applications and offers in the same year
 
 A couple of things to point out:
 
@@ -128,13 +183,38 @@ A couple of things to point out:
 
 3.  Some schools in Brighton received low numbers of applications. For BACA and Longhill, the numbers of applications they received were BELOW their PANs. These were not popular schools in 2024.
 
-4.  For BACA and Longhill, their total offer numbers were also below their PANs. This means the schools were very under-subscribed and had excess capacity.
+4.  For BACA and Longhill, their total offer numbers were also below their PANs. This means the schools were very under-subscribed and had excess capacity. Longhill had a PAN of 270 and a total offer count of 94. Almost ***three times*** ***fewer*** students attending than there were places available.
 
-## First Preferences, Offers and Ratios
+```{r, echo=F, message=F, warning=F}
+filtered_admissions <- admissions_long_derived %>%
+  filter(stat_type %in% c("relative_popularity")) %>%
+  mutate(stat_adj = stat - 1)
 
-```{r}
+# Color based on value
+col <- rev(ifelse(filtered_admissions$stat_adj < 0, "pink", "lightblue"))
+
+ggplot(filtered_admissions, aes(x = reorder(school, -as.numeric(factor(school))), y = stat_adj)) +
+  geom_bar(fill = col, stat = "identity", position = "dodge2", show.legend = FALSE) +
+  xlab("") +
+  ylab("Relative School Popularity, Brighton and Hove") +
+  coord_flip() +
+  scale_y_continuous(breaks= seq(-2, 2, by = 1),
+                     limits = c(min(filtered_admissions$stat_adj) - 0.2,
+                                max(filtered_admissions$stat_adj) + 0.2))
+
+```
+
+Figure 3 - Relative School Popularity (School 2024 Application to 2024 PAN ratio divided by Average 2024 Brighton Application to PAN ratio)
+
+Another way of looking at Applications vs PANs is take the ratio of applications into PAN and compare this with the city average. In the graph in Figure 3 above, the data has been rescaled (code in the github link) so that anything \> 0 is greater popularity relative to other schools in the city, and anything \< 0 is less popular.
+
+Interestingly, we can see that Kings School - the smallest in the city in terms of places available with a PAN of 165, is relatively the *most popular*, Longhill, on the other hand, is relatively the *least popular* even after scaling according to the city average.
+
+## First Preferences, Offers and Rejections
+
+```{r, echo=F, message=F, warning=F}
 filtered_admissions <- admissions_long %>%
-  filter(stat_type %in% c("pan", "first_pref_count", "first_pref_offer_count", "first_pref_reject_count"))
+  filter(stat_type %in% c("pan2024", "first_pref_count", "first_pref_offer_count", "first_pref_reject_count"))
 
 ggplot(filtered_admissions, aes(x = reorder(school, -as.numeric(factor(school))), y = stat)) +
   geom_bar(aes(fill = stat_type), stat = "identity", position = "dodge2") +
@@ -142,12 +222,109 @@ ggplot(filtered_admissions, aes(x = reorder(school, -as.numeric(factor(school)))
   ylab("Count 2024") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   coord_flip() +
-  scale_fill_manual(values = c("pan" = "#b3cde0", "first_pref_count" = "#decbe4", "first_pref_offer_count" = "#fed9a6", "first_pref_reject_count" = "#ffffcc"),
-                    labels = c("pan" = "PAN", "first_pref_count" = "First Preferences", "first_pref_offer_count" = "First Preference Offers", "first_pref_reject_count" = "First Preference Rejections"))
+  scale_fill_manual(name = "Legend", values = c("pan2024" = "#b3cde0", "first_pref_count" = "#decbe4", "first_pref_offer_count" = "#fed9a6", "first_pref_reject_count" = "#ffffcc"),
+                    labels = c("pan2024" = "PAN 2024", "first_pref_count" = "First Preferences", "first_pref_offer_count" = "First Preference Offers", "first_pref_reject_count" = "First Preference Rejections"))
 
 ```
 
+Figure 4 - PAN 2024 relative to total First Preference Applications, Offers and Rejections.
+
+Some things to note here in Figure 4:
+
+1.  First Preferences and rejections are an alternative demand measure for a school and less affected by double counting than total applications. More rejections occur where first preferences are high.
+
+2.  Three schools - Varndean, King's and Cardinal Newman had more first-preference than PANs, indicating very high demand.
+
+3.  BACA, PACA and Longhill have significantly more PANs than first preference and thus larger proportions of their cohorts are filled with students who did not choose them as a first choice, indicating low demand.
+
+## Interpretation
+
+-   We can see from the evidence above that ***PANS for schools in the city bear little or no relation to the popularity of the schools in 2024***, as evidenced through their application figures. In fact, for the most popular schools, their first-preference applications are far in excess of the places they have been allocated by the council - their PANS could easily be much higher, relative to other schools in the City.
+-   Some schools have PANs far in excess of their popularity which affects the rest of the system negatively. PANs matter when you have more demand than places as you can't go any higher. When you have less demand than places in one school, the PAN is entirely irrelevant for the school (if you've only given out 94 offers, it doesn't matter if your PAN is 270 or 2700!) but HUGELY relevant for the rest of the schools in the system as the number of pupils they can take in is reduced.
+
+## Proposed Changes to PANs
+
+```{r, echo=F, message=F, warning=F}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+# Filter and reshape data
+filtered_admissions <- admissions_long %>%
+  filter(stat_type %in% c("pan2024", "pan2026", "pan2030"))
+
+reshaped_data <- filtered_admissions %>%
+  pivot_wider(names_from = stat_type, values_from = stat) %>%
+  pivot_longer(cols = c(pan2024, pan2026, pan2030), names_to = "year", values_to = "pan_value")
+
+# Convert year names to actual years
+reshaped_data$year <- gsub("pan", "", reshaped_data$year)
+reshaped_data$year <- as.numeric(reshaped_data$year)
+
+# Plotting the data
+ggplot(reshaped_data, aes(x = year, y = pan_value, color = school, group = school)) +
+  geom_line() +
+  geom_point() +
+  xlab("Year") +
+  ylab("PAN Value") +
+  theme_minimal() +
+  theme(legend.title = element_blank())
+
+
+```
+
+-   The graph above is a representation of the data provided in slide 11 of the [materials supplied by the council](https://yourvoice.brighton-hove.gov.uk/en-GB/projects/secondary-school-engagement-exercise/1). Under "Option A", it's clear to see that the council proposes to reduce PANS for all Council run schools in the city, first in 2026 and then again in 2030.
+
+-   Below we see the same data, but this time in a table with the Council City-Wide PAN targets they have set at the bottom and three illustrative scenarios I have produced to explore the decisions the council is making and the biases in their PAN setting. The final column is a Scenario I am calling the "Kings 2026 PAN Scenario" which I will explain below.
+
+```{r}
+# Filter and reshape data
+library(dplyr)
+library(knitr)
+
+# Calculate the sum row
+sum_row <- admissions %>%
+  summarise(across(3:8, sum, na.rm = TRUE))
+
+# Add blank and "Total" labels for the sum row
+sum_row <- cbind("", "Total", sum_row)
+
+# Convert sum_row to a data frame
+sum_row <- as.data.frame(sum_row, stringsAsFactors = FALSE)
+
+# Ensure column names match exactly
+names(sum_row) <- names(admissions)[1:8]
+
+# Bind the sum row to the original data, after removing headers
+admissions_with_sum <- rbind(admissions[, 1:8], setNames(sum_row, names(admissions[, 1:8])))
+
+# Update the headers for columns 3-8
+colnames(admissions_with_sum)[1:8] <- c("School", "Type","PAN 2024", "PAN 2026", "PAN 2030", "PAN 2026 Scaled Popularity", "PAN 2026 Scaled Even", "PAN 2026 Kings Scenario")
+
+# Create kable table
+kable(admissions_with_sum, caption = "Council PAN and PAN Scenarios")
+
+```
+
+### Observations - Council Proposed PANs
+
+-   I have made a number of [earlier observations which look at proposed PAN reductions for different schools in the city](https://adamdennett.github.io/BH_Secondary_Admissions_Analysis/BH_Sec_Sch_Analysis.html#comparing-populations-of-2021-5-year-olds-with-available-school-places-in-2026.) level relative to the population distribution of pupils and have shown that there are more severe reductions in areas of higher demand and less severe reductions in areas of lower demand, so I won't go over that again here.
+
+-   What I will comment on, however, are the PAN levels relative to school popularity - a related by slightly different dimension. Taking relative popularity as shown in Figure 3 above, and using that to scale up and down the
+
+### PAN 2026 Scenario 1 - Scaled by Popularity
+
+Firstly, I should point out that these scenarios are illustrative - I know that school entry numbers are predicated on multiples of 30, but these are designed to show the effect of different.
+
+Column 4 scales the total target PAN number of 2440 (rounding errors make the total slightly higher). This scaling takes the relative school popularity score across the city shown in
+
+## PANS Across Brighton - Conclusions
+
+-   King's School has PAN of 165 and is a popular and viable school within the city. What if we scale BACA and Longhill to this, how does this affect total PAN?
+
 ## Small Schools in England and Wales
+
+-   One argument put forward by the Council is "it does
 
 The histogram below shows the distribution of the number of pupils in open, state funded 11-16 secondary schools in England and Wales. The red and cyan lines show the number of pupils at Longhill and PACA respectively.
 
@@ -174,37 +351,6 @@ ggplot(., aes(x = number_of_pupils)) +
 The council has repeated cited at the in person consultation meeting I attended and again in the [People Overview and Scrutiny Committee held on 9/10/2024](https://democracy.brighton-hove.gov.uk/ieListDocuments.aspx?CId=1129&MId=11719&Ver=4) that it is not sustainable to have schools with low numbers of pupils. In the Scrutiny meeting, Councillor Haver asked a question about the minimum viability of schools.
 
 Councillor Collier and Colleague commented that is was their view that 180 pupils was the *minimum* single year PAN they would consider viable.
-
-```{r}
-
-brighton_sec_schools %>% 
-  ggplot(., aes(x = number_of_pupils, y = establishment_name)) +
-  geom_bar(stat = "identity") +
-  theme_minimal()
-
-```
-
-```{r, echo=F, message=F, warning=F}
-
-library(ggplot2)
-
-filtered_admissions <- admissions_long %>%
-  filter(stat_type == "pan")
-
-average_stat <- mean(filtered_admissions$stat, na.rm = TRUE)
-
-ggplot(filtered_admissions, aes(x = reorder(school, -as.numeric(factor(school))), y = stat)) +
-  geom_bar(aes(fill = type), stat = "identity", position = "dodge2") +
-  xlab("") +
-  ylab("PAN 2024") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  coord_flip() +
-  geom_hline(yintercept = average_stat, linetype = "dotted", color = "red") +
-  annotate("text", x = Inf, y = average_stat, label = "Average", vjust = -0.5, hjust = 1.1, angle = 90, color = "red") +
-  scale_fill_discrete(name = "School Type")
-
-
-```
 
 ```{r, echo=F, message=F, warning=F}
 ggplot(admissions_long, aes(x = reorder(school, -as.numeric(factor(school))), y = stat)) +

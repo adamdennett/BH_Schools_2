@@ -1,12 +1,12 @@
 ---
-title: "BH_Schools_2"
+title: "Welcome Home"
 ---
 
-This is a Quarto website.
+Nothing to see here, although you might be interested that this is a Quarto website.
 
 To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
 
-```{r}
+```{r, echo=F, message=F, warning=F}
 #library(usethis)
 #use_git()
 #use_github()
