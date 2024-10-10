@@ -310,13 +310,49 @@ kable(admissions_with_sum, caption = "Council PAN and PAN Scenarios")
 
 -   I have made a number of [earlier observations which look at proposed PAN reductions for different schools in the city](https://adamdennett.github.io/BH_Secondary_Admissions_Analysis/BH_Sec_Sch_Analysis.html#comparing-populations-of-2021-5-year-olds-with-available-school-places-in-2026.) level relative to the population distribution of pupils and have shown that there are more severe reductions in areas of higher demand and less severe reductions in areas of lower demand, so I won't go over that again here.
 
--   What I will comment on, however, are the PAN levels relative to school popularity - a related by slightly different dimension. Taking relative popularity as shown in Figure 3 above, and using that to scale up and down the
-
 ### PAN 2026 Scenario 1 - Scaled by Popularity
 
-Firstly, I should point out that these scenarios are illustrative - I know that school entry numbers are predicated on multiples of 30, but these are designed to show the effect of different.
+-   Firstly, I should point out that these scenarios below are illustrative - I know that school entry numbers are predicated on multiples of 30, but these are designed to show the effect of different.
 
-Column 4 scales the total target PAN number of 2440 (rounding errors make the total slightly higher). This scaling takes the relative school popularity score across the city shown in
+-   What I will comment on, however, are the PAN levels relative to school popularity - a related by slightly different dimension. Taking relative popularity as shown in Figure 3 above, and using that to scale up and down the PAN according the level of popularity in 2024.
+
+    -   Comparing the PAN 2026 and PAN 2026 Scaled Popularity columns, we can see the effect this would have on different school PANs.
+
+    -   The PANs for Dorothy Strings, Varndean, Hove Park, Kings, and Varndean would all increase by quite large numbers of pupils, reflecting their popularity and accommodating demand.
+
+    -   The PANs for Blatchington Mill would reduce almost in line with proposals, Cardinal newman, already with a high PAN, would remain similar, and Patcham would remain virtually the same.
+
+    -   The PANs for BACA, PACA and Longhill would decline quite considerably and to the point where they would not be viable schools.
+
+-   As stated at the top, this is merely illustrative and NOT in any form a recommendation, but it is useful to explore how the reality of school popularity would change the PANs across the city if it were used.
+
+### PAN 2026 Scenario 2 - Scaled by Evenly
+
+-   What would happen if the council reduced PANs down for each school, but did so evenly across the whole city, according to their current distributions? i.e. dividing each school PAN 2004 by the total Brighton PAN in 2024 and simply multiplying that proportion by the 2026 Brighton Total PAN. Again, I know these don't fit into multiples of 30, but help for illustration.
+
+-   What this scenario is useful for is exploring is the impact of some schools being able to opt out of reducing the PANs. If all things were equal, the 2026 Scaled Even PAN would be the same as the Council 2026 PAN.
+
+-   As we can see, things are not equal. Part of this, of course, it due to the fact mentioned earlier that BACA, PACA, Cardinal Newman and Kings set their own PANs at the moment and the Council can't change this.
+
+-   However, we can start to see which schools are hit harder by the intractability of not being able to make the non-council run schools take their fair share of the hit. .
+
+    -   Blatchington Mill's PAN is 15 pupils lower than expected
+
+    -   Longhill is 17 students lower than expected
+
+    -   Dorothy Stringer 15 students lower
+
+    -   Varndean at 15/16 students lower.
+
+### PAN 2026 Scenario 3 - the Kings Scenario
+
+-   This scenario takes a little explaining which I will do below, but the outcome is:
+
+    -   Most schools in the city don't need to alter their 2026 PANs from current levels at all
+
+    -   No school in the City has a PAN lower than the demonstrably viable 165 PAN that Kings School already has (hence the scenario name)
+
+    -   PANs are more closely aligned with demand, although a number of schools are 'donating to the system' by having PANs considerably lower than their demand levels would suggest
 
 ## PANS Across Brighton - Conclusions
 
