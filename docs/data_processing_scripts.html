@@ -1,0 +1,2214 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.280">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Adam Dennett">
+
+<title>Brighton and Hove Secondary Schools Admission - Evidence Pages - Data Processing Scripts</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-HFKH18TWMG"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-HFKH18TWMG', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="Brighton and Hove Secondary Schools Admission - Evidence Pages - Data Processing Scripts">
+<meta property="og:description" content="https://www.brighton-hove.gov.uk/allocation-factsheet-year-7-places-september-2024">
+<meta property="og:site-name" content="Brighton and Hove Secondary Schools Admission - Evidence Pages">
+<meta name="twitter:title" content="Brighton and Hove Secondary Schools Admission - Evidence Pages - Data Processing Scripts">
+<meta name="twitter:description" content="https://www.brighton-hove.gov.uk/allocation-factsheet-year-7-places-september-2024">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Brighton and Hove Secondary Schools Admission - Evidence Pages</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./about.html">
+ <span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./schools_wk2.html">
+ <span class="menu-text">Week 2 Analysis</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://adamdennett.co.uk"><i class="bi bi-person-circle" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/adam_dennett"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-github" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-github">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/adamdennett/BH_Secondary_Admissions_Analysis">
+ <span class="dropdown-text">Source Code</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/adamdennett/BH_Secondary_Admissions_Analysis/issues">
+ <span class="dropdown-text">Report a Bug</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#mining-stuff-from-the-council-website" id="toc-mining-stuff-from-the-council-website" class="nav-link active" data-scroll-target="#mining-stuff-from-the-council-website">Mining stuff from the Council website</a></li>
+  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section">2024</a></li>
+  <li><a href="#section-1" id="toc-section-1" class="nav-link" data-scroll-target="#section-1">2023</a></li>
+  <li><a href="#section-2" id="toc-section-2" class="nav-link" data-scroll-target="#section-2">2022</a></li>
+  <li><a href="#section-3" id="toc-section-3" class="nav-link" data-scroll-target="#section-3">2021</a></li>
+  <li><a href="#section-4" id="toc-section-4" class="nav-link" data-scroll-target="#section-4">2020</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/adamdennett/BH_Secondary_Admissions_Analysis/blob/main/data_processing_scripts.qmd" class="toc-action">View source</a></p><p><a href="https://github.com/adamdennett/BH_Secondary_Admissions_Analysis/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Data Processing Scripts</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Adam Dennett </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="mining-stuff-from-the-council-website" class="level2">
+<h2 class="anchored" data-anchor-id="mining-stuff-from-the-council-website">Mining stuff from the Council website</h2>
+</section>
+<section id="section" class="level2">
+<h2 class="anchored" data-anchor-id="section">2024</h2>
+<p><a href="https://www.brighton-hove.gov.uk/allocation-factsheet-year-7-places-september-2024" class="uri">https://www.brighton-hove.gov.uk/allocation-factsheet-year-7-places-september-2024</a></p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Allocation Factsheet Year 7 Places September 2024</caption>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 4%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">School</th>
+<th style="text-align: right;">No_1st_pref</th>
+<th style="text-align: right;">No_1st_pref_offer</th>
+<th style="text-align: right;">No_2nd_pref</th>
+<th style="text-align: right;">No_2nd_pref_offer</th>
+<th style="text-align: right;">No_3rd_pref</th>
+<th style="text-align: right;">No_3rd_pref_offer</th>
+<th style="text-align: right;">Total</th>
+<th style="text-align: right;">Total_offer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Blatchington Mill</td>
+<td style="text-align: right;">279</td>
+<td style="text-align: right;">243</td>
+<td style="text-align: right;">268</td>
+<td style="text-align: right;">69</td>
+<td style="text-align: right;">224</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">771</td>
+<td style="text-align: right;">330</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Brighton Aldridge Community Academy</td>
+<td style="text-align: right;">73</td>
+<td style="text-align: right;">73</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">139</td>
+<td style="text-align: right;">84</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cardinal Newman</td>
+<td style="text-align: right;">466</td>
+<td style="text-align: right;">347</td>
+<td style="text-align: right;">203</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">272</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">941</td>
+<td style="text-align: right;">360</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dorothy Stringer</td>
+<td style="text-align: right;">234</td>
+<td style="text-align: right;">199</td>
+<td style="text-align: right;">518</td>
+<td style="text-align: right;">111</td>
+<td style="text-align: right;">262</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">1014</td>
+<td style="text-align: right;">330</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hove Park</td>
+<td style="text-align: right;">110</td>
+<td style="text-align: right;">110</td>
+<td style="text-align: right;">252</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">244</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">606</td>
+<td style="text-align: right;">170</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Kings School</td>
+<td style="text-align: right;">242</td>
+<td style="text-align: right;">159</td>
+<td style="text-align: right;">224</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">202</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">668</td>
+<td style="text-align: right;">165</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Longhill High</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">149</td>
+<td style="text-align: right;">94</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Patcham High</td>
+<td style="text-align: right;">210</td>
+<td style="text-align: right;">182</td>
+<td style="text-align: right;">89</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">253</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">552</td>
+<td style="text-align: right;">225</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Portslade Aldridge Community Academy</td>
+<td style="text-align: right;">129</td>
+<td style="text-align: right;">129</td>
+<td style="text-align: right;">105</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">77</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">311</td>
+<td style="text-align: right;">171</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Varndean</td>
+<td style="text-align: right;">456</td>
+<td style="text-align: right;">293</td>
+<td style="text-align: right;">394</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">209</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1059</td>
+<td style="text-align: right;">300</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Total</td>
+<td style="text-align: right;">2279</td>
+<td style="text-align: right;">1815</td>
+<td style="text-align: right;">2110</td>
+<td style="text-align: right;">322</td>
+<td style="text-align: right;">1821</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">6210</td>
+<td style="text-align: right;">2259</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Any child living within Brighton &amp; Hove who was not offered a place at one of their preferred schools would have been offered a place at the nearest school with places available.</p>
+</section>
+<section id="section-1" class="level2">
+<h2 class="anchored" data-anchor-id="section-1">2023</h2>
+<p><a href="https://www.brighton-hove.gov.uk/children-and-learning/allocation-factsheet-year-7-places-september-2023" class="uri">https://www.brighton-hove.gov.uk/children-and-learning/allocation-factsheet-year-7-places-september-2023</a></p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Allocation Factsheet Year 7 Places September 2023</caption>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 4%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">School</th>
+<th style="text-align: right;">No_1st_pref</th>
+<th style="text-align: right;">No_1st_pref_offer</th>
+<th style="text-align: right;">No_2nd_pref</th>
+<th style="text-align: right;">No_2nd_pref_offer</th>
+<th style="text-align: right;">No_3rd_pref</th>
+<th style="text-align: right;">No_3rd_pref_offer</th>
+<th style="text-align: right;">Total</th>
+<th style="text-align: right;">Total_offer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Blatchington Mill</td>
+<td style="text-align: right;">300</td>
+<td style="text-align: right;">260</td>
+<td style="text-align: right;">309</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">231</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">840</td>
+<td style="text-align: right;">330</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Brighton Aldridge Community Academy</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">160</td>
+<td style="text-align: right;">100</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cardinal Newman</td>
+<td style="text-align: right;">451</td>
+<td style="text-align: right;">351</td>
+<td style="text-align: right;">189</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">297</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">937</td>
+<td style="text-align: right;">360</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dorothy Stringer</td>
+<td style="text-align: right;">260</td>
+<td style="text-align: right;">242</td>
+<td style="text-align: right;">516</td>
+<td style="text-align: right;">81</td>
+<td style="text-align: right;">232</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">1008</td>
+<td style="text-align: right;">330</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hove Park</td>
+<td style="text-align: right;">158</td>
+<td style="text-align: right;">132</td>
+<td style="text-align: right;">298</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">258</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">714</td>
+<td style="text-align: right;">180</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Kings School</td>
+<td style="text-align: right;">241</td>
+<td style="text-align: right;">162</td>
+<td style="text-align: right;">229</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">198</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">668</td>
+<td style="text-align: right;">165</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Longhill</td>
+<td style="text-align: right;">134</td>
+<td style="text-align: right;">134</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">199</td>
+<td style="text-align: right;">152</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Patcham High</td>
+<td style="text-align: right;">203</td>
+<td style="text-align: right;">196</td>
+<td style="text-align: right;">87</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">292</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">582</td>
+<td style="text-align: right;">225</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Portslade Aldridge Community Academy</td>
+<td style="text-align: right;">154</td>
+<td style="text-align: right;">154</td>
+<td style="text-align: right;">79</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">113</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">346</td>
+<td style="text-align: right;">200</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Varndean</td>
+<td style="text-align: right;">409</td>
+<td style="text-align: right;">292</td>
+<td style="text-align: right;">423</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">233</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1065</td>
+<td style="text-align: right;">300</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Total</td>
+<td style="text-align: right;">2402</td>
+<td style="text-align: right;">2015</td>
+<td style="text-align: right;">2202</td>
+<td style="text-align: right;">264</td>
+<td style="text-align: right;">1915</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">6789</td>
+<td style="text-align: right;">2407</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Any child living within Brighton &amp; Hove who was not offered a place at one of their preferred schools would have been offered a place at the nearest school with places available.</p>
+</section>
+<section id="section-2" class="level2">
+<h2 class="anchored" data-anchor-id="section-2">2022</h2>
+<p><a href="https://www.brighton-hove.gov.uk/schools-and-learning/apply-school/allocation-factsheet-year-7-places-september-2022" class="uri">https://www.brighton-hove.gov.uk/schools-and-learning/apply-school/allocation-factsheet-year-7-places-september-2022</a></p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Allocation Factsheet Year 7 Places September 2022</caption>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 4%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">School</th>
+<th style="text-align: right;">No_1st_pref</th>
+<th style="text-align: right;">No_1st_pref_offer</th>
+<th style="text-align: right;">No_2nd_pref</th>
+<th style="text-align: right;">No_2nd_pref_offer</th>
+<th style="text-align: right;">No_3rd_pref</th>
+<th style="text-align: right;">No_3rd_pref_offer</th>
+<th style="text-align: right;">Total</th>
+<th style="text-align: right;">Total_offer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Blatchington Mill</td>
+<td style="text-align: right;">292</td>
+<td style="text-align: right;">270</td>
+<td style="text-align: right;">299</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">235</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">826</td>
+<td style="text-align: right;">330</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Brighton Aldridge Community Academy</td>
+<td style="text-align: right;">121</td>
+<td style="text-align: right;">121</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">77</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">235</td>
+<td style="text-align: right;">132</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cardinal Newman</td>
+<td style="text-align: right;">381</td>
+<td style="text-align: right;">342</td>
+<td style="text-align: right;">182</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">293</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">856</td>
+<td style="text-align: right;">360</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dorothy Stringer</td>
+<td style="text-align: right;">291</td>
+<td style="text-align: right;">258</td>
+<td style="text-align: right;">537</td>
+<td style="text-align: right;">87</td>
+<td style="text-align: right;">226</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1054</td>
+<td style="text-align: right;">349</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hove Park</td>
+<td style="text-align: right;">115</td>
+<td style="text-align: right;">115</td>
+<td style="text-align: right;">246</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">235</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">596</td>
+<td style="text-align: right;">149</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Kings School</td>
+<td style="text-align: right;">232</td>
+<td style="text-align: right;">160</td>
+<td style="text-align: right;">234</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">203</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">669</td>
+<td style="text-align: right;">165</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Longhill</td>
+<td style="text-align: right;">104</td>
+<td style="text-align: right;">104</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">188</td>
+<td style="text-align: right;">122</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Patcham High</td>
+<td style="text-align: right;">218</td>
+<td style="text-align: right;">197</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">320</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">618</td>
+<td style="text-align: right;">225</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Portslade Aldridge Community Academy</td>
+<td style="text-align: right;">166</td>
+<td style="text-align: right;">166</td>
+<td style="text-align: right;">106</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">84</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">356</td>
+<td style="text-align: right;">194</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Varndean</td>
+<td style="text-align: right;">444</td>
+<td style="text-align: right;">303</td>
+<td style="text-align: right;">435</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">212</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1091</td>
+<td style="text-align: right;">310</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Total</td>
+<td style="text-align: right;">2364</td>
+<td style="text-align: right;">2034</td>
+<td style="text-align: right;">2195</td>
+<td style="text-align: right;">245</td>
+<td style="text-align: right;">1930</td>
+<td style="text-align: right;">57</td>
+<td style="text-align: right;">6789</td>
+<td style="text-align: right;">2407</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>There were 29 children in the Dorothy Stringer/Varndean Catchment area who applied for both these schools but could not initially be offered a catchment area school or a higher preference. To accommodate these children in a catchment area school, 19 additional children were allocated to Dorothy Stringer and 10 to Varndean school.</p>
+<p>All children living in the Dorothy Stringer/Varndean catchment who expressed a preference for both catchment schools were offered a place at a catchment school or a higher preference.</p>
+<p>The Published Admissions Number (PAN) for Dorothy Stringer and Varndean school will remain at 330 and 300 respectively.</p>
+</section>
+<section id="section-3" class="level2">
+<h2 class="anchored" data-anchor-id="section-3">2021</h2>
+<p><a href="https://www.brighton-hove.gov.uk/schools-and-learning/apply-school/allocation-factsheet-year-7-places-september-2021" class="uri">https://www.brighton-hove.gov.uk/schools-and-learning/apply-school/allocation-factsheet-year-7-places-september-2021</a></p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Allocation Factsheet Year 7 Places September 2021</caption>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 4%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">School</th>
+<th style="text-align: right;">No_1st_pref</th>
+<th style="text-align: right;">No_1st_pref_offer</th>
+<th style="text-align: right;">No_2nd_pref</th>
+<th style="text-align: right;">No_2nd_pref_offer</th>
+<th style="text-align: right;">No_3rd_pref</th>
+<th style="text-align: right;">No_3rd_pref_offer</th>
+<th style="text-align: right;">Total</th>
+<th style="text-align: right;">Total_offer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Blatchington Mill</td>
+<td style="text-align: right;">400</td>
+<td style="text-align: right;">284</td>
+<td style="text-align: right;">320</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">278</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">998</td>
+<td style="text-align: right;">330</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Brighton Aldridge Community Academy</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">211</td>
+<td style="text-align: right;">141</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cardinal Newman</td>
+<td style="text-align: right;">414</td>
+<td style="text-align: right;">340</td>
+<td style="text-align: right;">226</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">321</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">961</td>
+<td style="text-align: right;">360</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dorothy Stringer</td>
+<td style="text-align: right;">386</td>
+<td style="text-align: right;">306</td>
+<td style="text-align: right;">493</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">227</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1106</td>
+<td style="text-align: right;">330</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hove Park</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">310</td>
+<td style="text-align: right;">101</td>
+<td style="text-align: right;">249</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">675</td>
+<td style="text-align: right;">247</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Kings School</td>
+<td style="text-align: right;">235</td>
+<td style="text-align: right;">150</td>
+<td style="text-align: right;">258</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">280</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">773</td>
+<td style="text-align: right;">165</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Longhill</td>
+<td style="text-align: right;">145</td>
+<td style="text-align: right;">145</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">226</td>
+<td style="text-align: right;">167</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Patcham High</td>
+<td style="text-align: right;">211</td>
+<td style="text-align: right;">193</td>
+<td style="text-align: right;">83</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">252</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">546</td>
+<td style="text-align: right;">225</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Portslade Aldridge Community Academy</td>
+<td style="text-align: right;">165</td>
+<td style="text-align: right;">165</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">102</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">357</td>
+<td style="text-align: right;">186</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Varndean</td>
+<td style="text-align: right;">386</td>
+<td style="text-align: right;">296</td>
+<td style="text-align: right;">492</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">208</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1086</td>
+<td style="text-align: right;">300</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Total</td>
+<td style="text-align: right;">2574</td>
+<td style="text-align: right;">2111</td>
+<td style="text-align: right;">2353</td>
+<td style="text-align: right;">252</td>
+<td style="text-align: right;">2012</td>
+<td style="text-align: right;">88</td>
+<td style="text-align: right;">6939</td>
+<td style="text-align: right;">2501</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>There were 62 children in the Dorothy Stringer/Varndean Catchment area who couldn’t be offered a catchment area school or a higher preference. Of these 62 children, 44 expressed preferences for both catchment area schools.</p>
+</section>
+<section id="section-4" class="level2">
+<h2 class="anchored" data-anchor-id="section-4">2020</h2>
+<p><a href="https://www.brighton-hove.gov.uk/schools-and-learning/apply-school/allocation-factsheet-year-7-places-september-2020" class="uri">https://www.brighton-hove.gov.uk/schools-and-learning/apply-school/allocation-factsheet-year-7-places-september-2020</a></p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Allocation Factsheet Year 7 Places September 2020</caption>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 4%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">School</th>
+<th style="text-align: right;">No_1st_pref</th>
+<th style="text-align: right;">No_1st_pref_offer</th>
+<th style="text-align: right;">No_2nd_pref</th>
+<th style="text-align: right;">No_2nd_pref_offer</th>
+<th style="text-align: right;">No_3rd_pref</th>
+<th style="text-align: right;">No_3rd_pref_offer</th>
+<th style="text-align: right;">Total</th>
+<th style="text-align: right;">Total_offer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Blatchington Mill</td>
+<td style="text-align: right;">350</td>
+<td style="text-align: right;">279</td>
+<td style="text-align: right;">281</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">237</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">868</td>
+<td style="text-align: right;">330</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Brighton Aldridge Community Academy</td>
+<td style="text-align: right;">89</td>
+<td style="text-align: right;">89</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">62</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">201</td>
+<td style="text-align: right;">106</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cardinal Newman</td>
+<td style="text-align: right;">349</td>
+<td style="text-align: right;">311</td>
+<td style="text-align: right;">221</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">326</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">896</td>
+<td style="text-align: right;">360</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dorothy Stringer</td>
+<td style="text-align: right;">438</td>
+<td style="text-align: right;">357</td>
+<td style="text-align: right;">489</td>
+<td style="text-align: right;">73</td>
+<td style="text-align: right;">203</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">1130</td>
+<td style="text-align: right;">440</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hove Park</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">227</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">281</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">588</td>
+<td style="text-align: right;">137</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Kings School</td>
+<td style="text-align: right;">253</td>
+<td style="text-align: right;">145</td>
+<td style="text-align: right;">282</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">257</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">792</td>
+<td style="text-align: right;">150</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Longhill</td>
+<td style="text-align: right;">159</td>
+<td style="text-align: right;">159</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">235</td>
+<td style="text-align: right;">177</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Patcham High</td>
+<td style="text-align: right;">219</td>
+<td style="text-align: right;">206</td>
+<td style="text-align: right;">65</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">304</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">588</td>
+<td style="text-align: right;">225</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Portslade Aldridge Community Academy</td>
+<td style="text-align: right;">174</td>
+<td style="text-align: right;">174</td>
+<td style="text-align: right;">95</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">77</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">346</td>
+<td style="text-align: right;">203</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Varndean</td>
+<td style="text-align: right;">307</td>
+<td style="text-align: right;">268</td>
+<td style="text-align: right;">530</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">231</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1068</td>
+<td style="text-align: right;">304</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Total</td>
+<td style="text-align: right;">2418</td>
+<td style="text-align: right;">2068</td>
+<td style="text-align: right;">2278</td>
+<td style="text-align: right;">215</td>
+<td style="text-align: right;">2016</td>
+<td style="text-align: right;">73</td>
+<td style="text-align: right;">6712</td>
+<td style="text-align: right;">2356</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li>*&nbsp;There were 8 children in the Dorothy Stringer and Varndean Catchment area who applied for both these schools but could not initially be offered a catchment area school or a higher preference. In order to accommodate these children in a catchment area school, 4 additional children were allocated, each, to Dorothy Stringer and Varndean schools.</li>
+</ul>
+<p>2019</p>
+<p><a href="https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202019.pdf" class="uri">https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202019.pdf</a></p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Allocation Factsheet Year 7 Places September 2019</caption>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 4%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">School</th>
+<th style="text-align: right;">No_1st_pref</th>
+<th style="text-align: right;">No_1st_pref_offer</th>
+<th style="text-align: right;">No_2nd_pref</th>
+<th style="text-align: right;">No_2nd_pref_offer</th>
+<th style="text-align: right;">No_3rd_pref</th>
+<th style="text-align: right;">No_3rd_pref_offer</th>
+<th style="text-align: right;">Total</th>
+<th style="text-align: right;">Total_offer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Blatchington Mill</td>
+<td style="text-align: right;">373</td>
+<td style="text-align: right;">282</td>
+<td style="text-align: right;">344</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">256</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">973</td>
+<td style="text-align: right;">330</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Brighton Aldridge Community Academy</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">181</td>
+<td style="text-align: right;">110</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cardinal Newman</td>
+<td style="text-align: right;">465</td>
+<td style="text-align: right;">340</td>
+<td style="text-align: right;">219</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">344</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">1028</td>
+<td style="text-align: right;">360</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dorothy Stringer</td>
+<td style="text-align: right;">447</td>
+<td style="text-align: right;">355</td>
+<td style="text-align: right;">479</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">233</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">1159</td>
+<td style="text-align: right;">374</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hove Park</td>
+<td style="text-align: right;">119</td>
+<td style="text-align: right;">119</td>
+<td style="text-align: right;">289</td>
+<td style="text-align: right;">62</td>
+<td style="text-align: right;">271</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">679</td>
+<td style="text-align: right;">215</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Kings School</td>
+<td style="text-align: right;">188</td>
+<td style="text-align: right;">157</td>
+<td style="text-align: right;">209</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">204</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">601</td>
+<td style="text-align: right;">178</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Longhill</td>
+<td style="text-align: right;">217</td>
+<td style="text-align: right;">190</td>
+<td style="text-align: right;">83</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">299</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">599</td>
+<td style="text-align: right;">225</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Patcham High</td>
+<td style="text-align: right;">168</td>
+<td style="text-align: right;">164</td>
+<td style="text-align: right;">106</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">136</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">410</td>
+<td style="text-align: right;">240</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Portslade Aldridge Community Academy</td>
+<td style="text-align: right;">104</td>
+<td style="text-align: right;">104</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">95</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">248</td>
+<td style="text-align: right;">112</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Varndean</td>
+<td style="text-align: right;">304</td>
+<td style="text-align: right;">251</td>
+<td style="text-align: right;">537</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">257</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">1098</td>
+<td style="text-align: right;">304</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Total</td>
+<td style="text-align: right;">2526</td>
+<td style="text-align: right;">2102</td>
+<td style="text-align: right;">2330</td>
+<td style="text-align: right;">281</td>
+<td style="text-align: right;">2111</td>
+<td style="text-align: right;">126</td>
+<td style="text-align: right;">6967</td>
+<td style="text-align: right;">2509</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li>There were 8 children in the Dorothy Stringer/Varndean Catchment area who applied for both these schools but could not initially be offered a catchment area school or a higher preference. In order to accommodate these children in a catchment area school, 4 additional children were allocated, each, to Dorothy Stringer and Varndean schools.</li>
+</ul>
+<p>2018</p>
+<p><a href="https://www.brighton-hove.gov.uk/sites/default/files/migrated/subject/inline/Secondary%20Allocation%20factsheet%202018.pdf" class="uri">https://www.brighton-hove.gov.uk/sites/default/files/migrated/subject/inline/Secondary%20Allocation%20factsheet%202018.pdf</a></p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Allocation Factsheet Year 7 Places September 2018</caption>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 4%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">School</th>
+<th style="text-align: right;">No_1st_pref</th>
+<th style="text-align: right;">No_1st_pref_offer</th>
+<th style="text-align: right;">No_2nd_pref</th>
+<th style="text-align: right;">No_2nd_pref_offer</th>
+<th style="text-align: right;">No_3rd_pref</th>
+<th style="text-align: right;">No_3rd_pref_offer</th>
+<th style="text-align: right;">Total</th>
+<th style="text-align: right;">Total_offer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Blatchington Mill</td>
+<td style="text-align: right;">401</td>
+<td style="text-align: right;">303</td>
+<td style="text-align: right;">288</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">257</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">946</td>
+<td style="text-align: right;">330</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Brighton Aldridge Community Academy</td>
+<td style="text-align: right;">110</td>
+<td style="text-align: right;">109</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">202</td>
+<td style="text-align: right;">130</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cardinal Newman</td>
+<td style="text-align: right;">381</td>
+<td style="text-align: right;">342</td>
+<td style="text-align: right;">162</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">274</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">816</td>
+<td style="text-align: right;">360</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dorothy Stringer</td>
+<td style="text-align: right;">413</td>
+<td style="text-align: right;">325</td>
+<td style="text-align: right;">488</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">208</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1109</td>
+<td style="text-align: right;">331</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hove Park</td>
+<td style="text-align: right;">151</td>
+<td style="text-align: right;">151</td>
+<td style="text-align: right;">345</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">226</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">722</td>
+<td style="text-align: right;">239</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Kings School</td>
+<td style="text-align: right;">143</td>
+<td style="text-align: right;">117</td>
+<td style="text-align: right;">133</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">159</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">435</td>
+<td style="text-align: right;">132</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Longhill</td>
+<td style="text-align: right;">246</td>
+<td style="text-align: right;">156</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">321</td>
+<td style="text-align: right;">175</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Patcham High</td>
+<td style="text-align: right;">226</td>
+<td style="text-align: right;">191</td>
+<td style="text-align: right;">641</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">368</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">1235</td>
+<td style="text-align: right;">245</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Portslade Aldridge Community Academy</td>
+<td style="text-align: right;">168</td>
+<td style="text-align: right;">168</td>
+<td style="text-align: right;">108</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">133</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">409</td>
+<td style="text-align: right;">188</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Varndean</td>
+<td style="text-align: right;">355</td>
+<td style="text-align: right;">280</td>
+<td style="text-align: right;">486</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">253</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1094</td>
+<td style="text-align: right;">300</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Total</td>
+<td style="text-align: right;">2504</td>
+<td style="text-align: right;">2142</td>
+<td style="text-align: right;">2143</td>
+<td style="text-align: right;">190</td>
+<td style="text-align: right;">1975</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">6622</td>
+<td style="text-align: right;">2403</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li>Please note that 1 additional child was allocated a place at Dorothy Stringer School in order that twins could be kept together at the same school.</li>
+</ul>
+<p>2017</p>
+<p><a href="https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202017.pdf" class="uri">https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202017.pdf</a></p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Allocation Factsheet Year 7 Places September 2017</caption>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 4%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">School</th>
+<th style="text-align: right;">No_1st_pref</th>
+<th style="text-align: right;">No_1st_pref_offer</th>
+<th style="text-align: right;">No_2nd_pref</th>
+<th style="text-align: right;">No_2nd_pref_offer</th>
+<th style="text-align: right;">No_3rd_pref</th>
+<th style="text-align: right;">No_3rd_pref_offer</th>
+<th style="text-align: right;">Total</th>
+<th style="text-align: right;">Total_offer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Blatchington Mill</td>
+<td style="text-align: right;">336</td>
+<td style="text-align: right;">282</td>
+<td style="text-align: right;">323</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">238</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">897</td>
+<td style="text-align: right;">300</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Brighton Aldridge Community Academy</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">143</td>
+<td style="text-align: right;">108</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cardinal Newman</td>
+<td style="text-align: right;">362</td>
+<td style="text-align: right;">330</td>
+<td style="text-align: right;">154</td>
+<td style="text-align: right;">62</td>
+<td style="text-align: right;">278</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">794</td>
+<td style="text-align: right;">403</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dorothy Stringer</td>
+<td style="text-align: right;">459</td>
+<td style="text-align: right;">372</td>
+<td style="text-align: right;">455</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">159</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1073</td>
+<td style="text-align: right;">331</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hove Park</td>
+<td style="text-align: right;">198</td>
+<td style="text-align: right;">198</td>
+<td style="text-align: right;">299</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">229</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">726</td>
+<td style="text-align: right;">255</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Kings School</td>
+<td style="text-align: right;">124</td>
+<td style="text-align: right;">94</td>
+<td style="text-align: right;">83</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">142</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">289</td>
+<td style="text-align: right;">100</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Longhill</td>
+<td style="text-align: right;">131</td>
+<td style="text-align: right;">131</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">203</td>
+<td style="text-align: right;">150</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Patcham High</td>
+<td style="text-align: right;">211</td>
+<td style="text-align: right;">185</td>
+<td style="text-align: right;">210</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">183</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">604</td>
+<td style="text-align: right;">215</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Portslade Aldridge Community Academy</td>
+<td style="text-align: right;">158</td>
+<td style="text-align: right;">158</td>
+<td style="text-align: right;">65</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">84</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">307</td>
+<td style="text-align: right;">176</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Varndean</td>
+<td style="text-align: right;">304</td>
+<td style="text-align: right;">282</td>
+<td style="text-align: right;">482</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">244</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">1030</td>
+<td style="text-align: right;">270</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Total</td>
+<td style="text-align: right;">2373</td>
+<td style="text-align: right;">2023</td>
+<td style="text-align: right;">2046</td>
+<td style="text-align: right;">163</td>
+<td style="text-align: right;">1747</td>
+<td style="text-align: right;">79</td>
+<td style="text-align: right;">6166</td>
+<td style="text-align: right;">2265</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>2016</p>
+<p><a href="https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20Factsheet%202016.pdf" class="uri">https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20Factsheet%202016.pdf</a></p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Allocation Factsheet Year 7 Places September 2016</caption>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 4%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">School</th>
+<th style="text-align: right;">No_1st_pref</th>
+<th style="text-align: right;">No_1st_pref_offer</th>
+<th style="text-align: right;">No_2nd_pref</th>
+<th style="text-align: right;">No_2nd_pref_offer</th>
+<th style="text-align: right;">No_3rd_pref</th>
+<th style="text-align: right;">No_3rd_pref_offer</th>
+<th style="text-align: right;">Total</th>
+<th style="text-align: right;">Total_offer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Blatchington Mill</td>
+<td style="text-align: right;">410</td>
+<td style="text-align: right;">292</td>
+<td style="text-align: right;">289</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">189</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">888</td>
+<td style="text-align: right;">300</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Brighton Aldridge Community Academy</td>
+<td style="text-align: right;">87</td>
+<td style="text-align: right;">87</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">138</td>
+<td style="text-align: right;">99</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cardinal Newman</td>
+<td style="text-align: right;">375</td>
+<td style="text-align: right;">338</td>
+<td style="text-align: right;">130</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">330</td>
+<td style="text-align: right;">65</td>
+<td style="text-align: right;">835</td>
+<td style="text-align: right;">420</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dorothy Stringer</td>
+<td style="text-align: right;">495</td>
+<td style="text-align: right;">337</td>
+<td style="text-align: right;">337</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">191</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">1023</td>
+<td style="text-align: right;">344</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hove Park</td>
+<td style="text-align: right;">172</td>
+<td style="text-align: right;">172</td>
+<td style="text-align: right;">335</td>
+<td style="text-align: right;">82</td>
+<td style="text-align: right;">224</td>
+<td style="text-align: right;">79</td>
+<td style="text-align: right;">731</td>
+<td style="text-align: right;">273</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Kings School</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">102</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">142</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">342</td>
+<td style="text-align: right;">100</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Longhill</td>
+<td style="text-align: right;">138</td>
+<td style="text-align: right;">138</td>
+<td style="text-align: right;">111</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">237</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">517</td>
+<td style="text-align: right;">152</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Patcham High</td>
+<td style="text-align: right;">217</td>
+<td style="text-align: right;">215</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">237</td>
+<td style="text-align: right;">101</td>
+<td style="text-align: right;">517</td>
+<td style="text-align: right;">339</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Portslade Aldridge Community Academy</td>
+<td style="text-align: right;">85</td>
+<td style="text-align: right;">85</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">182</td>
+<td style="text-align: right;">94</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Varndean</td>
+<td style="text-align: right;">219</td>
+<td style="text-align: right;">176</td>
+<td style="text-align: right;">521</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">217</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">957</td>
+<td style="text-align: right;">284</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Total</td>
+<td style="text-align: right;">2296</td>
+<td style="text-align: right;">1900</td>
+<td style="text-align: right;">1871</td>
+<td style="text-align: right;">270</td>
+<td style="text-align: right;">1648</td>
+<td style="text-align: right;">362</td>
+<td style="text-align: right;">6815</td>
+<td style="text-align: right;">2232</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>2015</p>
+<p><a href="https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202015.pdf" class="uri">https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202015.pdf</a></p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Allocation Factsheet Year 7 Places September 2015</caption>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 4%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">School</th>
+<th style="text-align: right;">No_1st_pref</th>
+<th style="text-align: right;">No_1st_pref_offer</th>
+<th style="text-align: right;">No_2nd_pref</th>
+<th style="text-align: right;">No_2nd_pref_offer</th>
+<th style="text-align: right;">No_3rd_pref</th>
+<th style="text-align: right;">No_3rd_pref_offer</th>
+<th style="text-align: right;">Total</th>
+<th style="text-align: right;">Total_offer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Blatchington Mill</td>
+<td style="text-align: right;">389</td>
+<td style="text-align: right;">287</td>
+<td style="text-align: right;">323</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">234</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">946</td>
+<td style="text-align: right;">301</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Brighton Aldridge Community Academy</td>
+<td style="text-align: right;">120</td>
+<td style="text-align: right;">120</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">176</td>
+<td style="text-align: right;">130</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cardinal Newman</td>
+<td style="text-align: right;">385</td>
+<td style="text-align: right;">345</td>
+<td style="text-align: right;">132</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">306</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">823</td>
+<td style="text-align: right;">350</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dorothy Stringer</td>
+<td style="text-align: right;">471</td>
+<td style="text-align: right;">329</td>
+<td style="text-align: right;">366</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">189</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1026</td>
+<td style="text-align: right;">337</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hove Park</td>
+<td style="text-align: right;">215</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">387</td>
+<td style="text-align: right;">77</td>
+<td style="text-align: right;">220</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">822</td>
+<td style="text-align: right;">300</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Kings School</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">108</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">289</td>
+<td style="text-align: right;">121</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Longhill</td>
+<td style="text-align: right;">141</td>
+<td style="text-align: right;">141</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">73</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">250</td>
+<td style="text-align: right;">156</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Patcham High</td>
+<td style="text-align: right;">208</td>
+<td style="text-align: right;">184</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">250</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">530</td>
+<td style="text-align: right;">210</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Portslade Aldridge Community Academy</td>
+<td style="text-align: right;">86</td>
+<td style="text-align: right;">86</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">191</td>
+<td style="text-align: right;">123</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Varndean</td>
+<td style="text-align: right;">210</td>
+<td style="text-align: right;">176</td>
+<td style="text-align: right;">480</td>
+<td style="text-align: right;">94</td>
+<td style="text-align: right;">233</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">923</td>
+<td style="text-align: right;">277</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Total</td>
+<td style="text-align: right;">2315</td>
+<td style="text-align: right;">1958</td>
+<td style="text-align: right;">1917</td>
+<td style="text-align: right;">268</td>
+<td style="text-align: right;">1682</td>
+<td style="text-align: right;">88</td>
+<td style="text-align: right;">5914</td>
+<td style="text-align: right;">2314</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>*** There were 14 children in the Dorothy Stringer/Varndean Catchment area who applied for both these schools but could not initially be offered a catchment area school or a higher preference. In order to accommodate these children in a catchment area school, 7 additional children were allocated each to Dorothy Stringer and Varndean schools.</p>
+<p>2014</p>
+<p><a href="https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202014.pdf" class="uri">https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202014.pdf</a></p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Allocation Factsheet Year 7 Places September 2014</caption>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 4%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">School</th>
+<th style="text-align: right;">No_1st_pref</th>
+<th style="text-align: right;">No_1st_pref_offer</th>
+<th style="text-align: right;">No_2nd_pref</th>
+<th style="text-align: right;">No_2nd_pref_offer</th>
+<th style="text-align: right;">No_3rd_pref</th>
+<th style="text-align: right;">No_3rd_pref_offer</th>
+<th style="text-align: right;">Total</th>
+<th style="text-align: right;">Total_offer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Blatchington Mill</td>
+<td style="text-align: right;">349</td>
+<td style="text-align: right;">286</td>
+<td style="text-align: right;">287</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">212</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">848</td>
+<td style="text-align: right;">300</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Brighton Aldridge Community Academy</td>
+<td style="text-align: right;">68</td>
+<td style="text-align: right;">68</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">113</td>
+<td style="text-align: right;">82</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cardinal Newman</td>
+<td style="text-align: right;">393</td>
+<td style="text-align: right;">355</td>
+<td style="text-align: right;">135</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">296</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">824</td>
+<td style="text-align: right;">360</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dorothy Stringer</td>
+<td style="text-align: right;">493</td>
+<td style="text-align: right;">316</td>
+<td style="text-align: right;">414</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">178</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">1085</td>
+<td style="text-align: right;">331</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hove Park</td>
+<td style="text-align: right;">181</td>
+<td style="text-align: right;">181</td>
+<td style="text-align: right;">343</td>
+<td style="text-align: right;">95</td>
+<td style="text-align: right;">195</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">719</td>
+<td style="text-align: right;">200</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Kings School</td>
+<td style="text-align: right;">105</td>
+<td style="text-align: right;">105</td>
+<td style="text-align: right;">54</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">77</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">236</td>
+<td style="text-align: right;">115</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Longhill</td>
+<td style="text-align: right;">209</td>
+<td style="text-align: right;">179</td>
+<td style="text-align: right;">67</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">222</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">498</td>
+<td style="text-align: right;">210</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Patcham High</td>
+<td style="text-align: right;">202</td>
+<td style="text-align: right;">179</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">235</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">498</td>
+<td style="text-align: right;">210</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Portslade Aldridge Community Academy</td>
+<td style="text-align: right;">85</td>
+<td style="text-align: right;">85</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">162</td>
+<td style="text-align: right;">92</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Varndean</td>
+<td style="text-align: right;">216</td>
+<td style="text-align: right;">165</td>
+<td style="text-align: right;">495</td>
+<td style="text-align: right;">95</td>
+<td style="text-align: right;">254</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">965</td>
+<td style="text-align: right;">270</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Total</td>
+<td style="text-align: right;">2290</td>
+<td style="text-align: right;">1931</td>
+<td style="text-align: right;">1889</td>
+<td style="text-align: right;">223</td>
+<td style="text-align: right;">1532</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">6654</td>
+<td style="text-align: right;">1975</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>There were 23 children In catchment area who couldn’t be offered Varndean School or a higher preference.</p>
+<p>Tidy all of these into a single dataframe:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># List of data frames</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>data_frames <span class="ot">&lt;-</span> <span class="fu">list</span>(yr_7_admissions_2014, yr_7_admissions_2015, yr_7_admissions_2016, yr_7_admissions_2017,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                    yr_7_admissions_2018, yr_7_admissions_2019, yr_7_admissions_2020, yr_7_admissions_2021,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                    yr_7_admissions_2022, yr_7_admissions_2023, yr_7_admissions_2024)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Assign years to each data frame</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="dv">2014</span><span class="sc">:</span><span class="dv">2024</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine data frames with a year column</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>combined_data <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(<span class="fu">lapply</span>(<span class="fu">seq_along</span>(data_frames), <span class="cf">function</span>(i) {</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(data_frames[[i]], <span class="at">Year =</span> years[i])</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>}))</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Reshape to long format</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>combined_data_long <span class="ot">&lt;-</span> combined_data <span class="sc">%&gt;%</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(School, Year, No_1st_pref, No_1st_pref_offer, No_2nd_pref, No_2nd_pref_offer,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>         No_3rd_pref, No_3rd_pref_offer, Total, Total_offer)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Arrange the data</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>combined_data_long <span class="ot">&lt;-</span> combined_data_long <span class="sc">%&gt;%</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Year, School)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co"># View the combined long format data</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co">#print(combined_data_long)</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Update school names to ensure consistency</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>combined_data_long <span class="ot">&lt;-</span> combined_data_long <span class="sc">%&gt;%</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">School =</span> <span class="fu">ifelse</span>(School <span class="sc">==</span> <span class="st">"Longhill"</span>, <span class="st">"Longhill High"</span>, School))</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify the changes</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(combined_data_long<span class="sc">$</span>School)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Blatchington Mill"                   
+ [2] "Brighton Aldridge Community Academy" 
+ [3] "Cardinal Newman"                     
+ [4] "Dorothy Stringer"                    
+ [5] "Hove Park"                           
+ [6] "Kings School"                        
+ [7] "Longhill High"                       
+ [8] "Patcham High"                        
+ [9] "Portslade Aldridge Community Academy"
+[10] "Total"                               
+[11] "Varndean"                            </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="data_processing_scripts_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="data_processing_scripts_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="data_processing_scripts_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="data_processing_scripts_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="data_processing_scripts_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
