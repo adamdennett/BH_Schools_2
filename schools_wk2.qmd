@@ -14,9 +14,21 @@ FSM - Free School Meals. This is the proportion of pupils in a school or residen
 
 # Headlines / Executive Summary
 
+-   In this analysis I will present a viable alternative to the current proposals put forward by the council which allows the council to hit its current pupil number projections in 2026 across all schools in the city with no disruption to schools in the city or catchment boundaries.
+
+    -   It will allow space and time needed for the council to review its own initiatives on FSM mixing and improving educational outcomes.
+
+    -   I believe it is a proposal that can be backed by the population across all social and demographic groups in the city.
+
+    -   I believe it will allow the council the space and time it needs to engage with a proper, joined-up, systems thinking approach that pays due care and attention to all relevant dimensions of the issue.
+
+    -   It will allow the council time to engage with a full-range of experts on all aspects of this problem, as well as a greater breadth and depth of members of the community through community groups and forums that represent the diversity of views in the city.
+
+    -   I would encourage the council to consider carefully the detailed evidence I present below and the recommendations I make and I will of course be happy to speak to them at length about this.
+
 -   **PANs are one big driver of the issues. Despite what the Council says, from the analysis I have done, I believe there is no need to reduce PANs for most schools in the City in 2026 - reduction in PANS is necessary for some schools, but analysis below shows even for schools where they justifiably could be reduced, numbers still will be well in excess of their current admission figures and not smaller than the smallest school in the city.**
 
--   **Consequently, no change to current catchment boundaries is required in 2026 while still hitting Council PAN reduction targets.**
+-   **Consequently, no change to current catchment boundaries is required in 2026 while still hitting Council PAN reduction targets, again, giving space and time priority.**
 
 -   The desired increase in social mixing that the council is currently trialling through allowing FSM pupils from other catchments priority over students within, will in all likelihood lead to some of the outcomes already desired by the council (Social Mixing and achievement improvements). It is a pioneering initiative with potentially very positive outcomes that needs space and time to be fully evaluated. Results will not published until early 2025 - *after* any changes the council might try and push through under the current time table. In the People Overview and Scrutiny Committee held on 9/10/2024, the Council's own expert, Dr Ellen Greaves, University of Exeter, urged the council to wait for the results of this initiative before making any changes to the admissions system. Artificially reducing PANS in high demand schools will amplify problems as out of catchment students attend popular schools.
 
@@ -158,7 +170,7 @@ ggplot(filtered_admissions, aes(x = reorder(school, -as.numeric(factor(school)))
 
 We can see from this graph that the academy schools and King's School have a relatively low PAN compared to other schools in the City, with Cardinal Newman enjoying a PAN well above average at 360. This represents 14% of the total places available.
 
-As an interesting aside, we know from the 2021 Census that 30.9% of the population of Brighton identify as Christian - <https://www.ons.gov.uk/census/maps/choropleth/identity/religion/religion-tb/christian?lad=E06000043> - if we believe wikipedia - <https://en.wikipedia.org/wiki/Religion_in_the_United_Kingdom> - 13% of Christians in the UK are Catholic. So if we apply that percentage to Brighton, we can expect 3.9% of the population to be Roman Catholic. But 14% of the school places can be reserved for Catholic Children as a priority. I'll just leave that there to sink in!
+As an interesting aside, we know from the 2021 Census that 30.9% of the population of Brighton identify as Christian - <https://www.ons.gov.uk/census/maps/choropleth/identity/religion/religion-tb/christian?lad=E06000043> - if we believe wikipedia - <https://en.wikipedia.org/wiki/Religion_in_the_United_Kingdom> - 13% of Christians in the UK are Catholic. So if we apply that percentage to Brighton, we can expect 3.9% of the population to be Roman Catholic. But 14% of the school places in the city can be reserved for Catholic Children as a priority. I'll just leave that there to sink in!
 
 ## PANs vs Applications and Intake
 
@@ -281,7 +293,7 @@ ggplot(reshaped_data, aes(x = year, y = pan_value, color = school, group = schoo
 
 *Figure 5 - 2024 PAN and Proposed 2026 and 2030 PANs under Option A of the Council's reorganisation proposals.*
 
-\*I should note that I have asked for the boundary data and numbers associated with the Option A boundary reorganisation, but at the time of writing have not received. These new boundaries are slightly different and will have slightly different pupil numbers within catchments, but they are similar enough to the present catchment to hopefully still be able to make reasonable comparison. If more and better data arrive in the future, I will of course re-visit and update.
+\*I should note that I have asked for the boundary data and numbers associated with the Option A boundary reorganisation, but at the time of writing have not received these. These new boundaries are slightly different and will have slightly different pupil numbers within catchments, but they are similar enough to the present catchment to hopefully still be able to make reasonable comparison. If more and better data arrive in the future, I will of course re-visit and update.
 
 -   The graph above is a representation of the data provided in slide 11 of the [materials supplied by the council](https://yourvoice.brighton-hove.gov.uk/en-GB/projects/secondary-school-engagement-exercise/1). Under "Option A", it's clear to see that the council proposes to reduce PANS for all Council run schools in the city, first in 2026 and then again in 2030.
 
@@ -385,9 +397,9 @@ The latter is tied intrinsically to the former with these two statements, but is
 
 The Government provides data on all schools in England and Wales through their edubase dataset, published annually. <https://get-information-schools.service.gov.uk/> - the database is in the data folder which will allow you to recreate all of this analysis at home with the github code links above.
 
-In order that we are comparing like-with-like, let's only look at state-funded 11-16 schools in England and Wales. The histogram below shows the distribution of the number of pupils in these schools. The red and cyan lines show the number of pupils at Longhill and PACA respectively.
+In order that we are comparing like-with-like, let's only look at open state-funded 11-16 schools in England and Wales. The histogram below shows the distribution of the number of pupils in these schools. The red and cyan lines show the number of pupils at Longhill and PACA respectively (included in the histogram distribution).
 
-I have not included BACA in this graph as it is an 11-19 school and thus not directly comparable, however the recorded number on its role in 2024 is 802 - so a much smaller school than Longhill.
+I have not included BACA or Kings in the histogram as they are 11-19 schools and thus not directly comparable, however I have included their numbers as indicative vertical lines on the plot.
 
 ```{r, echo=F, message=F, warning=F}
 edubase_sec_schools %>% 
@@ -401,12 +413,27 @@ ggplot(., aes(x = number_of_pupils)) +
   annotate("text", x = 825, y = Inf, label = "Longhill", vjust = 16.5, color = "red") + 
   geom_vline(xintercept = 974, linetype = "dotted", color = "cyan") +
   annotate("text", x = 974, y = Inf, label = "PACA", vjust = 18.5, color = "cyan") +
-  + 
   geom_vline(xintercept = 876, linetype = "dotted", color = "lightgreen") +
-  annotate("text", x = 876, y = Inf, label = "PACA", vjust = 18.5, color = "lightgreen") +
+  annotate("text", x = 876, y = Inf, label = "Kings", vjust = 20.5, color = "lightgreen") +
+  geom_vline(xintercept = 802, linetype = "dotted", color = "purple") +
+  annotate("text", x = 802, y = Inf, label = "BACA", vjust = 22.5, color = "purple") +
+  geom_vline(xintercept = 750, linetype = "dotted", color = "pink") +
+  annotate("text", x = 750, y = Inf, label = "150 PAN", vjust = 14.5, color = "pink") +
   theme_minimal()
 
 ```
+
+Figure 6 - Histogram showing the distribution, by total numbers of pupils recorded in the school in 2024, of all open, 11-16 state funded secondary schools in England and Wales.
+
+-   What we can see from the histogram in Figure 6 is that despite the lowest pupil numbers in the city, Longhill and BACA are not outlier schools nationally. Indeed quite the opposite, they fall somewhere near the middle of the distribution of all comparable schools, perhaps slightly on the left of the distribution, so below average, but most people observing the graph would agree that they are pretty average sized schools.
+
+#### Interpretation
+
+-   Total size, is of course, somewhat different to PAN, but for a school with 5 year-groups (Yr 7 to Yr 11) and equal numbers of pupils in each year (which would be the case for popular schools that hit their PAN every year), if the PAN was set at 165 (the same as Kings in 2024) the total school population would be 825. Longhill currently has a population of - checks figures - 825.
+
+-   The national distribution of comparable schools shows that the small schools in Brighton are not 'small schools' just small relative to the city.
+
+-   It is abundantly clear from the evidence above that schools even smaller than the smallest in Brighton are viable. Even if the PANs in the small schools dropped lower than I am recommending currently (165) to, say, a 4-form entry of 150 (a reasonable scenario) - this would equate to a school size of 750 pupils or the pink vertical line on this histogram.
 
 ```{r, echo=F, message=F, warning=F}
 
@@ -418,172 +445,93 @@ edubase_brighton <- edubase_sec_schools %>%
 
 ```
 
-## Closing Schools in Brighton and Hove with low numbers
+#### Does the argument for closing schools in Brighton and Hove with low numbers stack up?
 
-The council has repeated cited at the in person consultation meeting I attended and again in the [People Overview and Scrutiny Committee held on 9/10/2024](https://democracy.brighton-hove.gov.uk/ieListDocuments.aspx?CId=1129&MId=11719&Ver=4) that it is not sustainable to have schools with low numbers of pupils. In the Scrutiny meeting, Councillor Haver asked a question about the minimum viability of schools.
+The council has repeated cited at the in person consultation meeting I attended and again in the [People Overview and Scrutiny Committee held on 9/10/2024](https://democracy.brighton-hove.gov.uk/ieListDocuments.aspx?CId=1129&MId=11719&Ver=4) that it is not sustainable to have schools with low numbers of pupils. In the Scrutiny meeting, Councillor Haver (\*check name) asked a question about the minimum viability of schools.
 
-Councillor Collier and Colleague commented that is was their view that 180 pupils was the *minimum* single year PAN they would consider viable.
+Councillor Taylor and Richard Barker responded that is was their view that 180 pupils was the *minimum* single year PAN they would consider viable.
 
-```{r, echo=F, message=F, warning=F}
-ggplot(admissions_long, aes(x = reorder(school, -as.numeric(factor(school))), y = stat)) +
-  geom_bar(aes(fill = stat_type), stat = "identity", position = "dodge2") +
-  xlab("School") +
-  ylab("Count") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  coord_flip()
-```
+Given the evidence above, it would appear that they are mistaken in this view.
 
-```{r}
+-   A large number of comparable 11-16 schools in England and Wales (495 if you count them) are operating with smaller numbers of students than Longhill and BACA.
 
-#get some LSOA pop weighted centroids for E&W from ONS
-url <- "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/LLSOA_Dec_2021_PWC_for_England_and_Wales_2022/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson"
+-   Within Brighton itself, the Kings School, a thriving and demonstrably viable school in the North of the city, is doing very well with a PAN of 165.
 
-# Read the GeoJSON file into an sf object
-sf_point_data <- st_read(url)
-#save locally
-st_write(sf_point_data, here("data", "EW_LSOA_PW_Centoid.geojson"), append = TRUE)
+-   Even if Longhill and BACA reduced their PANs to a 4-form entry of 150 - something I am not advocating for here - they would still not be uncommonly small in England and Wales terms.
 
-#brighton school data
-brighton_school_children <- read_csv(here("data", "BrightonLSOASchoolChildren.csv"))
+Now, of course, there are financial intricacies to which I am not privy and potentially other considerations, but a question we would all be forgiven for asking at this point is:
 
-btn_lsoa_list <- as.data.frame(brighton_school_children$lsoa_code) %>% 
-  clean_names()
+-   ***Is there a particular failure of competency within Brighton and Hove Council that is considers itself unable to contemplate running schools in the city of a size that a large proportion of other local authorities in the country appear to manage quite happily?***
 
-lsoa_btn_pw_centroids <- sf_point_data %>% 
-  st_transform(27700) %>% 
-  clean_names %>% 
-  select(lsoa21cd, geometry)
+-   ***Why does the council consider itself unable to manage what other councils are able to achieve?***
 
-lsoa_btn_pw_centroids <- lsoa_btn_pw_centroids %>% right_join(btn_lsoa_list, by = c("lsoa21cd" = "brighton_school_children_lsoa_code"))
+-   ***Would a sensible course of action be to consult with other local authorities who are more experienced in dealing with some smaller schools in their portfolio?***
 
-st_write(lsoa_btn_pw_centroids, here("data", "lsoa_btn_pw_centroids.geojson"), append = TRUE)
-```
+### PAN 2026 Scenario 3 - Continued
 
-```{r, echo=F, message=F, warning=F}
+It is clear then, that there is no justifiable reason why Brighton and Hove Council can't run some schools with PANs lower than 180. I have shown how PANs of even 150 are viable in a national context.
 
-#catchments
-bh_catchments <- st_read(here("data","BrightonSecondaryCatchments.geojson"))
+Recap
 
-#lsoa data
-sf_data <- st_read(here("data","EW_LSOA.geojson"))
-sf_data <- clean_names(sf_data)
+-   We know that if PANs bore any relation to demand (PAN 2026 scaled by popularity, below), schools like Longhill, BACA and PACA would not be viable in 2026.
 
-#lsoa data
-brighton_lsoa <- sf_data %>% right_join(brighton_school_children, by = c("lsoa21cd" = "lsoa_code"))
+-   We know that if we just reduce PANs evenly across the system in 2026, popular and in-demand schools will be turning away pupils they could easily accomodate (and we've not even got the the impacts of the new FSM policy and the exodus of pupils from the Private sector after the introduction of VAT)
 
-#lsoa centroids
-brighton_lsoa_centroids <- st_centroid(brighton_lsoa) %>% 
-  st_transform(27700)
-
-brighton_lsoa_centroids_simple <- st_centroid(brighton_lsoa) %>% 
-  st_transform(27700) %>% 
-  select(lsoa21cd, geometry)
-
-brighton_oa <- st_read(here("data","oa_brighton.geojson"))
-
-brighton_roads <- st_read(here("data","brighton_roads.shp"))
-
-#Fix the school and school data so r5 can handle it
-#schools first
-
-brighton_sec_schools_wgs84 <- brighton_sec_schools %>%
-  st_transform(4326) %>% 
-  st_set_crs(4326)
-
-bh_sec_sch <- brighton_sec_schools_wgs84 %>% 
-  select(urn, establishment_name, geometry) %>%
-  rename(id = urn)
-
-coords <- st_coordinates(bh_sec_sch)
-bh_sec_sch$lon <- coords[, 1]
-bh_sec_sch$lat <- coords[, 2]
-
-bh_sec_sch_bng <- bh_sec_sch %>% 
-  st_transform(27700)
-
-#now the LSOAs
-brighton_lsoa_points_r5 <- brighton_lsoa_centroids %>% 
-  select(fid, lsoa21cd,lat, long) %>% 
-  rename(lon = long, lat = lat, id = fid) %>% 
-  st_transform(4326) %>% 
-  st_set_crs(4326)
-
-```
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-data_path = here("data")
-# Check what files we have
-#list.files(data_path)
-
-# Allow 10 GiB of memory
-rJava::.jinit()
-rJava::.jcall("java.lang.System", "S", "getProperty", "java.version")
-options(java.parameters = "-Xmx10G")
-
-library(r5r)
-library(accessibility)
-library(sf)
-library(data.table)
-library(ggplot2)
-library(interp)
-library(h3jsr)
-library(h3r)
-library(dplyr)
-library(osmextract)
-library(stplanr)
-
-r5r_core = setup_r5(data_path = data_path)
-
-```
+#### Back to the PANs and Demand
 
 ```{r}
-#travel time matrix
-
-# Set parameters
-mode = c("WALK")
-max_walk_time = 90 # minutes
-max_trip_duration = 90 # minutes
-departure_datetime = as.POSIXct("23-05-2024 8:30:00",
-                                 format = "%d-%m-%Y %H:%M:%S", 
-                                tz = "GMT")
-
-#note the code below already requires the h3 core matrix to be set up
-
-# Calculate the travel time matrix by Transit
-ttm_btn_lsoa_to_School = travel_time_matrix(r5r_core = r5r_core,
-                          origins = bh_sec_sch,
-                          destinations = brighton_lsoa_points_r5,
-                          mode = mode,
-                          departure_datetime = departure_datetime,
-                          max_walk_time = max_walk_time,
-                          max_trip_duration = max_trip_duration)
-
-#join codes back to the matrix and get it ready from plotting
-ttm_btn_lsoa_to_School$orig_lsoa <- brighton_lsoa_centroids$lsoa21cd[match(ttm_btn_lsoa_to_School$to_id, brighton_lsoa_centroids$fid)]
-
-ttm_btn_lsoa_to_School$dest_sch <- brighton_sec_schools_wgs84$establishment_name[match(ttm_btn_lsoa_to_School$from_id, brighton_sec_schools_wgs84$urn)]
-
-ttm_btn_lsoa_to_School <- ttm_btn_lsoa_to_School %>%
-  mutate(to_id = as.factor(to_id)) %>%
-  unite(od_code, orig_lsoa, to_id, sep = "_", remove = FALSE)
-
-simple_ttm <- ttm_btn_lsoa_to_School %>%
-  select(orig_lsoa, to_id, travel_time_p50) %>% 
-  rename(orig = orig_lsoa, dest = to_id, flow = travel_time_p50)
-
-class(ttm_btn_lsoa_to_School)
-
-simple_ttm <- na.omit(simple_ttm)
-
-#brighton_lsoa_to_school_times <- od2line(flow = simple_ttm, zones = lsoa_btn_pw_centroids, destinations = bh_sec_sch_bng, zone_code = "orig", dest_code = "dest", zone_code_d = "id")
-
-#brighton_lsoa_to_school_times <- od2line(flow = simple_ttm, zones = lsoa_btn_pw_centroids, destinations = bh_sec_sch_bng, zone_code = "orig", dest_code = "dest", zone_code_d = "id")
-
-#brighton_lsoa_to_school_times <- od2line(flow = simple_ttm, zones = lsoa_btn_pw_centroids, destinations = brighton_sec_schools)
-
-#write_csv(simple_ttm, here("data", "simple_ttm.csv"))
-#st_write(brighton_sec_schools, here("data", "brighton_sec_schools.geojson"), append = TRUE)
-
+# Create kable table
+kable(admissions_with_sum, caption = "Council PAN and PAN Scenarios")
 ```
+
+A more equitable solution to the PAN problem that pays due consideration to demand, while also acknowledging the reality of pupil numbers for all schools across this city, can be represented by my PAN 2026 Kings Scenario above.
+
+In this scenario:
+
+-   Most schools in the city keep PANs that are in line with their 2024 levels. Many of these schools could accommodate more, but in the interests of continuing the viability of other schools in the system, they are in effect donating PAN to less popular schools.
+
+-   The recommendation is that BACA in an ideal world would reduce its PAN to 165 - well in excess of a demand-based PAN, but lower than its current level. I acknowledge that under the current system this is not possible, but at just 15 students, bear with me - we're within margins of error in the whole system now.
+
+-   Every other school in Brighton EXCEPT Longhill, keeps its PANs at the 2024 Level. For most of these schools, as I have said, this is a reduction in PAN relative to popularity. I propose Longhill reduces its PAN to 165 - the same level as Kings School - and still WELL IN EXCESS of its actual student intake in 2024 of 94 students.
+
+I believe this proposal is not both workable, sensible and importantly, equitable, recognising both the need to keep all schools open in the city and the recognition of demand in other places. It will also buy the council the time it needs to fully engage in a more comprehensive review of all evidence from all of the inter-connected domains while hitting its own overall PAN targets.
+
+I am aware that some may feel that despite all of the evidence above, I am picking on Longhill, but to be totally honest, I don't think my brain had even acknowledged its existence until this week - I knew there was a school in Rottingdean, but that was all I knew. But its importance has started to shine through while carrying out data analysis on the topic over the last week or so. So let's explore the Longhill problem in a little more detail.
+
+## The Longhill Problem
+
+### Recent Numbers
+
+-   Longhill is a school on the Eastern geographic edge of the city in Rottingdean (for a map see my last analysis here - <https://adamdennett.github.io/BH_Secondary_Admissions_Analysis/BH_Sec_Sch_Analysis.html#current-situation>)
+
+-   The intakes of all secondary schools in the city are a matter of public record and can be obtained from the Council's webpages - <https://www.brighton-hove.gov.uk/allocation-factsheet-year-7-places-september-2024>
+
+-   You can see that in 2024, Longhill admitted (or at least offered places to) 94 students. This was relative to a PAN in 2024 of 270 places. Put another way, the school admitted almost three-times fewer students than its PAN would have allowed it to.
+
+-   Clearly this is not ideal for Longhill as the funding that schools get is tied to pupil numbers (if you are interested in exactly how this works - HT James for this - [see here](https://www.gov.uk/government/publications/pre-16-schools-funding-local-authority-guidance-for-2025-to-2026/summary-policy-document-for-schools-national-funding-formula-2025-to-2026)). But what does it mean for the rest of the school system in Brighton?
+
+-   In 2024, Brighton Council set a hard ceiling of 2560 for its PAN - schools are legally not allowed to admit more pupils than their PAN (although Varndean due to special circumstances). If one school in the system has a much higher PAN than it can reasonably be expected to hit, the net effect is it takes potential capacity away from other schools.
+
+-   As I mentioned earlier in this piece, PANs are originally derived from a physical measure of school size - the volume of the buildings, pretty much. So it might be the case that they are maxed out in terms of their physical limits.
+
+-   In 2024 it it could be argued that Longhill isn't leeching capacity from other schools where other schools are already maxed out, but this picture changes in a declining school roll environment.
+
+-   Under current Council proposals for 2026 in Option A, Longhill's PAN reduces slightly to 240, but is it reasonable to expect anything like this number of students to attend? If it is not, and other schools in the system already in high demand are being forced to reduce their PANs as well, then we are now in a situation where Longhill is unfairly taking capacity away from schools where demand is higher.
+
+### Why are Longhill's 2024 numbers low and might we expect them to change?
+
+-   People might reasonably ask, what if 2024 is just an out-of-character blip? Something related to its recent downgrading from an [Ofsted rating of "Good" in 2018? to "Requires Improvement" in 2024](https://reports.ofsted.gov.uk/provider/23/114581)?
+
+-   Or what if it is just a brief demographic anomaly? What were it's numbers like in previous years? Well, we can answer those questions.
+
+*As an aside, this is a plea to Brighton Council - please sort your data out!! I had to trawl through about 11 different web-pages, open several different PDF documents \*NB, PDFs are a TERRIBLE way to store data - webpages not much better. Spreadsheets, csv files, or, whisper it - an API - would all be better. If it weren't for my tame AI helper, I'd still be processing these data next month!*
+
+All of my code for processing these data and the original source files can be accessed
+
+Acknowledgement of Limitations
+
+-   I am aware that what I have presented here some may not see as a silver bullet and indeed I don't think I intend it that way.
+
+-   Keeping the status quo in terms of choice
 
 Remember VAT on private schools - look at private school numbers in the city

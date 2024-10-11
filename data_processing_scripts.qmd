@@ -589,13 +589,13 @@ combined_data_long_filtered <- combined_data_long %>%
   filter(School != "Total")
 
 # Create the plot
-ggplot(combined_data_long_filtered, aes(x = Year, y = Total_offer, color = School, group = School)) +
+ggplot(combined_data_long_filtered, aes(x = Year, y = Total, color = School, group = School)) +
   geom_line() +
   geom_point() +
   xlab("Year") +
-  ylab("Total Offers") +
+  ylab("Total Applications") +
   theme_minimal() +
-  ggtitle("Yearly Total Offers by School")
+  ggtitle("Yearly Total Applications by School")
 
 ```
 
@@ -628,7 +628,7 @@ ggplot(selected_schools, aes(x = Year, y = Total, color = School, group = School
   geom_point() +
   geom_smooth(method = "lm", se = FALSE, linetype = "dotted") +
   xlab("Year") +
-  ylab("Total Offers") +
+  ylab("Total Applications") +
   theme_minimal() +
   ggtitle("Yearly Total Applications")
 
@@ -645,8 +645,25 @@ ggplot(selected_schools, aes(x = Year, y = Total, color = School, group = School
   geom_point() +
   geom_smooth(method = "lm", se = FALSE, linetype = "dotted") +
   xlab("Year") +
-  ylab("Total Offers") +
+  ylab("Total Applications") +
   theme_minimal() +
   ggtitle("Yearly Total Applications")
+
+```
+
+```{r, echo=F, message=F, warning=F}
+# Filter data for the specified schools
+selected_schools <- combined_data_long %>%
+  filter(School %in% c("Varndean", "Dorothy Stringer", "Hove Park", "Blatchington Mill"))
+
+# Create the plot
+ggplot(selected_schools, aes(x = Year, y = Total_offer, color = School, group = School)) +
+  geom_line() +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, linetype = "dotted") +
+  xlab("Year") +
+  ylab("Total Offers") +
+  theme_minimal() +
+  ggtitle("Yearly Total Offers")
 
 ```

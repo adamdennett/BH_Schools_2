@@ -8,8 +8,8 @@ website:
     background: primary
     search: true
     left:
-      - text: "Home"
-        href: index.qmd
+      - text: "Data Processing"
+        href: data_processing_scripts.qmd
       - about.qmd
       - text: "Week 2 Analysis"
         href: schools_wk2.qmd
