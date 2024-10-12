@@ -1,6 +1,6 @@
 ---
 title: "Brighton and Hove Secondary School Admissions Proposal - New Analysis and an Alternative Proposal"
-author: "Professor Adam Dennett FRGS FAcSS, Professor of Urban Analytics, Bartlett Centre for Advanced Spatial Analysis, University College London - a.dennett@ucl.ac.uk"
+author: "Professor Adam Dennett FRGS FAcSS, Professor of Urban Analytics, Bartlett Centre for Advanced Spatial Analysis, University College London - a.dennett@ucl.ac.uk - @adam_dennett"
 published-title: 12/10/24
 format: html
 editor: visual
@@ -13,6 +13,7 @@ editor: visual
 library(dplyr)
 library(tidyr)
 library(knitr)
+library(tidyverse)
 
 # Create the original data frame
 yr_7_admissions_2024 <- data.frame(
@@ -409,10 +410,11 @@ combined_data_long <- combined_data_long %>%
 combined_data_long <- combined_data_long %>%
   mutate(School = ifelse(School == "Longhill", "Longhill High", School))
 
-
-
-
 ```
+
+### Disclaimer and acknowledgements
+
+Everything below is very much a work in progress, but the urgency of this current situation has circumvented the usual review process. This is raw, largely unedited and very much 'beta' work - but is is a start and something that will get the conversation between the council and the citizens of Brighton heading, hopefully, in a more positive direction. There will be errors, there are some un-filtered bits (there have been many late nights this week!). Thanks to all those people who have already helped by contributing to the online conversation this week and messaged me with incredibly useful information and encouragement. I know we can reach a good solution together.
 
 ### Terminology
 
@@ -422,17 +424,21 @@ FSM - Free School Meals. This is the proportion of pupils in a school or residen
 
 # Headlines / Executive Summary
 
--   In this detailed analysis I will present a viable alternative to the current proposals put forward by the council which allows the council to hit its current pupil number projections in 2026 across all schools in the city with no disruption to schools in the city or catchment boundaries.
+-   In this detailed analysis I will present a viable alternative to the current proposals put forward by the council which allows the council to hit its current declining pupil number projections in 2026 across all schools in the city with no disruption to schools in the city or catchment boundaries.
 
-    -   It will allow space and time needed for the council to review its own initiatives on FSM mixing and improving educational outcomes.
+-   The proposal presented will allow the Council to see through on the pioneering FSM initiative it has developed and evaluate it properly before changing the system entirely, leading to better chances for more deprived students in the city and contributing to less intense segregation in the system.
+
+    -   It will allow for crucial space and time for this review to be completed.
 
     -   I believe it is a proposal that can be backed by the population across all social and demographic groups in the city.
 
-    -   I believe it will allow the council the space and time it needs to engage with a proper, joined-up, systems thinking approach that pays due care and attention to all relevant dimensions of the issue.
+    -   I believe it will allow the council to engage with a proper, joined-up, systems thinking approach that pays due care and attention to all relevant dimensions of the issue.
 
     -   It will allow the council time to engage with a full-range of experts on all aspects of this problem, as well as a greater breadth and depth of members of the community through community groups and forums that represent the diversity of views in the city.
 
     -   I would encourage the council to consider carefully the detailed evidence I present below and the recommendations I make and I will of course be happy to speak to them at length about this.
+
+-   In summary the proposal is to reduce PANs for schools where it is not being reached at all already. This will not affect those schools at all, but will allow for a sensible redistribution of the excess amongst other schools, meaning they are not forced to reduce their own PANs. A concurrent benefit of this is it removes the current motivation to redraw catchment boundaries.
 
 -   **PANs are one big driver of the issues and potentially the most important at this present time. Despite what the Council says, from the analysis I have done, I believe there is *no need* to reduce PANs for *most* schools in the City in 2026 - reduction in PANS is necessary for *some* schools, but analysis below shows even for schools where they justifiably could be reduced, numbers still will be well in excess of their current admission figures and not smaller than the smallest school in the city.**
 
@@ -440,7 +446,7 @@ FSM - Free School Meals. This is the proportion of pupils in a school or residen
 
 -   The desired increase in social mixing that the council is currently trialling through allowing FSM pupils from other catchments priority over students within, will in every likelihood lead to some of the outcomes already desired by the council (Social Mixing and achievement and academic attainment improvements). It is a pioneering initiative with potentially very positive outcomes that needs space and time to be fully evaluated. The results will not published until early 2025 - *after* any changes the council might try and push through under the current time table. In the People Overview and Scrutiny Committee held on 9/10/2024, the Council's own expert, Dr Ellen Greaves, University of Exeter, urged the council to wait for the results of this initiative before making any changes to the admissions system - not to do so would be ignoring their own expert advice. If successful, this initiative will impact already high demand schools, so artificially reducing their PANs will amplify problems futher.
 
--   PANS for Academies, Free Schools and Religious schools cannot currently be set by the council. However, in the above meeting, Councillor Haver\* raised a point that a Government White Paper is on the horizon which may give local authorities the power to control ALL PANs in the near future - this could alleviate some of the issues I am about to describe still further.
+-   PANS for Academies, Free Schools and Religious schools cannot currently be set by the council. However, in the above meeting, Councillor Haver\* raised a point that a [Government White Paper is on the horizon which may give local authorities the power to control ALL PANs in the near future](https://www.localgovernmentlawyer.co.uk/education-law/394-education-news/57962-government-to-introduce-legislation-requiring-all-schools-to-cooperate-with-local-authorities-on-school-admissions) - this could alleviate some of the issues I am about to describe still further.
 
     \*I think this was her name - audio wasn't perfect
 
@@ -466,13 +472,13 @@ FSM - Free School Meals. This is the proportion of pupils in a school or residen
 
 -   From what I have observed and listened to in these meetings, I am of the *personal opinion* that the educational mixing argument being promoted by the council as the main driver (alongside reducing roll numbers) for these proposals, while real, is actually secondary to the financial issues facing schools in the city. These are real and difficult to resolve and [other solutions have been touted](https://www.brightonandhovenews.org/2024/07/10/senior-councillor-airs-plans-to-federate-schools-to-tackle-deficits/) in recent months, showing that this is at the front of the Council's mind.
 
--   It is my *personal opinion* that giving FSM pupils better access to better performing schools in the city, while a brilliant goal and something that should be addressed, is an initiative that is being hijacked and used as an inappropriate solution to the entirely different problem of financial viability. As everything is connected, it may help some of the underlying financial challenges in an indirect way, but the risk of collateral damage is very high and there are better solutions out there if the council chooses an evidence-based approach. I have come to this conclusion through observing the dismissive way the council are treating their given their own pioneering FSM policy by not even allowing it time to bear fruit and be evaluated before trying to force another solution through. This is important, as if the council admitted financial challenges were the driver, then different 'solutions' to the problem (such as the one I suggest below) become viable.
+-   It is my *personal opinion* that giving FSM pupils better access to better performing schools in the city, while a brilliant goal and something that should be addressed, is an initiative that is being hijacked and used as an inappropriate solution to the entirely different problem of financial viability. As everything is connected, it may help some of the underlying financial challenges in an indirect way, but the risk of collateral damage is very high and there are better solutions out there if the council chooses an evidence-based approach. I have come to this conclusion through observing the dismissive way the council are treating their own pioneering FSM policy by not even allowing it time to bear fruit and be evaluated before trying to force another solution through. This is important, as if the council admitted financial challenges were the driver, then different 'solutions' to the problem (such as the one I suggest below) become viable.
 
 -   Listening to voices [Class Divide](https://www.classdivide.co.uk/) in Brighton and knowing the social geography of the city as a geographer and resident, it is an established fact that there is a real issue of socio-economic deprivation compounded by segregation in the city, with residents in the most deprived Eastern parts of the city lacking both quality in education provision and choice. [This is a wider and long-term issue](https://www.theguardian.com/education/2005/aug/09/schools.uk) and has driven initiatives to tackle socio-economic disadvantage through the school system and admissions shake-ups in the past. It is my belief that the reason many of these have failed is not due to the sadly pervasive class-led narrative of "middle-class parents from Preston Park" with "sharp elbows" "only looking out for themselves", but a similar lack of [systems thinking](https://www.apm.org.uk/resources/find-a-resource/what-is-systems-thinking/) and the offering of poorly thought through solutions to complex interconnected problems. There is a very real risk that if the council doggedly tries to pursue its current path, it is inevitable the same will happen again, not only destroying trust across all sections of the city population, but failing those who are really suffering at the bottom of the socio-economic pile.
 
--   Compared to previous attempts to re-draw the catchments in Brighton, there is an additional demographic challenge this time. The projections of the decline of children in the city are likely to be borne out, to a greater or lesser degree in turn reducing the money available to schools from the government in a system which allocates money according to, primarily, pupil numbers alongside some additional support according levels of deprivation or special educational need.
+-   Compared to previous attempts to re-draw the catchments in Brighton, there is an additional demographic challenge this time. The projections of the decline of children in the city are likely to be borne out, to a greater or lesser degree, in turn reducing the money available to schools from the government in a system which allocates money according to, primarily, pupil numbers alongside some additional support according levels of deprivation or special educational need.
 
--   However, as I described in [my last piece of work](https://adamdennett.github.io/BH_Secondary_Admissions_Analysis/BH_Sec_Sch_Analysis.html), distributions of children in the city are not even and the geographic location of schools relative to these childen generates spatial challenges. There is also what we could describe as a 'multiplier effect' whereby the residential geographies, deprivation and school locations interact to amplify issues even further. A classic example of multiple deprivation.
+-   However, as I described in [my last piece of work](https://adamdennett.github.io/BH_Secondary_Admissions_Analysis/BH_Sec_Sch_Analysis.html), distributions of children in the city are not even and the geographic location of schools relative to these children generates spatial challenges. There is also what we could describe as a 'multiplier effect' whereby the residential geographies, deprivation and school locations interact to amplify issues even further. A classic example of multiple deprivation.
 
 -   The Council is faced with a big challenge, but rather than engaging in systems thinking and recognising that schools are a part of an interconnected urban ecosystem which encompasses the social fabric of the city with individual children, families and communities, transport systems, the environment, homes, jobs, and the economy, they are focusing only on the narrow educational dimensions of the problem, which while incredibly important, are no more or less important that the whole city system and cannot be managed in isolation from the rest of the city.
 
@@ -480,11 +486,11 @@ FSM - Free School Meals. This is the proportion of pupils in a school or residen
 
 -   A particularly big failure of process is that not only have the Council neglected the truly interconnected nature of schools and communities in the city, they have thus-far failed in their duty to carry out even the most basic evidence gathering and dissemination process before launching an engagement/consultation on the residents. Had they have completed this job in advance, they could have understood the problem better and come up with viable alternative, less disruptive, solutions - perhaps like the ones I propose below.
 
--   The Council have said that they will produce more evidence if this reaches the formal consultation stage, but it is my view that at this point it will be too late - to carry out the consultation properly, people need to be in possession of all of the facts. Evidence needs to come ***before*** policy. I am now even more of the strong opinion that the whole process needs to be paused to give time to build a comprehensive evidence base - however, the solution I present below, should the Council see the merits of it (and I really hope they do!) offers them a real chance to do the right thing.
+-   The Council have said that they will produce more evidence if this reaches the formal consultation stage, but it is my view that at this point it will be ***too late*** - to carry out the consultation properly, people need to be in possession of all of the facts. Evidence needs to come ***before*** policy. I am now even more of the strong opinion that the whole process needs to be paused to give time to build a comprehensive evidence base - however, the solution I present below, should the Council see the merits of it, offers them a chance of what might be described as a 'constructive pause' and a real change to be evidence-based in their solutions.
 
--   The council is giving the impression through its current approach to this process that dogmatism and ideology are driving decisions more than full consideration of all relevant evidence - I sincerely hope my impressions in person are off the mark and I really do hope this is a mis-characterisation and I would love them to prove me wrong on this, particularly after reading this piece!
+-   The council is giving the impression through its current approach to this process that dogmatism and ideology are driving decisions more than full consideration of all relevant evidence - I sincerely hope my impressions in person are off the mark and I really do hope this is a mis-characterisation and I would love them to prove me wrong on this, particularly after reading this piece.
 
--   On a practical note, this stuff is hard work. My life is made considerably more easy with good open data. I have repeatedly asked the council to share their data with me and offered my services on multiple occasions to assist them in the evidence gathering I have expertise in. I have had some positive interations with Cllr Taylor and colleagues, but I am yet to receive any data. I have had correspondence that suggests it could be on the way, but I have asked three times this week and nothing has yet arrived.
+-   On a practical note, this kind of gathering and analysing of data is hard work. My life is made considerably easier with good open data. I have repeatedly asked the council to share their data with me and offered my services on multiple occasions to assist them in the evidence gathering I have expertise in. I have had some positive interactions with Cllr Taylor and colleagues, but I am yet to receive any data. I have had correspondence that suggests it could be on the way, but I have asked three times this week and nothing has yet arrived.
 
 ```{r, echo=F, message=F, warning=F}
 library(tidyverse)
@@ -536,13 +542,13 @@ Much of the data presented on this page are taken from a rare example of publish
 
 PANS for 2026 and 2030 are derived from tables in the power point from the consultation website - <https://yourvoice.brighton-hove.gov.uk/en-GB/projects/secondary-school-engagement-exercise/1>
 
-## PAN(demonium?)
+# PAN(demonium?)
 
 ### PAN Background
 
 It has become clearer to me over the last week that the Published Admission Numbers (PAN) for both individual schools and the City are a massive part - if not ***THE*** most important part of this whole issue and I hope what I present below will convince you of this too.
 
-The PAN is really two problems - the city-level PAN for different years (which relates to population projections produced by the Council), and the individual school-level PANs (which affect how many pupils a school can admit at year 7) which control school intake. I will explore both of these dimensions, but first some local background:
+The PAN is really two problems - the city-level PAN for different years (which relates to population projections produced by the Council), and the individual school-level PANs (which affect how many pupils a school can admit at year 7) which control school intake. They are connected in that school PANs will sum to the city-level PAN. I will explore both of these dimensions, but first some local background:
 
 A school cannot legally admit fewer children than its PAN where pupils wish to attend the school. The PAN is determined (initially) by the physical size of the school by the Government's [Net Capacity Assessment Programme](https://www.gov.uk/guidance/net-capacity-assessment-nca-programme), but it is not set in stone and can be reduced or increased according to demand. Physically larger schools may have artificially higher PANs even when lived pupil numbers are low - and we will see why this is important later.
 
@@ -585,8 +591,6 @@ ggplot(filtered_admissions, aes(x = reorder(school, -as.numeric(factor(school)))
 *Figure 1 - PANs by School and Type, Brighton*
 
 We can see from this graph that the academy schools and King's School have a relatively low PAN compared to other schools in the City, with Cardinal Newman enjoying a PAN well above average at 360. This represents 14% of the total places available.
-
-As an interesting aside, we know from the 2021 Census that 30.9% of the population of Brighton identify as Christian - <https://www.ons.gov.uk/census/maps/choropleth/identity/religion/religion-tb/christian?lad=E06000043> - if we believe wikipedia - <https://en.wikipedia.org/wiki/Religion_in_the_United_Kingdom> - 13% of Christians in the UK are Catholic. So if we apply that percentage to Brighton, we can expect 3.9% of the population to be Roman Catholic. But 14% of the school places in the city can be reserved for Catholic Children as a priority. I'll just leave that there to sink in!
 
 ## PANs vs Applications and Intake
 
@@ -916,9 +920,9 @@ In this scenario:
 
 I believe this proposal is not both workable, sensible and importantly, equitable, recognising both the need to keep all schools open in the city and the recognition of demand in other places. It will also buy the council the time it needs, should it wish to try other equity improving initiatives around diversity and segregation to fully engage in a more comprehensive review of all evidence from all of the inter-connected domains, while hitting its own overall PAN targets if that is an operational challenge. Essentially, while not everybody wins, there is a much lower proportion of losers under this strategy.
 
-I am aware - and indeed steeling myself for the inevitable - that some may feel that despite all of the evidence above, I am somehow picking on Longhill, but to be totally honest, I don't think my brain had even acknowledged its existence until this week - yes, I knew there was a school in Rottingdean, but that was all I knew - I didn't know any of its background. But its importance has started to shine through incredibly brightly while carrying out data analysis on the topic over the last week or so. So let's explore the Longhill problem in a little more detail.
+I am aware - and indeed steeling myself for the inevitable - that some may feel that despite all of the evidence above, I am somehow picking on Longhill, but to be totally honest, I don't think my brain had even acknowledged its existence until this week - yes, I knew there was a school in Rottingdean/Ovingdean, but that was all I knew - I didn't know any of its background. But its importance has started to shine through incredibly brightly while carrying out data analysis on the topic over the last week or so. So let's explore the Longhill problem in a little more detail.
 
-## The Longhill Problem
+## The Longhill Challenge
 
 ### Recent Numbers
 
@@ -1083,7 +1087,7 @@ ggplot(selected_schools, aes(x = Year, y = Total, color = School, group = School
   ggtitle("Yearly Total Applications")
 ```
 
-Figure 11
+Figure 11 - Yearly application trends at four of the larger / more popular schools in the city
 
 ```{r, echo=F, message=F, warning=F}
 # Filter data for the specified schools
@@ -1101,15 +1105,15 @@ ggplot(selected_schools, aes(x = Year, y = Total_offer, color = School, group = 
   ggtitle("Yearly Total Offers")
 ```
 
-Figure 12
+Figure 12 - Yearly offer trends at four of the larger / more popular schools in the city
 
 -   By way of contrast, Figures 11 and 12 show the temporal trends for applications and admissions in some of the more popular schools in the city.
 
 -   What is noticeable about these schools is their relative consistency. There is some variation and some trending slightly up or slightly down - this will be relevant later when we compare to long-term population trends at the city level, but at the moment we can note that any PAN changes imposed on these schools would run counter to their long-term trends of popularity and viability and I would view it as a negative intervention on the part of the council.
 
-### The Longhill Problem - Conclusions and Recommendations
+### The Longhill Challenge - Conclusions and Recommendations
 
-I hope that the evidence of longer-term trends presented here helps evidence that Longhill is not being unfairly targeted in this analysis. It has long-term issues which do not appear to be related over the long term to its performance.
+I hope that the evidence of longer-term trends presented here helps evidence that Longhill is not being unfairly targeted in this analysis. It has long-term issues of declining number which do not appear to be directly related over the long term to its performance - of course more work would need to be done to establish precisely the contributions of demography and performance to this observation.
 
 I am aware that what I have presented here will not solve the problems at Longhill - the council will have to think long and hard about a strategy of managed decline in numbers that can still support the school to remain viable.
 
@@ -1117,7 +1121,9 @@ It's also true that Longhill's student population problems might get *even* wors
 
 I have evidenced above that Longhill can be viable as a smaller school and I think it should be supported to be a thriving smaller school, but it is not viable as a large school, no matter what ill-conceived policy might be imposed to force it to be one. Anything like this would run against a huge weight of evidence and will be ultimately destined to fail, generating more problems than it solves in the process.
 
-One final point of note is that the council needs to come to terms with the reality that Longhill is already a very different school in size and demography than it was perhaps in the time when Cllr Taylor was a student. Yes, it still occupies the same site, but the site does not suit the school it is any more. This is actually a fantastic opportunity should the council choose to grasp it. It owns a large site in an [affluent part of the city](https://www.ons.gov.uk/visualisations/dvc1371/#/E06000043) that should it choose to reduce the size of the estate, then it could use this resource for any number of productive initiatives, including affordable housing. This is an opportunity that needs the kind of thinking beyond narrow educational boundaries I have already discussed.
+One final point of note is that the council needs to come to terms with the reality that Longhill is already a very different school in size and demography than it was perhaps in the time when Cllr Taylor was a student. Yes, it still occupies the same site, but the site does not suit the school it is any more.
+
+This is actually a fantastic opportunity should the council choose to grasp it. It owns a large site in an [affluent part of the city](https://www.ons.gov.uk/visualisations/dvc1371/#/E06000043) that should it choose to reduce the size of the estate, then it could use this resource for any number of productive initiatives, not limited to but perhaps including affordable housing (although I am aware of the challenges the planning system may through up here). This is an opportunity that needs the kind of thinking beyond narrow educational boundaries I have already discussed.
 
 I would urge the council to consider this very carefully indeed. I will re-iterate this:
 
@@ -1131,7 +1137,7 @@ Phew, if you've made it this far - well done. That was hard going! I hope that y
 
 Good question - I'm glad you asked! I promise this is one final push, stick with me!
 
-In my last piece I emplored the Council to publish as much information as possible, including their methodology for estimating (present day) and projecting (into the future) pupil populations in the city. I will ask again - ***PLEASE PUBLISH YOUR DATA AND METHODOLOGY.***
+In my last piece I implored the Council to publish as much information as possible, including their methodology for estimating (present day) and projecting (into the future) pupil populations in the city. I will ask again - ***PLEASE PUBLISH YOUR DATA AND METHODOLOGY.***
 
 Year 7 PANs relate directly to the Population of children who will be going into Year 7 in the next school year. For most children when they start, they will be 11 years old. So how do we know how many there are?
 
@@ -1159,7 +1165,7 @@ So how do I think these numbers are arrived at and do I believe them? In the abs
 
 ## Comparing Brighton PAN Projections with ONS Sub-National Population Projections
 
-Verifying the validity of the Population Projections and associated PAN projections produced by the Council is important. If projections are out, this could have existential impacts on schools, so getting it right is important. Further context to this concern is given in 2015 where a review of Brighon's pupil projection methodology was carried out - <https://democracy.brighton-hove.gov.uk/ieDecisionDetails.aspx?AIId=47946> - and found issues with the methodology employed. While I am sure the council has acted upon the recommendations of the report, ***I can find no detailed documentation describing how their current projections are calculated.***
+Verifying the validity of the Population Projections and associated PAN projections produced by the Council is important. If projections are out, this could have existential impacts on schools, so getting it right is important. Further context to this concern is given in 2015 where a review of Brighton's pupil projection methodology was carried out - <https://democracy.brighton-hove.gov.uk/ieDecisionDetails.aspx?AIId=47946> - and found issues with the methodology employed. While I am sure the council has acted upon the recommendations of the report, ***I can find no detailed documentation describing how their current projections are calculated.***
 
 While I have no reason to believe the Council employs a poor methodology to project its city-level and catchment-specific student populations and PAN, without documentation and methodology to support the numbers, we don't really know. Verification is a basic part of due diligence, especially if disruptive changes hinge on the numbers produced.
 
@@ -1214,7 +1220,9 @@ Figure 13 - Comparison of Brighton PAN projections and ONS Sub-National Populati
 
 There are, as ever, a few things to note here:
 
--   Firstly the ONS SNPP numbers are higher - this is to be expected as the Brighton numbers should be adjusted down to only account for pupils in the state sector - home schooled pupils and private school pupils are likely the main reason for discrepencies but others probably exist.
+-   Firstly the ONS SNPP numbers are higher - this is to be expected as the Brighton numbers should be adjusted down to only account for pupils in the state sector - home schooled pupils and private school pupils are likely the main reason for discrepancies but others probably exist.
+
+-   One small point is these numbers from the published Brighton documentation from Jan 2024 are different from the numbers that appear in the consultation PowerPoint. Projections do change, but without a published methodology, the reasons behind this are opaque.
 
 -   In 2024 the difference is 659 people aged 11 across the city - quite a large number if we think about this in terms of class sizes of 30 and the PANs for individual schools seen earlier. This difference grows and contracts a little until 2030 when it is at 563, but then gets much larger to 878 by 2034.
 
@@ -1311,4 +1319,4 @@ Got there - and trust me, I am far more relieved to have reached this point that
 
 -   I believe that a systems approach needs to be adopted which recognises the intricacies and interdependencies of the education system, not just in Brighton but in every city. You do not get a negative response on the scale you have seen over the last 10 days or so, without having got something very wrong. I hope the council takes the time to reflect on this.
 
-Adam Dennett, 12/10/204
+Adam Dennett, 12/10/2024
