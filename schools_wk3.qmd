@@ -130,18 +130,23 @@ There are a couple of points to note in this graph.
 
 -   Indeed London performs a full 10% better than the next ranked region and does a fantastic job of pulling the average up for the rest of the country.
 
--   
+-   Without London, the average for the rest of the country reduces to 21% and Brighton is performing better than everywhere, apart from London.
 
 ```{r}
 
 # Filter the data
 sm_data_filtered <- sm_data %>%
-  filter(area_name != c("England", ""))
+  filter(area_name != "England") %>% 
+  filter(!grepl("outer london", area_name, ignore.case = TRUE))
 
 # Reorder area_name based on the value
 sm_data_filtered <- sm_data_filtered %>%
   mutate(area_name = factor(area_name, levels = unique(area_name[order(value)])))
 
+
+new_avg_value <- sm_data_filtered %>%
+  summarise(avg_value = mean(value, na.rm = TRUE)) %>%
+  pull(avg_value)
 
 ```
 
