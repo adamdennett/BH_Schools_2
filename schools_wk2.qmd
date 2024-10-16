@@ -540,6 +540,8 @@ Much of the data presented on this page are taken from a rare example of publish
 
 PANS for 2026 and 2030 are derived from tables in the power point from the consultation website - <https://yourvoice.brighton-hove.gov.uk/en-GB/projects/secondary-school-engagement-exercise/1>
 
+Any data not pulled from web-links in the code behind this webpage can be accessed here - <https://www.dropbox.com/s/tx3treag895wer9/brightondata.zip?dl=0>
+
 # PAN(demonium?)
 
 ### PAN Background
