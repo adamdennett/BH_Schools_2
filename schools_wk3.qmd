@@ -5,8 +5,9 @@ title: "schools_wk3"
 ```{r}
 library(tidyr)
 library(dplyr)
+library(writexl)
 
-# Creating the dataframe
+# Creating the dataframe with additional data columns based on the provided image
 data_from_image <- data.frame(
   Year = c(2024:2030, "Total/Average"),
   Places_Available = c(220, 220, 220, 220, 220, 220, 220, 1540),
@@ -39,4 +40,119 @@ data_from_image <- data.frame(
 # Print the dataframe
 print(data_from_image)
 
+# Writing the dataframe to the "data" folder
+write_xlsx(data_from_image, here::here("data", "data_from_image.xlsx"))
+
+# Now your file "data_from_image.xlsx" is saved in the "data" folder
+
 ```
+
+```{r}
+library(tidyr)
+library(dplyr)
+library(writexl)
+library(here)
+
+# Creating the dataframe
+data <- data.frame(
+  Year = c(2024:2034),
+  ONS_SNPP_Age_11 = c(2915, 2734, 2815, 2786, 2672, 2545, 2574, 2580, 2559, 2544, 2550),
+  BTN_All_Schools = c(2256, 2279, 2270, 2231, 2217, 2114, 2011, 2001, 1852, 1827, 1672),
+  ONS_BTN_Difference = c(659, 455, 545, 555, 455, 431, 563, 579, 707, 717, 878),
+  ONS_SNPP_Age_11_2024_Change = c(0.94, 0.97, 0.96, 0.92, 0.87, 0.88, 0.89, 0.88, 0.87, 0.87, 0.00),
+  BTN_All_Schools_2024_Change = c(1.01, 1.01, 0.99, 0.98, 0.94, 0.89, 0.89, 0.82, 0.81, 0.74, 0.00),
+  BTN_ONS_Rate = c(2256, 2116, 2347, 2247, 2140, 2112, 2138, 2016, 1985, 1841, 1831)
+)
+
+# Saving the dataframe as an Excel file
+here()
+write_xlsx(data_from_image, here("data", "data_from_image.xlsx"))
+
+# Now you can download the file "data_from_image.xlsx"
+
+```
+
+## Review of Last two Pieces and Prediction of how I think this will play out
+
+## "A Stain on our City" - or a badge of relative achievement?
+
+The phrase "A Stain on our City" has been in the back of my mind ever since it was used in reference to one of the opening slides that Jacob Taylor produced during the face-to-face consultation meeting on Tuesday 8/10/2024. It is highly emotive. Somebody pulled him up on it in the audience. He then went on to use it again in the People, Overview and Scrutiny Committee Meeting - it can be seen here near the opening of his speech - <https://aisapps.mediasite.com/AuditelScheduler/Player/Index/?id=c1841cfa-af61-45cf-85b5-bb8d274e6b75&presID=32ca1cfe29e14291be27a478fdbf76d01d>
+
+As a reminder, this is the graph that he was referring to when he made these comments:
+
+![A Stain On Our City?](data/stain.png)
+
+The 'stain' in this context is in reference to the 24% of Brighton & Hove's disadvantaged pupil population getting grade 5 or above in Maths and English. Being below the figure of 25.4 for England, this constituted a "stain on our city". Strong stuff. Especially considering Brighton seems to be doing better than the rest of the South East region.
+
+But is it really a stain, or is there more going on?
+
+Now, of course, comparing these figures with non-disadvantaged pupils, there is clearly a big attainment gap and narrowing this gap must be (and I am sure is) a priority for every local authority in the country. It's not right that those from disadvantaged backgrounds do so much worse than their more advantaged peers.
+
+But the argument Jacob Taylor was employing cast Brighton as a failure, relative to England. But is it Brighton really doing as badly as cast? Fortunately, [the Government publishes data on attainment at age 16 across the country, according to social disadvantage](https://social-mobility.data.gov.uk/intermediate_outcomes/compulsory_school_age_(5_to_16_years)/attainment_at_age_16/latest), so we can compare Brighton with a few more examples than just the national average, and the evidence is revealing.
+
+```{r}
+sm_data <- read_csv("https://social-mobility.data.gov.uk/intermediate_outcomes/compulsory_school_age_(5_to_16_years)/attainment_at_age_16/2.0/IN13-2.0-attainment-at-age-16--full-dataset.csv")
+
+
+library(ggplot2)
+library(scales)
+library(viridis)
+
+# Filter the data
+sm_data_filtered <- sm_data %>%
+  filter(area_name != "England")
+
+# Reorder area_name based on the value
+sm_data_filtered <- sm_data_filtered %>%
+  mutate(area_name = factor(area_name, levels = unique(area_name[order(value)])))
+
+# Define the color palette
+color_palette <- scale_color_viridis_c(option = "magma", direction = -1)
+
+# Create the plot
+ggplot(sm_data_filtered, aes(x = value * 100, y = area_name, color = value)) +
+  geom_point() +
+  color_palette +
+  labs(x = "% 5+ GCSE English and Maths, FSM and Non-FSM", y = "Area Name", color = "Value", title = "Percentage of students achieving a grade 5 or above in both GCSE English and Maths, by region and eligibility for free school meals (FSM) (England, 2022 to 2023 school year)") +
+  theme_minimal()
+
+```
+
+Figure 1 - Percentage of Students achieving Grade 5+ English and Maths, for disadvantaged (those in receipt of Free School Meals - left) and non-disadvantaged (right) students, 2022-23.
+
+There are a couple of points to note in this graph.
+
+-   Firstly, there are 41 'Regions' in this version of England. Brighton is within (and contributing to) the value of 21.4% for Surrey, East and West Sussex. Brighton, at 24%, is not only doing better than its wider region but because it is not excluded from the regional figure, actually pulling its average *up*.
+
+-   Secondly, if Brighton were a region on this scale (ranked according to FSM achievement), it would sit between West Yorkshire (23.8% - ranked 10 of 41) and Berkshire, Buckinghamshire and Oxfordshire (24.5% - ranked 9 of 41). In other words, it would fall in the top 25% in England.
+
+-   You may have noticed something interesting at the top of the graph - the top 5-regions that perform considerably better on the attainment of their pupils in receipt of Free School Meals - are all parts of London.
+
+-   Indeed London performs a full 10% better than the next ranked region and does a fantastic job of pulling the average up for the rest of the country.
+
+-   
+
+```{r}
+
+# Filter the data
+sm_data_filtered <- sm_data %>%
+  filter(area_name != c("England", ""))
+
+# Reorder area_name based on the value
+sm_data_filtered <- sm_data_filtered %>%
+  mutate(area_name = factor(area_name, levels = unique(area_name[order(value)])))
+
+
+```
+
+## The Importance of Boundaries
+
+The Modifiable Areal Unit Problem (MAUP).
+
+## Brighton and Hove - Demographic History and Futures
+
+## The Importance of Geography and Distance
+
+Prior Form
+
+<https://www.brightonandhovenews.org/2024/09/11/infant-school-wins-appeal-against-council-vote-to-cut-intake/>

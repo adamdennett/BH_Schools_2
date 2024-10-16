@@ -1,0 +1,97 @@
+---
+title: "BrightonLSOAProjections"
+author: "Adam Dennett"
+---
+
+```{r}
+library(tidyverse)
+library(sf)
+library(tmap)
+library(arrow)
+library(janitor)
+library(here)
+```
+
+```{r}
+parquet <- open_dataset(here("data","nomis_LSOA.parquet"))%>%
+  #just get age
+  filter(C_AGE_TYPE == "Individual age")%>%
+  # value
+  filter(MEASURES_NAME == "Value")%>%
+  #filter aged 11 students, could be any age here.
+  filter(C_AGE_NAME=="Age 11")%>%
+  #gender 0 is total
+  filter(GENDER==0)%>%
+  # select date, geog and value
+  select(DATE, GEOGRAPHY, GEOGRAPHY_TYPE, C_AGE_NAME, OBS_VALUE)%>%
+  collect() %>% clean_names
+  
+```
+
+```{r}
+library(dplyr)
+
+parquet <- parquet %>%
+  group_by(date) %>%
+  mutate(obs_prop = obs_value / sum(obs_value)) %>%
+  ungroup()
+
+parquet <- parquet %>%
+  group_by(date) %>%
+  mutate(obs_prop_3yr_avg = obs_value / mean(obs_value[date >= date - 2 & date <= date])) %>%
+  ungroup()
+
+
+
+```
+
+```{r}
+library(dplyr)
+library(tidyr)
+
+parquet_sub <- parquet %>% 
+  select("geography", "date", "obs_value")
+
+parquet_wide <- parquet_sub %>%
+  pivot_wider(names_from = c(date), values_from = obs_value) 
+
+sum_table <- parquet_wide %>%
+  select(-geography) %>%
+  summarise(across(everything(), sum, na.rm = TRUE))
+
+sum_table
+
+write_csv(sum_table , file = here("data", "sum_table.csv"))
+
+
+parquet_sub <- parquet %>% 
+  select("geography", "date", "obs_prop")
+
+parquet_wide_probs <- parquet_sub %>%
+  pivot_wider(names_from = c(date), values_from = obs_prop) 
+
+parquet_wide_probs <- parquet_wide_probs %>%
+  mutate(avg_18_20 = rowMeans(select(., `2018`, `2019`, `2020`), na.rm = TRUE))
+
+
+write_csv(parquet_wide_probs, here("data","lsoa_pop_props.csv"))
+```
+
+```{r}
+library(ggplot2)
+
+# Subset the data
+subset_parquet <- parquet %>%
+  filter(geography %in% unique(geography)[1:10])
+
+# Create the plot
+ggplot(subset_parquet, aes(x = date, y = obs_prop, color = geography, group = geography)) +
+  geom_line() +
+  labs(x = "Date", y = "Observation Proportion", title = "Observation Proportion by Geography Over Time") +
+  theme_minimal()
+
+```
+
+```{r}
+
+```
