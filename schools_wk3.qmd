@@ -2,10 +2,13 @@
 title: "schools_wk3"
 ---
 
-```{r}
+```{r echo=FALSE, results='hide', message=FALSE, warning=FALSE, include=FALSE}
 library(tidyr)
 library(dplyr)
 library(writexl)
+library(tidyverse)
+library(here)
+library(janitor)
 
 # Creating the dataframe with additional data columns based on the provided image
 data_from_image <- data.frame(
@@ -47,7 +50,7 @@ write_xlsx(data_from_image, here::here("data", "data_from_image.xlsx"))
 
 ```
 
-```{r}
+```{r echo=FALSE, results='hide', message=FALSE, warning=FALSE, include=FALSE}
 library(tidyr)
 library(dplyr)
 library(writexl)
@@ -66,33 +69,48 @@ data <- data.frame(
 
 # Saving the dataframe as an Excel file
 here()
-write_xlsx(data_from_image, here("data", "data_from_image.xlsx"))
+#write_xlsx(data_from_image, here("data", "data_from_image.xlsx"))
 
 # Now you can download the file "data_from_image.xlsx"
 
 ```
 
-## Review of Last two Pieces and Prediction of how I think this will play out
+## Review of Last two Pieces and Prediction of how I fear this will play out
 
-## "A Stain on our City" - or a badge of relative achievement?
+Since the announcement of the 'engagement exercise' by the council, I have made it my mission to try and fill the information vacuum with data and evidence collated, analysed and presented from a variety of different sources.
 
-The phrase "A Stain on our City" has been in the back of my mind ever since it was used in reference to one of the opening slides that Jacob Taylor produced during the face-to-face consultation meeting on Tuesday 8/10/2024. It is highly emotive. Somebody pulled him up on it in the audience. He then went on to use it again in the People, Overview and Scrutiny Committee Meeting - it can be seen here near the opening of his speech - <https://aisapps.mediasite.com/AuditelScheduler/Player/Index/?id=c1841cfa-af61-45cf-85b5-bb8d274e6b75&presID=32ca1cfe29e14291be27a478fdbf76d01d>
+At the beginning of the exercise, I had real hope that the lack of information coming from the council was perhaps a mistake - an oversight due to an inexperienced team or something. Unfortunately, as the weeks have gone one, I am increasingly of the opinion that the lack of information is deliberate because it is only without information and evidence that these options put forward could have any pretence to
+
+Having started to dig into the data, [in my first piece](https://adamdennett.github.io/BH_Secondary_Admissions_Analysis/BH_Sec_Sch_Analysis.html), it became clear that the proposals for reductions in student numbers across schools in the city, bore no resemblance to the geography of where secondary school students live in the city
+
+## "***A Stain on our City***" - or a badge of relative achievement?
+
+The phrase "***A Stain on our City***" has been in the back of my mind ever since it was used in reference to one of the opening slides that Jacob Taylor produced during the face-to-face consultation meeting on Tuesday 8/10/2024. It is highly a highly charged statement used as an oratorical device in making his case. Somebody pulled him up on the emotive language in the audience. He then went on to use it again in the People, Overview and Scrutiny Committee Meeting - it can be seen here near the opening of his speech - <https://aisapps.mediasite.com/AuditelScheduler/Player/Index/?id=c1841cfa-af61-45cf-85b5-bb8d274e6b75&presID=32ca1cfe29e14291be27a478fdbf76d01d>
 
 As a reminder, this is the graph that he was referring to when he made these comments:
 
 ![A Stain On Our City?](data/stain.png)
 
-The 'stain' in this context is in reference to the 24% of Brighton & Hove's disadvantaged pupil population getting grade 5 or above in Maths and English. Being below the figure of 25.4 for England, this constituted a "stain on our city". Strong stuff. Especially considering Brighton seems to be doing better than the rest of the South East region.
+The 'stain' in this context is in reference to the 24% of Brighton & Hove's disadvantaged pupil population getting grade 5 or above in Maths and English. Being below the national figure of 25.4 for England constituted a "stain on our city" in JT's mind. Strong stuff. Especially considering Brighton seems to be doing better than the rest of the South East region.
 
-But is it really a stain, or is there more going on?
+#### *But is it really a "stain", or is there more going on?*
 
 Now, of course, comparing these figures with non-disadvantaged pupils, there is clearly a big attainment gap and narrowing this gap must be (and I am sure is) a priority for every local authority in the country. It's not right that those from disadvantaged backgrounds do so much worse than their more advantaged peers.
 
-But the argument Jacob Taylor was employing cast Brighton as a failure, relative to England. But is it Brighton really doing as badly as cast? Fortunately, [the Government publishes data on attainment at age 16 across the country, according to social disadvantage](https://social-mobility.data.gov.uk/intermediate_outcomes/compulsory_school_age_(5_to_16_years)/attainment_at_age_16/latest), so we can compare Brighton with a few more examples than just the national average, and the evidence is revealing.
+But the argument Jacob Taylor was employing cast Brighton as a failure, relative to England. But is it Brighton really doing as badly as cast?
 
-```{r}
+Two questions arise from this:
+
+-   Is 24% as bad as is being portrayed if we examine some wider context?
+
+-   Is the gap between 24% and 50% worse or better than anywhere else in the country?
+
+In answering both of these questions, we can develop a clearer context for Brighton - which is really important as it underpins a lot of the arguments being made by the Council.
+
+Fortunately, [the Government publishes data on attainment at age 16 across the country, according to social disadvantage](https://social-mobility.data.gov.uk/intermediate_outcomes/compulsory_school_age_(5_to_16_years)/attainment_at_age_16/latest), so we can compare Brighton with a few more examples than just the national average, and the evidence is revealing.
+
+```{r echo=FALSE, results='hide', message=FALSE, warning=FALSE}
 sm_data <- read_csv("https://social-mobility.data.gov.uk/intermediate_outcomes/compulsory_school_age_(5_to_16_years)/attainment_at_age_16/2.0/IN13-2.0-attainment-at-age-16--full-dataset.csv")
-
 
 library(ggplot2)
 library(scales)
@@ -118,21 +136,27 @@ ggplot(sm_data_filtered, aes(x = value * 100, y = area_name, color = value)) +
 
 ```
 
-Figure 1 - Percentage of Students achieving Grade 5+ English and Maths, for disadvantaged (those in receipt of Free School Meals - left) and non-disadvantaged (right) students, 2022-23.
+***Figure 1 - Percentage of Students achieving Grade 5+ English and Maths, for disadvantaged (those in receipt of Free School Meals - left) and non-disadvantaged (right) students, 2022-23.***
 
-There are a couple of points to note in this graph.
+There are a few features of note in this graph.
 
--   Firstly, there are 41 'Regions' in this version of England. Brighton is within (and contributing to) the value of 21.4% for Surrey, East and West Sussex. Brighton, at 24%, is not only doing better than its wider region but because it is not excluded from the regional figure, actually pulling its average *up*.
+-   Firstly, there are 33 'Regions' in this version of England. Brighton is within, and contributing to, the value of 21.4% for Surrey, East and West Sussex. Brighton, at 24%, is not only doing better than its wider region, but because it is not excluded from the regional figure, actually pulling its average *up*.
 
--   Secondly, if Brighton were a region on this scale (ranked according to FSM achievement), it would sit between West Yorkshire (23.8% - ranked 10 of 41) and Berkshire, Buckinghamshire and Oxfordshire (24.5% - ranked 9 of 41). In other words, it would fall in the top 25% in England.
+-   Secondly, if Brighton were a region on this scale (ranked according to FSM achievement), it would sit between West Yorkshire (23.8% - ranked 10 of 33) and Berkshire, Buckinghamshire and Oxfordshire (24.5% - ranked 9 of 33). In other words, it would fall in the ***top 1/3*** in England.
 
--   You may have noticed something interesting at the top of the graph - the top 5-regions that perform considerably better on the attainment of their pupils in receipt of Free School Meals - are all parts of London.
+-   Thirdly, you may have noticed something interesting at the top of the graph - the top 5-regions that perform considerably better on the attainment of their pupils in receipt of Free School Meals, are all parts of London.
 
--   Indeed London performs a full 10% better than the next ranked region and does a fantastic job of pulling the average up for the rest of the country.
+    -   Indeed London performs a full 10% better than the next ranked region and does a fantastic job of pulling the average up for the rest of the country. Which takes me back to the [question I asked in my first piece of work on this topic](https://adamdennett.github.io/BH_Secondary_Admissions_Analysis/BH_Sec_Sch_Analysis.html#executive-summary) - why is London doing much better than Brighton and almost everywhere else in the Country? A question I can't answer here, but one incredibly relevant to this whole issue.
 
--   Without London, the average for the rest of the country reduces to 21% and Brighton is performing better than everywhere, apart from London.
+-   Forthly, without London, the average 5-9 GCSE rate for disadvantaged pupils for the rest of the country reduces to *21%.* Against which Brighton is performing ***much better than average,*** and if it were one of these regions it would be, in the top 5.
 
-```{r}
+-   Finally (and it might be easier to read across the table below to see this), the FSM / Non-FSM attainment gap in Brighton, according to the Council's graph at the top of this piece, is 26%. As you can see in the table below - if Brighton were a region, this would rank 12th on this scale out of 33 - just outside the top 1/3.
+
+***Table 1 - Attainment Gap at Age 16, FSM Eligible and Non-Eligible Students, England 33 Regions. Ranked by Smallest Gap***
+
+```{r echo=FALSE, results='hide', message=FALSE, warning=FALSE, include=FALSE}
+
+library(dplyr)
 
 # Filter the data
 sm_data_filtered <- sm_data %>%
@@ -148,7 +172,91 @@ new_avg_value <- sm_data_filtered %>%
   summarise(avg_value = mean(value, na.rm = TRUE)) %>%
   pull(avg_value)
 
+
+# Filter the data
+sm_data_filtered <- sm_data %>%
+  filter(area_name != "England" & !grepl("London", area_name, ignore.case = TRUE))
+
+# Calculate the average value for each category of 'seb'
+avg_values_by_seb <- sm_data_filtered %>%
+  group_by(seb) %>%
+  summarise(avg_value = mean(value, na.rm = TRUE))
+
+print(avg_values_by_seb)
+
+
+avg_values_by_seb[1,2] - avg_values_by_seb[2,2]
+
 ```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(dplyr)
+library(tidyr)
+library(knitr)
+
+# Filter the data
+sm_data_filtered <- sm_data %>%
+  select(area_name, seb, value) %>%
+  filter(area_name != "England")
+
+# Pivot the data wider
+sm_data_wide <- sm_data_filtered %>%
+  pivot_wider(names_from = seb, values_from = value) %>% clean_names()
+
+# Calculate the 'gap' column (assuming you want the difference between the first two SEB categories)
+sm_data_wide <- sm_data_wide %>%
+  mutate(gap = abs(fsm_eligible - not_fsm_eligible))
+
+# View the result
+#print(sm_data_wide)
+
+# Calculate the average gap for all area_name values
+avg_gap_all <- sm_data_wide %>%
+  summarise(avg_gap = mean(gap, na.rm = TRUE)) %>%
+  pull(avg_gap)
+
+
+# Assuming the dataframe has columns named 'fsm_eligible' and 'not_fsm_eligible'
+sm_data_wide_percent <- sm_data_wide %>%
+  mutate(across(c(fsm_eligible, not_fsm_eligible, gap), ~ round(. * 100, 1)))
+
+sm_data_wide_percent_sorted <- sm_data_wide_percent %>%
+  arrange((gap)) %>%
+  mutate(rank = row_number()) %>%
+  select(rank, everything())
+
+# Create the kable table
+kable(sm_data_wide_percent_sorted)
+
+
+# Calculate the average gap for area_name values excluding "London"
+avg_gap_excl_london <- sm_data_wide %>%
+  filter(!grepl("London", area_name, ignore.case = TRUE)) %>%
+  summarise(avg_gap = mean(gap, na.rm = TRUE)) %>%
+  pull(avg_gap)
+
+list(avg_gap_all = avg_gap_all, avg_gap_excl_london = avg_gap_excl_london)
+
+
+```
+
+## A Stain on our City? Conclusions
+
+Hopefully what I have shown in this short exercise, is that ***context is everything***.
+
+-   Compared the the national average for England, Brighton's attainment at GCSE for pupils on Free School Meals is lower, ***however***, that national average is being pulled up considerably by London, which is performing between 6.5% and 15.1% better than the best-performing non-London region.
+
+-   If Brighton were one of these 33 regions, ***it woud still be achieving better results for pupils on FSM than 2/3 of other places in England***. If we take London out of the equation, it would appear in the top 5.
+
+-   Rather than being 'a stain on our city', it should be regared as a badge of pride that Brighon and Hove is able to achieve such good results for pupils in receipt of Free School Meals, relative to the rest of England.
+
+-   If we look at the attainment gap between those who are on Free School Meals and those who aren't as well, Brighton still performs far better than average, even with London in the equation. If Brighton were one of the regions above, it would be just outside the top 1/3.
+
+So I would argue that given the evidence above, the characterisation of Brighton and Hove's ability to help it's more deprived students as a 'stain on the city' is demonstrably unfair. And I would also observe that it is this kind of 'cherry picking' of statistics (where indeed statistics of any kind have been provided) to suit a particular line of argument has sadly characterised this whole sorry 'engagement' process.
+
+One final note is that just because the full picture has not been provided, it does not diminish the very real problems that still exist. Having only 24% of students on Free School Meals achieve grade 5+ in GCSE Maths and English is ***not good*** - it is just better than almost everywhere else in the country.
+
+We should be striving to achieve something closer to the 42.1% achieved in Inner London - West. And it absolutely should be in the Council's mission to improve further, but in doing so, getting a better understanding of the various factors at play in London (demographic, financial, geographical, educational etc.) is crucial as then better solutions could be trialled here.
 
 ## The Importance of Boundaries
 

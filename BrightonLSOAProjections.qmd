@@ -3,7 +3,7 @@ title: "BrightonLSOAProjections"
 author: "Adam Dennett"
 ---
 
-```{r}
+```{r echo=FALSE, results='hide', message=FALSE, warning=FALSE, include=FALSE}
 library(tidyverse)
 library(sf)
 library(tmap)
@@ -12,7 +12,7 @@ library(janitor)
 library(here)
 ```
 
-```{r}
+```{r echo=FALSE, results='hide', message=FALSE, warning=FALSE, include=FALSE}
 parquet <- open_dataset(here("data","nomis_LSOA.parquet"))%>%
   #just get age
   filter(C_AGE_TYPE == "Individual age")%>%
@@ -28,7 +28,7 @@ parquet <- open_dataset(here("data","nomis_LSOA.parquet"))%>%
   
 ```
 
-```{r}
+```{r echo=FALSE, results='hide', message=FALSE, warning=FALSE, include=FALSE}
 library(dplyr)
 
 parquet <- parquet %>%
@@ -45,7 +45,7 @@ parquet <- parquet %>%
 
 ```
 
-```{r}
+```{r echo=FALSE, results='hide', message=FALSE, warning=FALSE, include=FALSE}
 library(dplyr)
 library(tidyr)
 

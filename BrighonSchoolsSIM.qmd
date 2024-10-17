@@ -1,0 +1,349 @@
+---
+title: "BrightonSchoolSIM"
+author: "Adam Dennett"
+---
+
+```{r}
+library(tidyverse)
+library(sf)
+library(janitor)
+library(here)
+library(usethis)
+library(tmap)
+library(readxl)
+library(r5r)
+library(dplyr)
+library(tidyr)
+```
+
+# Spatial Interaction Demand Model for Brighton Schools
+
+Origins - Brighton LSOAs and Pupils in 2024
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+BrightonLSOA <- st_read(here("data","BrightonLSOA_Clean.geojson"))
+BrightonLSOA_pw_cent <- st_read(here("data","lsoa_btn_pw_cent.geojson"))
+BTN_LSOA_Proj <- st_read(here("data","LSOA_NOMIS_plus_projections.geojson")) %>% clean_names
+
+
+bh_catchments <- st_read(here("data","BrightonSecondaryCatchments.geojson"))
+bh_catchments <- bh_catchments %>%
+  rename(catchment = AreaName)
+bh_optionA <- st_read(here("data","optionA.geojson"))
+bh_optionB <- st_read(here("data","optionB.geojson"))
+
+# Assuming your dataframe is called BTN_LSOA_Proj and your other dataframe is BrightonLSOA
+BTN_LSOA_Proj_wide <- BTN_LSOA_Proj %>%
+  select(geography, date, obs_value) %>%
+  pivot_wider(names_from = date, values_from = obs_value) %>%
+  st_drop_geometry()
+
+BrightonLSOA <- BrightonLSOA %>%
+  mutate(`2024` = BTN_LSOA_Proj_wide$`2024`[match(lsoa21cd, BTN_LSOA_Proj_wide$geography)])
+
+bh_lsoa_projections <- read_csv(here("data", "bh_lsoa_projections_2020_31.csv"))
+
+
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(dplyr)
+library(tmap)
+
+# Join the data
+BrightonLSOA_pw_cent <- BrightonLSOA_pw_cent %>%
+  mutate(`2024` = BTN_LSOA_Proj_wide$`2024`[match(lsoa21cd, BTN_LSOA_Proj_wide$geography)])
+
+# Create the tmap
+tmap_mode("view")
+tm_shape(BrightonLSOA_pw_cent) +
+  tm_dots(size = "2024", col = "2024", alpha = 0.5, border.alpha = 0) +
+  tm_layout(legend.show = TRUE, title = "11 year olds, 2024") +
+tm_shape(bh_catchments) +
+  tm_borders() +
+  tm_fill(alpha = 0, col = "catchment")
+
+
+
+
+```
+
+Destinations - Brighton Secondary Schools
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, error=FALSE}
+brighton_sec_schools <- read_csv("https://www.dropbox.com/scl/fi/fhzafgt27v30lmmuo084y/edubasealldata20241003.csv?rlkey=uorw43s44hnw5k9js3z0ksuuq&raw=1") %>% 
+  clean_names() %>% 
+  filter(la_name == "Brighton and Hove") %>% 
+  filter(phase_of_education_name == "Secondary") %>% 
+  filter(establishment_status_name == "Open") %>%
+  st_as_sf(., coords = c("easting", "northing")) %>% 
+  st_set_crs(27700)
+
+names <- cbind(names(brighton_sec_schools))
+brighton_sec_schools_sml <- brighton_sec_schools %>% 
+  select(c("urn", "establishment_name", "type_of_establishment_name", "school_capacity","number_of_pupils","fsm", "percentage_fsm", "geometry" ))
+
+#write_csv(brighton_sec_schools_sml,here("data", "brighton_sec_schools_sml.csv"))
+
+yr7_admissions <- read_csv(here("data", "Yr7_admissions.csv"))
+
+brighton_sec_schools_sml <- brighton_sec_schools_sml %>% 
+  left_join(yr7_admissions, by = "urn")
+
+tmap_mode("view")
+tmap_options(check.and.fix = TRUE)
+tm_shape(bh_optionB) +
+  tm_borders() +
+  tm_fill(alpha = 0.2, col = "catchment") +
+tm_shape(brighton_sec_schools_sml) +
+  tm_dots(size = "pan2024", col = "pan2024", alpha = 0.5, border.alpha = 0, palette = "YlOrRd") +
+  tm_layout()
+
+
+```
+
+Interactions
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+data_path = here("data")
+# Check what files we have
+#list.files(data_path)
+
+# Allow 10 GiB of memory
+rJava::.jinit()
+rJava::.jcall("java.lang.System", "S", "getProperty", "java.version")
+options(java.parameters = "-Xmx10G")
+
+library(r5r)
+library(accessibility)
+library(sf)
+library(data.table)
+library(ggplot2)
+library(interp)
+library(h3jsr)
+library(h3r)
+library(dplyr)
+library(osmextract)
+
+brighton_oa <- st_read(here("data","oa_brighton.geojson"))
+
+#oe_match("East Sussex")
+roads_w_sussex = oe_get(c("West Sussex"), stringsAsFactors = FALSE, quiet = TRUE)
+roads_e_sussex = oe_get(c("East Sussex"), stringsAsFactors = FALSE, quiet = TRUE)
+#names(roads_w_sussex)
+#summary(roads_w_sussex)
+
+ht = c("motorway", "trunk", "primary", "secondary", "tertiary", "residential", "unclassified")
+osm_w_sussex_maj_roads = roads_w_sussex[roads_w_sussex$highway %in% ht, ]
+#class(osm_w_sussex_maj_roads)
+osm_e_sussex_maj_roads = roads_e_sussex[roads_e_sussex$highway %in% ht, ]
+
+osm_sussex_maj_roads <- rbind(osm_w_sussex_maj_roads, osm_e_sussex_maj_roads) %>% st_transform(27700)
+#summary(osm_sussex_maj_roads)
+#summary(brighton_oa)
+
+#osm_roads_buffered <- st_buffer(osm_sussex_maj_roads, dist = 100)
+brighton_oa_buffer <- st_buffer(brighton_oa, dist = 500)
+brighton_blob <- st_union(brighton_oa_buffer)
+
+#tm_shape(brighton_blob) +
+ # tm_polygons(alpha = 0.5)
+
+brighton_roads <- st_intersection(osm_sussex_maj_roads, brighton_blob)
+
+tm_shape(brighton_roads) +
+  tm_lines()
+
+#going to need to write this out as a shapefile and then use JOSM to convert to a PBF file - https://josm.openstreetmap.de/ 
+#st_write(brighton_roads, "data/brighton_roads.shp", append=FALSE)
+
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+# Create the routable network by indicating the path where OSM, GTFS and possible DEM data are stored
+r5r_core = setup_r5(data_path = data_path)
+```
+
+Note, I mess something up down here, so use the code from additional_supporting_info
+
+```{r}
+#set up the destinations for R5R
+bh_sec_sch1 <- brighton_sec_schools %>% 
+  select(urn, establishment_name, geometry) %>%
+  rename(id = urn) %>% 
+  st_transform(4326)
+
+coords <- st_coordinates(bh_sec_sch1)
+bh_sec_sch1$lon <- coords[, 1]
+bh_sec_sch1$lat <- coords[, 2]
+
+#now set up the origins
+BrightonLSOA_pw_cent <- BrightonLSOA_pw_cent %>%
+  mutate(fid = row_number())
+BrightonLSOA_pw_cent <- BrightonLSOA_pw_cent %>% 
+  st_transform(4326)
+coords <- st_coordinates(BrightonLSOA_pw_cent)
+BrightonLSOA_pw_cent$lon <- coords[, 1]
+BrightonLSOA_pw_cent$lat <- coords[, 2]
+
+
+names(BrightonLSOA_pw_cent)
+
+brighton_lsoa_points_r51 <- BrightonLSOA_pw_cent %>% 
+  select(fid, lsoa21cd ,lat, lon) %>% 
+  rename(lon = lon, lat = lat, id = fid) %>% 
+  st_transform(4326) %>% 
+  st_set_crs(4326)
+
+```
+
+```{r}
+#travel time matrix
+
+# Set parameters
+mode = c("WALK", "BUS")
+max_walk_time = 360 # minutes
+max_trip_duration = 520 # minutes
+departure_datetime = as.POSIXct("23-05-2024 8:30:00",
+                                 format = "%d-%m-%Y %H:%M:%S", 
+                                tz = "GMT")
+
+#note the code below already requires the h3 core matrix to be set up
+
+# Calculate the travel time matrix by Transit
+ttm_btn_lsoa_to_School = travel_time_matrix(r5r_core = r5r_core,
+                          origins = bh_sec_sch1,
+                          destinations = brighton_lsoa_points_r51,
+                          mode = mode,
+                          departure_datetime = departure_datetime,
+                          max_walk_time = max_walk_time,
+                          max_trip_duration = max_trip_duration)
+
+nrow(bh_sec_sch1) * nrow(brighton_lsoa_points_r51)
+ttm_btn_lsoa_to_School[, to_id:=as.numeric(to_id)]
+
+#join codes back to the matrix and get it ready from plotting
+ttm_btn_lsoa_to_School$orig_lsoa <- brighton_lsoa_points_r51$lsoa21cd[match(ttm_btn_lsoa_to_School$to_id, brighton_lsoa_points_r51$id)]
+
+ttm_btn_lsoa_to_School$dest_sch <- bh_sec_sch1$establishment_name[match(ttm_btn_lsoa_to_School$from_id, bh_sec_sch1$id)]
+
+#origs and dests all messed up
+ttm_btn_lsoa_to_School <- ttm_btn_lsoa_to_School %>%
+  mutate(to_id = as.factor(to_id)) %>%
+  unite(od_code, orig_lsoa, from_id, sep = "_", remove = FALSE)
+
+simple_ttm <- ttm_btn_lsoa_to_School %>%
+  select(orig_lsoa, from_id, travel_time_p50) %>% 
+  rename(orig = orig_lsoa, dest = from_id, flow = travel_time_p50)
+
+class(ttm_btn_lsoa_to_School)
+
+simple_ttm <- na.omit(simple_ttm) %>% 
+  unite("od_code", c("orig","dest"), sep = "_", remove = FALSE)
+```
+
+Cost - Travel Time Along the Road Network
+
+```{r}
+library(stplanr)
+library(od)
+library(tmap)
+
+# Switch to view mode
+tmap_mode("view")
+
+# Set options
+tmap_options(check.and.fix = TRUE)
+
+# Create the map with the two sf objects
+tm_shape(brighton_lsoa_points_r51) +
+tm_dots() +  
+tm_shape(bh_sec_sch1) + 
+tm_dots(col = "red") +  
+  tm_layout(
+    legend.title.size = 1,          # Adjust the size of the legend title
+    legend.outside.size = 0.15,     # Adjust the position of the legend
+    title = "Your Custom Title"     # Set your custom legend title
+)
+
+
+nrow(brighton_lsoa_points_r51) * nrow(bh_sec_sch)
+brighton_lsoa_points_r52 <- brighton_lsoa_points_r51 %>% 
+  select(c("lsoa21cd", "lat", "lon", "geometry")) %>% 
+  rename(orig = lsoa21cd)
+
+bh_sec_sch2 <- bh_sec_sch1 %>%
+  rename(dest = id)
+
+simple_ttm2 <- simple_ttm %>% 
+  select(orig, dest, flow) %>% 
+  rename(orig = orig, dest = dest, flow = flow)
+
+##big matrix for the whole of Brighton - won't need this now. 
+lsoa_btn_to_school_matrix <- 
+  matrix(0, nrow = nrow(brighton_lsoa_points_r5_1), ncol = nrow(bh_sec_sch), dimnames = list(brighton_lsoa_points_r5_1$lsoa21cd,bh_sec_sch$id))
+
+###############
+#matrix to paired list
+#all of London - and add an od_id
+lsoa_btn_to_school_matrix_all <- odmatrix_to_od(lsoa_btn_to_school_matrix) %>% 
+  unite("od_code", c("orig","dest"), sep = "_", remove = FALSE)
+
+brighton_sch_Commute_lines <- od2line(flow = simple_ttm2, zones = brighton_lsoa_points_r52, destinations = bh_sec_sch2)
+
+brighton_sch_Commute_lines1 <- od::od_to_sf(x = simple_ttm2, z = brighton_lsoa_points_r52, zd = bh_sec_sch2, crs = 4326)
+```
+
+```{r}
+brighton_sch_Commute_longhill <- brighton_sch_Commute_lines %>% 
+  filter(dest == 114581)
+```
+
+Map the flows
+
+```{r}
+
+tmap_mode("view")
+map <- tm_shape(brighton_sch_Commute_longhill) +
+  tm_lines(palette = "plasma", breaks = c(15, 30, 45, 60, 75, 90, 105, 120),
+           lwd = "flow",
+           scale = 5,
+           id="orig",
+           popup.vars= c("flow"),
+           title.lwd = "Travel Time, Bus or Walk",
+           alpha = 0.5,
+           col = "flow",
+           title = "Travel Time, Bus or Walk")+
+  tm_shape(bh_sec_sch2)+
+          tm_dots(col="establishment_name", size=0.01,id="establishment_name", title = "establishment_name" , legend.show = F) +
+  tm_shape(bh_catchments) +
+          tm_polygons(col = NA, alpha = 0)
+
+map
+```
+
+```{r}
+brighton_sch_Commute <- brighton_sch_Commute_lines %>% 
+  filter(dest == 114580)
+
+tmap_mode("view")
+# Create the map with thicker lines for smaller values
+map <- tm_shape(brighton_sch_Commute) +
+  tm_lines(palette = "plasma", breaks = c(15, 30, 45, 60, 75, 90, 105, 120),
+           lwd = "flow",
+           scale = 5,
+           id="orig",
+           popup.vars= c("flow"),
+           title.lwd = "Travel Time, Bus or Walk",
+           alpha = 0.5,
+           col = "flow",
+           title = "Travel Time, Bus or Walk")+
+  tm_shape(bh_sec_sch2)+
+          tm_dots(col="establishment_name", size=0.01,id="establishment_name", title = "establishment_name", legend.show = F) +
+  tm_shape(bh_catchments) +
+          tm_polygons(col = NA, alpha = 0)
+
+map
+
+```
