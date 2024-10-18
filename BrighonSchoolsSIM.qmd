@@ -55,17 +55,6 @@ library(tmap)
 BrightonLSOA_pw_cent <- BrightonLSOA_pw_cent %>%
   mutate(`2024` = BTN_LSOA_Proj_wide$`2024`[match(lsoa21cd, BTN_LSOA_Proj_wide$geography)])
 
-# Create the tmap
-tmap_mode("view")
-tm_shape(BrightonLSOA_pw_cent) +
-  tm_dots(size = "2024", col = "2024", alpha = 0.5, border.alpha = 0) +
-  tm_layout(legend.show = TRUE, title = "11 year olds, 2024") +
-tm_shape(bh_catchments) +
-  tm_borders() +
-  tm_fill(alpha = 0, col = "catchment")
-
-
-
 
 ```
 
@@ -102,6 +91,24 @@ tm_shape(brighton_sec_schools_sml) +
 
 
 ```
+
+```{r}
+
+# Create the tmap
+tmap_mode("view")
+tm_shape(BrightonLSOA_pw_cent) +
+  tm_dots(size = "2024", col = "2024", alpha = 0.5, border.alpha = 0, title = "Total Children") +
+  tm_layout(legend.show = TRUE, title = "11 year olds, 2024") +
+tm_shape(bh_catchments) +
+  tm_borders() +
+  tm_fill(alpha = 0) +
+tm_shape(brighton_sec_schools_sml) +
+  tm_dots()
+
+
+
+```
+
 
 Interactions
 
@@ -268,7 +275,7 @@ tm_dots(col = "red") +
 )
 
 
-nrow(brighton_lsoa_points_r51) * nrow(bh_sec_sch)
+#nrow(brighton_lsoa_points_r51) * nrow(bh_sec_sch1)
 brighton_lsoa_points_r52 <- brighton_lsoa_points_r51 %>% 
   select(c("lsoa21cd", "lat", "lon", "geometry")) %>% 
   rename(orig = lsoa21cd)
@@ -282,7 +289,7 @@ simple_ttm2 <- simple_ttm %>%
 
 ##big matrix for the whole of Brighton - won't need this now. 
 lsoa_btn_to_school_matrix <- 
-  matrix(0, nrow = nrow(brighton_lsoa_points_r5_1), ncol = nrow(bh_sec_sch), dimnames = list(brighton_lsoa_points_r5_1$lsoa21cd,bh_sec_sch$id))
+  matrix(0, nrow = nrow(brighton_lsoa_points_r51), ncol = nrow(bh_sec_sch1), dimnames = list(brighton_lsoa_points_r51$lsoa21cd,bh_sec_sch1$id))
 
 ###############
 #matrix to paired list
