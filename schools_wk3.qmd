@@ -9,77 +9,35 @@ library(writexl)
 library(tidyverse)
 library(here)
 library(janitor)
+library(here)
 
-# Creating the dataframe with additional data columns based on the provided image
-data_from_image <- data.frame(
-  Year = c(2024:2030, "Total/Average"),
-  Places_Available = c(220, 220, 220, 220, 220, 220, 220, 1540),
-  PACA_Catchment = c(NA, NA, NA, NA, NA, NA, NA, NA),
-  Reduced_by_1.96 = c(115, 114, 113, 112, 111, 110, 109, 784),
-  Adjusted_for_CN_Kings = c(151, 150, 149, 148, 147, 146, 145, 1036),
-  FSM_Eligible_Pupils = c("18%", "25%", "25%", "27%", "27%", "27%", "27%", "26%"),
-  Difference_from_Oct_2022_Forecast = c(6, 5, 4, 3, 2, 1, -2, 15),
-  Final_Forecast_Difference = c(6, 5, 4, 3, 2, 1, -2, 15),
-  Hove_Park_Blatch_Catchment = c(NA, NA, NA, NA, NA, NA, NA, NA),
-  Reduced_by_1.04 = c(510, 509, 508, 507, 506, 505, 504, 3549),
-  Adjusted_for_CN_Kings_2 = c(640, 639, 638, 637, 636, 635, 634, 4459),
-  FSM_Eligible_Pupils_2 = c("10%", "10%", "10%", "10%", "10%", "10%", "10%", "10%"),
-  Difference_from_Oct_2022_Forecast_2 = c(-16, 10, 64, 11, -5, -18, 2, 48),
-  Final_Forecast_Difference_2 = c(-16, 10, 64, 11, -5, -18, 2, 48),
-  Stringer_Varndean_Catchment = c(NA, NA, NA, NA, NA, NA, NA, NA),
-  Reduced_by_2.71 = c(630, 629, 628, 627, 626, 625, 624, 4379),
-  Adjusted_for_CN_Kings_3 = c(557, 556, 555, 554, 553, 552, 551, 3878),
-  FSM_Eligible_Pupils_3 = c("11%", "11%", "11%", "11%", "11%", "11%", "11%", "11%"),
-  Difference_from_Oct_2022_Forecast_3 = c(3, 2, 1, 0, -1, -2, -3, 0),
-  Final_Forecast_Difference_3 = c(3, 2, 1, 0, -1, -2, -3, 0),
-  Longhill_Catchment = c(NA, NA, NA, NA, NA, NA, NA, NA),
-  Reduced_by_2.04 = c(270, 269, 268, 267, 266, 265, 264, 1869),
-  Adjusted_for_CN_Kings_4 = c(204, 203, 202, 201, 200, 199, 198, 1407),
-  FSM_Eligible_Pupils_4 = c("27%", "27%", "27%", "27%", "27%", "27%", "27%", "27%"),
-  Difference_from_Oct_2022_Forecast_4 = c(6, 5, 4, 3, 2, 1, -2, 15),
-  Final_Forecast_Difference_4 = c(6, 5, 4, 3, 2, 1, -2, 15)
-)
 
-# Print the dataframe
-print(data_from_image)
-
-# Writing the dataframe to the "data" folder
-write_xlsx(data_from_image, here::here("data", "data_from_image.xlsx"))
-
-# Now your file "data_from_image.xlsx" is saved in the "data" folder
 
 ```
 
 ```{r echo=FALSE, results='hide', message=FALSE, warning=FALSE, include=FALSE}
-library(tidyr)
-library(dplyr)
-library(writexl)
-library(here)
 
-# Creating the dataframe
-data <- data.frame(
-  Year = c(2024:2034),
-  ONS_SNPP_Age_11 = c(2915, 2734, 2815, 2786, 2672, 2545, 2574, 2580, 2559, 2544, 2550),
-  BTN_All_Schools = c(2256, 2279, 2270, 2231, 2217, 2114, 2011, 2001, 1852, 1827, 1672),
-  ONS_BTN_Difference = c(659, 455, 545, 555, 455, 431, 563, 579, 707, 717, 878),
-  ONS_SNPP_Age_11_2024_Change = c(0.94, 0.97, 0.96, 0.92, 0.87, 0.88, 0.89, 0.88, 0.87, 0.87, 0.00),
-  BTN_All_Schools_2024_Change = c(1.01, 1.01, 0.99, 0.98, 0.94, 0.89, 0.89, 0.82, 0.81, 0.74, 0.00),
-  BTN_ONS_Rate = c(2256, 2116, 2347, 2247, 2140, 2112, 2138, 2016, 1985, 1841, 1831)
-)
 
-# Saving the dataframe as an Excel file
-here()
-#write_xlsx(data_from_image, here("data", "data_from_image.xlsx"))
-
-# Now you can download the file "data_from_image.xlsx"
 
 ```
 
 ## Review of Last two Pieces and Prediction of how I fear this will play out
 
-Since the announcement of the 'engagement exercise' by the council, I have made it my mission to try and fill the information vacuum with data and evidence collated, analysed and presented from a variety of different sources.
+Since the announcement of the 'engagement exercise' by the council, and frustrated by the evidence made available, I have made it my mission to try and fill the information vacuum with data and evidence collated, analysed and presented from a variety of different sources.
 
-At the beginning of the exercise, I had real hope that the lack of information coming from the council was perhaps a mistake - an oversight due to an inexperienced team or something. Unfortunately, as the weeks have gone one, I am increasingly of the opinion that the lack of information is deliberate because it is only without information and evidence that these options put forward could have any pretence to
+Thusfar, I have produced two pieces of analysis ([here](https://adamdennett.github.io/BH_Secondary_Admissions_Analysis/BH_Sec_Sch_Analysis.html)and [here](https://adamdennett.github.io/BH_Schools_2/schools_wk2.html)) which have helped zoom in where some of the real issues in the system are. These can be summarised as:
+
+-   The spatial distribution of schools and places available in those schools, relative to where pupils actually live. Some of the schools in Brighton are simply in the wrong place. F
+
+-   Illogical reductions in Published Admission Numbers for some schools relative to current and future demand.
+
+Unfortunately, the effort taken in unearthing these issues and reviewing the quality of the proposals in relation to them, means that I've not been able to address some of the other crucial part of the story. In particular:
+
+-   The fact that the problems associated with the spatial distribution of schools and places are felt most keenly by those in the city (in particular those in Whitehawk) who are already suffering from multiple deprivation. The issues raised by Class Divide around the closure of the COMART school in East Brighton in 2005 and their subsequent lack of accessibility to ANY secondary education in the city, let alone high-quality education is very real.
+
+But in not being honest (or sadly, even fully aware) about the true nature of problem and
+
+At the beginning of the exercise, I had real hope that the lack of information coming from the council was perhaps a mistake - an oversight due to an inexperienced team or something. Unfortunately, as the weeks have gone one, I am increasingly of the opinion that the lack of information is deliberate, because it is only without information and evidence that the options put forward for consultation could be justified.
 
 Having started to dig into the data, [in my first piece](https://adamdennett.github.io/BH_Secondary_Admissions_Analysis/BH_Sec_Sch_Analysis.html), it became clear that the proposals for reductions in student numbers across schools in the city, bore no resemblance to the geography of where secondary school students live in the city
 

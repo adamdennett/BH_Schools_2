@@ -14,6 +14,9 @@ library(readxl)
 library(r5r)
 library(dplyr)
 library(tidyr)
+library(tmap)
+library(RColorBrewer)
+
 ```
 
 # Spatial Interaction Demand Model for Brighton Schools
@@ -32,6 +35,9 @@ bh_catchments <- bh_catchments %>%
 bh_optionA <- st_read(here("data","optionA.geojson"))
 bh_optionB <- st_read(here("data","optionB.geojson"))
 
+#wait, this is same as projections file
+bh_lsoa_places <- read_csv(here("data","bh_lsoa_projections_2020_31.csv"))
+
 # Assuming your dataframe is called BTN_LSOA_Proj and your other dataframe is BrightonLSOA
 BTN_LSOA_Proj_wide <- BTN_LSOA_Proj %>%
   select(geography, date, obs_value) %>%
@@ -41,9 +47,9 @@ BTN_LSOA_Proj_wide <- BTN_LSOA_Proj %>%
 BrightonLSOA <- BrightonLSOA %>%
   mutate(`2024` = BTN_LSOA_Proj_wide$`2024`[match(lsoa21cd, BTN_LSOA_Proj_wide$geography)])
 
+#wait, this is same as projections file
+bh_lsoa_places <- read_csv(here("data","bh_lsoa_projections_2020_31.csv"))
 bh_lsoa_projections <- read_csv(here("data", "bh_lsoa_projections_2020_31.csv"))
-
-
 
 ```
 
@@ -330,6 +336,10 @@ map <- tm_shape(brighton_sch_Commute_longhill) +
 map
 ```
 
+
+
+
+
 ```{r}
 brighton_sch_Commute <- brighton_sch_Commute_lines %>% 
   filter(dest == 114580)
@@ -354,3 +364,340 @@ map <- tm_shape(brighton_sch_Commute) +
 map
 
 ```
+
+```{r}
+#analysis of 2024, 2026 and 2030 lsoa places by catchment
+
+optionA_1 <- st_read(here("data", "BTN_catchments","Catchment vectorised" ,"catchment_01.geojson"))
+optionB_1 <- st_read(here("data", "BTN_catchments","Catchment vectorised" ,"catchment_02.geojson"))
+OptionC_1 <- st_read(here("data", "BTN_catchments","Catchment vectorised" ,"catchment_03.geojson"))
+
+###
+#now just set up the catchments I want to use
+
+optionX <- bh_catchments
+optionA <- bh_optionA
+optionB <- bh_optionB
+optionC <- OptionC_1
+
+optionX <- st_make_valid(optionx)
+optionA <- st_make_valid(optionA)
+optionB <- st_make_valid(optionB)
+optionC <- st_make_valid(optionC)
+
+optionX <- optionX %>%
+  mutate(catchment = recode(catchment,
+                            "Patcham HighSchool" = "Patch",
+                            "StringerVarndean" = "StrVarn",
+                            "BrightonAldridge" = "BACA",
+                            "Longhill" = "Long",
+                            "BlatchingtonHove" = "Hove",
+                            "Portslade" = "PACA"))
+
+optionA <- optionA %>% 
+  mutate(catchment = recode(catchment,
+                            "Patcham" = "Patch",
+                            "VarndeanStringer" = "StrVarn",
+                            "BACA" = "BACA",
+                            "Longhill" = "Long",
+                            "HoveBlatchington" = "Hove",
+                            "PACA" = "PACA"))
+
+optionB <- optionB %>% 
+  mutate(catchment = recode(catchment,
+                            "LonghillStringer" = "SBTN",
+                            "PatchamVarndeanBACA" = "NBTN",
+                            "HoveBlatchington" = "Hove",
+                            "PACA" = "PACA"))
+
+optionC <- optionC %>% 
+  st_transform(27700)
+optionC <- optionC %>% 
+  mutate(catchment = recode(catchment,
+                            "Blatchingt" = "BLM",
+                            "Varndean" = "VD",
+                            "Stringer" = "DS",
+                            "BACA" = "BACA",
+                            "Longhill" = "Long",
+                            "Patchham" = "Patch",
+                            "Hove" = "Hove",
+                            "PACA" = "PACA"))
+
+# Switch to view mode
+tmap_mode("view")
+
+# Set options
+tmap_options(check.and.fix = TRUE)
+
+# Create the map with a more subtle color palette
+map <- tm_shape(optionX) +
+  tm_polygons(col = "catchment", palette = "Set1", alpha = 0.5, title = "Catchment Areas") +
+  tm_shape(optionA) +
+  tm_polygons(col = "catchment", palette = "Set1", alpha = 0.5, title = "Option A") +
+  tm_shape(optionB) +
+  tm_polygons(col = "catchment", palette = "Set1", alpha = 0.5, title = "Option B") +
+  tm_shape(optionC) +
+  tm_polygons(col = "catchment", palette = "Set1", alpha = 0.5, title = "Option C")
+
+# Print the map
+map
+
+
+```
+
+```{r}
+
+##summary pupils and PANs
+
+BTN_LSOA_Point_Proj <- BrightonLSOA_pw_cent %>%
+  select(-`2024`) %>% 
+  st_drop_geometry()
+  
+
+BTN_LSOA_Point_Proj <- bh_lsoa_places %>%
+  left_join(BTN_LSOA_Point_Proj, by = c("geography" = "lsoa21cd")) 
+
+# Create the geometry column using lon and lat
+BTN_LSOA_Point_Proj <- st_as_sf(BTN_LSOA_Point_Proj, coords = c("lon", "lat"), crs = 4326)
+
+BTN_LSOA_Point_Proj <- BTN_LSOA_Point_Proj %>% 
+  st_transform(27700)
+
+# Display the resulting sf object
+print(BTN_LSOA_Point_Proj)
+
+
+# Create the map with all four options and the specified settings
+map <- tm_shape(BTN_LSOA_Point_Proj) +
+  tm_dots(
+    size = "2024_scaled_BTN_places",
+    col = "2024_scaled_BTN_places",
+    alpha = 0.5,
+    border.alpha = 0,
+    palette = "Purples",  # Change color palette to purples
+    title = "Total Children"
+  ) +
+  tm_layout(
+    legend.show = TRUE,
+    title = "11 year places, 2024"
+  ) +
+  tm_shape(optionX) +
+  tm_borders() +
+  tm_fill(alpha = 0) +
+  tm_shape(optionA) +
+  tm_borders() +
+  tm_fill(alpha = 0) +
+  tm_shape(optionB) +
+  tm_borders() +
+  tm_fill(alpha = 0) +
+  tm_shape(optionC) +
+  tm_borders() +
+  tm_fill(alpha = 0) +
+  tm_shape(brighton_sec_schools_sml) +
+  tm_dots()
+
+# Print the map
+map
+
+
+```
+
+```{r}
+library(sf)
+library(dplyr)
+
+# Function to perform spatial join and summarise only numeric fields
+sum_intersections <- function(option_df, btn_lsoa_df) {
+  joined_data <- st_join(option_df, btn_lsoa_df, join = st_intersects)
+  numeric_columns <- sapply(joined_data, is.numeric)
+  joined_data %>%
+    group_by(geometry) %>%
+    summarise(across(where(is.numeric), sum, na.rm = TRUE))
+}
+
+# Perform the spatial join and summarise for each option
+optionX_summarised <- sum_intersections(optionX, BTN_LSOA_Point_Proj)
+optionA_summarised <- sum_intersections(optionA, BTN_LSOA_Point_Proj)
+optionB_summarised <- sum_intersections(optionB, BTN_LSOA_Point_Proj)
+optionC_summarised <- sum_intersections(optionC, BTN_LSOA_Point_Proj)
+
+# Ensure geometries are valid in all dataframes
+optionX <- st_make_valid(optionX)
+optionA <- st_make_valid(optionA)
+optionB <- st_make_valid(optionB)
+optionC <- st_make_valid(optionC)
+optionX_summarised <- st_make_valid(optionX_summarised)
+optionA_summarised <- st_make_valid(optionA_summarised)
+optionB_summarised <- st_make_valid(optionB_summarised)
+optionC_summarised <- st_make_valid(optionC_summarised)
+
+# Join id and catchment from respective options to the summarised dataframes based on matching geometry
+optionX_summarised <- st_join(optionX_summarised, optionX %>% select(id, catchment), join = st_equals)
+optionA_summarised <- st_join(optionA_summarised, optionA %>% select(id, catchment), join = st_equals)
+optionB_summarised <- st_join(optionB_summarised, optionB %>% select(id, catchment), join = st_equals)
+optionC_summarised <- st_join(optionC_summarised, optionC %>% select(id, catchment), join = st_equals)
+
+
+#join IDs back a
+write_csv(optionX_summarised,here("data", "optionX_summarised.csv"))
+write_csv(optionA_summarised,here("data",  "optionA_summarised.csv"))
+write_csv(optionB_summarised,here("data",  "optionB_summarised.csv"))
+write_csv(optionC_summarised,here("data",  "optionC_summarised.csv"))
+
+# Display results
+# Drop the geometry column
+numeric_optionX <- st_drop_geometry(optionX_summarised)
+numeric_optionA <- st_drop_geometry(optionA_summarised)
+numeric_optionB <- st_drop_geometry(optionB_summarised)
+numeric_optionC <- st_drop_geometry(optionC_summarised)
+
+# Calculate the sum of all rows in the summarized dataframes
+sum_optionX <- colSums(select(numeric_optionX, where(is.numeric)), na.rm = TRUE)
+sum_optionA <- colSums(select(numeric_optionA, where(is.numeric)), na.rm = TRUE)
+sum_optionB <- colSums(select(numeric_optionB, where(is.numeric)), na.rm = TRUE)
+sum_optionC <- colSums(select(numeric_optionC, where(is.numeric)), na.rm = TRUE)
+
+# Display the sums
+#sum_optionX
+#sum_optionA
+#sum_optionB
+#sum_optionC
+
+
+
+```
+
+
+```{r}
+library(tmap)
+
+# Switch to view mode
+tmap_mode("view")
+
+# Set options
+tmap_options(check.and.fix = TRUE)
+
+# Create the map for optionX
+map_optionX <- tm_shape(optionX_summarised) +
+  tm_polygons(
+    col = "2024_scaled_BTN_places",
+    popup.vars = c("Catchment" = "catchment", "2024 Places" = "2024_scaled_BTN_places"),
+    palette = "Purples",
+    title = "2024 Scaled BTN Places"
+  ) +
+  tm_layout(
+    legend.show = TRUE,
+    title = "Option X"
+  )
+
+# Create the map for optionA
+map_optionA <- tm_shape(optionA_summarised) +
+  tm_polygons(
+    col = "2024_scaled_BTN_places",
+    popup.vars = c("Catchment" = "catchment", "2024 Places" = "2024_scaled_BTN_places"),
+    palette = "Purples",
+    title = "2024 Scaled BTN Places"
+  ) +
+  tm_layout(
+    legend.show = TRUE,
+    title = "Option A"
+  )
+
+# Create the map for optionB
+map_optionB <- tm_shape(optionB_summarised) +
+  tm_polygons(
+    col = "2024_scaled_BTN_places",
+    popup.vars = c("Catchment" = "catchment", "2024 Places" = "2024_scaled_BTN_places"),
+    palette = "Purples",
+    title = "2024 Scaled BTN Places"
+  ) +
+  tm_layout(
+    legend.show = TRUE,
+    title = "Option B"
+  )
+
+# Create the map for optionC
+map_optionC <- tm_shape(optionC_summarised) +
+  tm_polygons(
+    col = "2024_scaled_BTN_places",
+    popup.vars = c("Catchment" = "catchment", "2024 Places" = "2024_scaled_BTN_places"),
+    palette = "Purples",
+    title = "2024 Scaled BTN Places"
+  ) +
+  tm_layout(
+    legend.show = TRUE,
+    title = "Option C"
+  )
+
+# Display the maps
+map_optionX
+map_optionA
+map_optionB
+map_optionC
+
+
+```
+
+```{r}
+library(dplyr)
+
+optionX_agg <- brighton_sec_schools_sml %>%
+  select(optionX, school_capacity, number_of_pupils, fsm, pan2024, pan2026, pan2030, contains('count')) %>%
+  group_by(optionX) %>%
+  summarise(across(where(is.numeric), sum, na.rm = TRUE), .groups = 'drop')
+
+
+
+yr7_2024_optionX <- yr7_admissions %>% 
+  
+
+```
+
+
+Work out total commuting time as minutes x pupils for each place in each catchment currently
+
+```{r}
+library(sf)
+library(dplyr)
+
+#first joint the points to different catchments
+
+# Perform spatial join to match points with polygons - first option X
+BTN_LSOA_Point_Proj <- st_join(BTN_LSOA_Point_Proj, optionX_summarised[, c("geometry", "catchment")], join = st_intersects)
+# Rename the catchment column to optionX
+BTN_LSOA_Point_Proj <- BTN_LSOA_Point_Proj %>%
+  rename(optionX = catchment)
+
+# Perform spatial join to match points with polygons - then option A
+BTN_LSOA_Point_Proj <- st_join(BTN_LSOA_Point_Proj, optionA_summarised[, c("geometry", "catchment")], join = st_intersects)
+# Rename the catchment column to optionA
+BTN_LSOA_Point_Proj <- BTN_LSOA_Point_Proj %>%
+  rename(optionA = catchment)
+
+# Perform spatial join to match points with polygons - then option B
+BTN_LSOA_Point_Proj <- st_join(BTN_LSOA_Point_Proj, optionB_summarised[, c("geometry", "catchment")], join = st_intersects)
+# Rename the catchment column to optionB
+BTN_LSOA_Point_Proj <- BTN_LSOA_Point_Proj %>%
+  rename(optionB = catchment)
+
+# Perform spatial join to match points with polygons - then option C
+BTN_LSOA_Point_Proj <- st_join(BTN_LSOA_Point_Proj, optionC_summarised[, c("geometry", "catchment")], join = st_intersects)
+# Rename the catchment column to optionC
+BTN_LSOA_Point_Proj <- BTN_LSOA_Point_Proj %>%
+  rename(optionC = catchment)
+
+
+```
+
+```{r}
+sub <- BTN_LSOA_Point_Proj %>% 
+  filter(optionX == "Long")
+
+```
+
+
+
+```{r}
+total_commute_longhill_2024 <- brighton_sch_Commute_lines 
+```
+
