@@ -701,3 +701,162 @@ sub <- BTN_LSOA_Point_Proj %>%
 total_commute_longhill_2024 <- brighton_sch_Commute_lines 
 ```
 
+
+```{r}
+##Try a basic demand model
+
+brighton_sec_schools_sml$urn1 <- as.character(brighton_sec_schools_sml$urn)
+
+# Start with full flow matrix
+btn_cij <- simple_ttm %>% 
+  rename("cij" = "flow")
+
+# add origin pupils
+btn_cij <- btn_cij %>% 
+  left_join(BTN_LSOA_Point_Proj %>% select("geography", "2024_scaled_BTN_places"), by = c("orig" = "geography")) %>% 
+  rename("Oi" = "2024_scaled_BTN_places")
+
+# add destination attractiveness
+btn_cij <- btn_cij %>% 
+  left_join(brighton_sec_schools_sml %>% select("urn1", "number_of_pupils", "pan2024", "fsm"), by = c("dest" = "urn1"))
+btn_cij$fixed_attr <- 100
+
+
+##############
+##modeling and parameters
+
+beta <- 0.57
+#beta <- 0.8
+alpha <- 1
+
+#calculate some new wj^alpha and dij^beta values
+wj2_alpha <- btn_cij$fixed_attr^alpha
+dist_beta <- btn_cij$cij^-beta
+#calculate the first stage of the Ai values
+btn_cij$Ai1 <- wj2_alpha*dist_beta
+#now do the sum over all js bit
+A_i <- btn_cij %>% group_by(orig) %>% summarise(A_i = sum(Ai1))
+#now divide in to 1
+A_i[,2] <- 1/A_i[,2]
+#and write the A_i values back into the data frame
+btn_cij$A_i <- A_i$A_i[match(btn_cij$orig,A_i$orig)]
+
+#now let's model some flows
+
+btn_cij$prodSIM1 <- btn_cij$A_i*btn_cij$Oi*wj2_alpha*dist_beta
+sum(btn_cij$prodSIM1)
+sum(BTN_LSOA_Point_Proj$`2024_scaled_BTN_places`)
+btn_sch_gravity1 <- btn_cij %>%
+  group_by(dest) %>%
+  summarise(prodSIM1 = sum(prodSIM1, na.rm = TRUE))
+
+# Display the new dataframe
+print(btn_sch_gravity1)
+
+brighton_sec_schools_sml$prodsim1 <- btn_sch_gravity1$prodSIM1[match(brighton_sec_schools_sml$urn, btn_sch_gravity1$dest)]
+temp <- brighton_sec_schools_sml %>%
+  select(establishment_name, pan2024, prodsim1) %>% 
+  mutate(prodsim1 = round(prodsim1, 0))
+
+
+```
+
+```{r}
+#flow map
+
+btn_cij_flow <- btn_cij %>%
+  select(orig, dest, prodSIM1) %>% 
+  rename("flow" = "prodSIM1")
+
+summary(btn_cij_flow)
+summary(simple_ttm2)
+
+simple_ttm3 <- simple_ttm2 %>% 
+  cbind(btn_cij_flow$flow)
+
+
+brighton_sch_Commute_lines <- od2line(flow = simple_ttm2, zones = brighton_lsoa_points_r52, destinations = bh_sec_sch2)
+brightopia_lines <- od2line(flow = simple_ttm3, zones = brighton_lsoa_points_r52, destinations = bh_sec_sch2)
+
+#brightopia_lines <- od2line(flow = btn_cij, zones = brighton_lsoa_points_r52, destinations = bh_sec_sch2) 
+
+
+
+```
+
+
+
+```{r}
+brighton_sch_Commute <- brightopia_lines %>% 
+  filter(dest == 114581) %>% 
+  filter(`btn_cij_flow$flow` > 1)
+
+tmap_mode("view")
+# Create the map with thicker lines for smaller values
+map <- tm_shape(brighton_sch_Commute) +
+  tm_lines(palette = "-plasma",
+           lwd = "btn_cij_flow$flow",
+           scale = 5,
+           id="btn_cij_flow$flow",
+           popup.vars= c("flow"),
+           title.lwd = "Number of 11 year olds",
+           alpha = 0.5,
+           col = "btn_cij_flow$flow",
+           title = "Number of 11 year olds")+
+  tm_shape(bh_sec_sch2)+
+          tm_dots(col="establishment_name", size=0.01,id="establishment_name", title = "establishment_name", legend.show = F) +
+  tm_shape(bh_catchments) +
+          tm_polygons(col = NA, alpha = 0)
+
+map
+```
+
+```{r}
+brighton_sch_Commute <- brightopia_lines %>% 
+  filter(dest == 136164) %>% 
+  filter(`btn_cij_flow$flow` > 1)
+
+tmap_mode("view")
+# Create the map with thicker lines for smaller values
+map <- tm_shape(brighton_sch_Commute) +
+  tm_lines(palette = "-plasma",
+           lwd = "btn_cij_flow$flow",
+           scale = 5,
+           id="orig",
+           popup.vars= c("flow"),
+           title.lwd = "Number of 11 year olds",
+           alpha = 0.5,
+           col = "btn_cij_flow$flow",
+           title = "Number of 11 year olds")+
+  tm_shape(bh_sec_sch2)+
+          tm_dots(col="establishment_name", size=0.01,id="establishment_name", title = "establishment_name", legend.show = F) +
+  tm_shape(bh_catchments) +
+          tm_polygons(col = NA, alpha = 0)
+
+map
+```
+
+
+```{r}
+brighton_sch_Commute <- brightopia_lines %>% 
+  filter(dest == 114579) %>% 
+  filter(`btn_cij_flow$flow` > 1)
+
+tmap_mode("view")
+# Create the map with thicker lines for smaller values
+map <- tm_shape(brighton_sch_Commute) +
+  tm_lines(palette = "-plasma",
+           lwd = "btn_cij_flow$flow",
+           scale = 5,
+           id="orig",
+           popup.vars= c("flow"),
+           title.lwd = "Number of 11 year olds",
+           alpha = 0.5,
+           col = "btn_cij_flow$flow",
+           title = "Number of 11 year olds")+
+  tm_shape(bh_sec_sch2)+
+          tm_dots(col="establishment_name", size=0.01,id="establishment_name", title = "establishment_name", legend.show = F) +
+  tm_shape(bh_catchments) +
+          tm_polygons(col = NA, alpha = 0)
+
+map
