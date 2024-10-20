@@ -337,7 +337,7 @@ These don't quite go down to the LSOA level, but are available at the local auth
 
 What is noticable is the relative distributions of the LSOA populations don't change that much over time, so we can use the distributions in the past estimates, to apply to future projections to create a full neighbourhood-level picture of Brighton for a 20 year period.
 
-One of my colleagues has created an interactive map where you can explore the period from 2011 until 2031 for the city. <https://amaclachlan.shinyapps.io/Brighton_school_children_catchments/>
+One of my colleagues, Dr Andy Maclachlan, has created an interactive map where you can explore the period from 2011 until 2031 for the city. <https://amaclachlan.shinyapps.io/Brighton_school_children_catchments/> - all data have been downloaded from the ONS via the NOMIS website.
 
 An alternative view of change can be seen in the map below.
 
