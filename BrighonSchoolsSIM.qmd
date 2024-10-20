@@ -3,7 +3,7 @@ title: "BrightonSchoolSIM"
 author: "Adam Dennett"
 ---
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(sf)
 library(janitor)
@@ -51,16 +51,9 @@ BrightonLSOA <- BrightonLSOA %>%
 bh_lsoa_places <- read_csv(here("data","bh_lsoa_projections_2020_31.csv"))
 bh_lsoa_projections <- read_csv(here("data", "bh_lsoa_projections_2020_31.csv"))
 
-```
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-library(dplyr)
-library(tmap)
-
 # Join the data
 BrightonLSOA_pw_cent <- BrightonLSOA_pw_cent %>%
   mutate(`2024` = BTN_LSOA_Proj_wide$`2024`[match(lsoa21cd, BTN_LSOA_Proj_wide$geography)])
-
 
 ```
 
@@ -74,6 +67,8 @@ brighton_sec_schools <- read_csv("https://www.dropbox.com/scl/fi/fhzafgt27v30lmm
   filter(establishment_status_name == "Open") %>%
   st_as_sf(., coords = c("easting", "northing")) %>% 
   st_set_crs(27700)
+
+#st_write(brighton_sec_schools, here("data", "brighton_sec_schools.geojson"))
 
 names <- cbind(names(brighton_sec_schools))
 brighton_sec_schools_sml <- brighton_sec_schools %>% 
@@ -98,7 +93,7 @@ tm_shape(brighton_sec_schools_sml) +
 
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 # Create the tmap
 tmap_mode("view")
@@ -114,7 +109,6 @@ tm_shape(brighton_sec_schools_sml) +
 
 
 ```
-
 
 Interactions
 
@@ -160,6 +154,9 @@ osm_sussex_maj_roads <- rbind(osm_w_sussex_maj_roads, osm_e_sussex_maj_roads) %>
 brighton_oa_buffer <- st_buffer(brighton_oa, dist = 500)
 brighton_blob <- st_union(brighton_oa_buffer)
 
+brighton_outline <- st_union(brighton_oa)
+write_sf(brighton_outline, here("data", "brighton_outline.geojson"))
+
 #tm_shape(brighton_blob) +
  # tm_polygons(alpha = 0.5)
 
@@ -178,9 +175,9 @@ tm_shape(brighton_roads) +
 r5r_core = setup_r5(data_path = data_path)
 ```
 
-Note, I mess something up down here, so use the code from additional_supporting_info
+Set up for the travel time matrix
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 #set up the destinations for R5R
 bh_sec_sch1 <- brighton_sec_schools %>% 
   select(urn, establishment_name, geometry) %>%
@@ -211,7 +208,7 @@ brighton_lsoa_points_r51 <- BrightonLSOA_pw_cent %>%
 
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 #travel time matrix
 
 # Set parameters
@@ -258,27 +255,13 @@ simple_ttm <- na.omit(simple_ttm) %>%
 
 Cost - Travel Time Along the Road Network
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(stplanr)
 library(od)
 library(tmap)
 
 # Switch to view mode
 tmap_mode("view")
-
-# Set options
-tmap_options(check.and.fix = TRUE)
-
-# Create the map with the two sf objects
-tm_shape(brighton_lsoa_points_r51) +
-tm_dots() +  
-tm_shape(bh_sec_sch1) + 
-tm_dots(col = "red") +  
-  tm_layout(
-    legend.title.size = 1,          # Adjust the size of the legend title
-    legend.outside.size = 0.15,     # Adjust the position of the legend
-    title = "Your Custom Title"     # Set your custom legend title
-)
 
 
 #nrow(brighton_lsoa_points_r51) * nrow(bh_sec_sch1)
@@ -308,14 +291,14 @@ brighton_sch_Commute_lines <- od2line(flow = simple_ttm2, zones = brighton_lsoa_
 brighton_sch_Commute_lines1 <- od::od_to_sf(x = simple_ttm2, z = brighton_lsoa_points_r52, zd = bh_sec_sch2, crs = 4326)
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 brighton_sch_Commute_longhill <- brighton_sch_Commute_lines %>% 
   filter(dest == 114581)
 ```
 
 Map the flows
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 tmap_mode("view")
 map <- tm_shape(brighton_sch_Commute_longhill) +
@@ -336,11 +319,7 @@ map <- tm_shape(brighton_sch_Commute_longhill) +
 map
 ```
 
-
-
-
-
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 brighton_sch_Commute <- brighton_sch_Commute_lines %>% 
   filter(dest == 114580)
 
@@ -365,12 +344,12 @@ map
 
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 #analysis of 2024, 2026 and 2030 lsoa places by catchment
 
 optionA_1 <- st_read(here("data", "BTN_catchments","Catchment vectorised" ,"catchment_01.geojson"))
 optionB_1 <- st_read(here("data", "BTN_catchments","Catchment vectorised" ,"catchment_02.geojson"))
-OptionC_1 <- st_read(here("data", "BTN_catchments","Catchment vectorised" ,"catchment_03.geojson"))
+OptionC_1 <- st_read(here("data", "BTN_catchments","Catchment vectorised" ,"catchment_03a.geojson"))
 
 ###
 #now just set up the catchments I want to use
@@ -380,11 +359,14 @@ optionA <- bh_optionA
 optionB <- bh_optionB
 optionC <- OptionC_1
 
-optionX <- st_make_valid(optionx)
+
+
+optionX <- st_make_valid(optionX)
 optionA <- st_make_valid(optionA)
 optionB <- st_make_valid(optionB)
 optionC <- st_make_valid(optionC)
 
+#harmonise the catchment names
 optionX <- optionX %>%
   mutate(catchment = recode(catchment,
                             "Patcham HighSchool" = "Patch",
@@ -419,7 +401,7 @@ optionC <- optionC %>%
                             "Stringer" = "DS",
                             "BACA" = "BACA",
                             "Longhill" = "Long",
-                            "Patchham" = "Patch",
+                            "Patcham" = "Patch",
                             "Hove" = "Hove",
                             "PACA" = "PACA"))
 
@@ -445,7 +427,7 @@ map
 
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 ##summary pupils and PANs
 
@@ -502,7 +484,7 @@ map
 
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(sf)
 library(dplyr)
 
@@ -539,7 +521,7 @@ optionC_summarised <- st_join(optionC_summarised, optionC %>% select(id, catchme
 
 
 #join IDs back a
-write_csv(optionX_summarised,here("data", "optionX_summarised.csv"))
+write_csv(optionX_summarised,here("data",  "optionX_summarised.csv"))
 write_csv(optionA_summarised,here("data",  "optionA_summarised.csv"))
 write_csv(optionB_summarised,here("data",  "optionB_summarised.csv"))
 write_csv(optionC_summarised,here("data",  "optionC_summarised.csv"))
@@ -567,8 +549,7 @@ sum_optionC <- colSums(select(numeric_optionC, where(is.numeric)), na.rm = TRUE)
 
 ```
 
-
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(tmap)
 
 # Switch to view mode
@@ -638,25 +619,102 @@ map_optionC
 
 ```
 
-```{r}
-library(dplyr)
+Something here to look at PANs vs Places and FSM in 2024 for different catchment options
 
-optionX_agg <- brighton_sec_schools_sml %>%
+```{r}
+#first aggregate PAN, FSM etc to each of the different x, a, c, C catchment designs
+
+optionX_stats <- brighton_sec_schools_sml %>%
   select(optionX, school_capacity, number_of_pupils, fsm, pan2024, pan2026, pan2030, contains('count')) %>%
   group_by(optionX) %>%
-  summarise(across(where(is.numeric), sum, na.rm = TRUE), .groups = 'drop')
+  summarise(across(where(is.numeric), sum, na.rm = TRUE), .groups = 'drop') %>% 
+  mutate(fsm_pct = round(fsm/number_of_pupils, 2)) %>% 
+  relocate(fsm_pct, .after = fsm) %>% 
+  st_drop_geometry()
+
+optionA_stats <- brighton_sec_schools_sml %>%
+  select(optionA, school_capacity, number_of_pupils, fsm, pan2024, pan2026, pan2030, contains('count')) %>%
+  group_by(optionA) %>%
+  summarise(across(where(is.numeric), sum, na.rm = TRUE), .groups = 'drop') %>% 
+  mutate(fsm_pct = round(fsm/number_of_pupils, 2)) %>% 
+  relocate(fsm_pct, .after = fsm) %>% 
+  st_drop_geometry()
+
+optionB_stats <- brighton_sec_schools_sml %>%
+  select(optionB, school_capacity, number_of_pupils, fsm, pan2024, pan2026, pan2030, contains('count')) %>%
+  group_by(optionB) %>%
+  summarise(across(where(is.numeric), sum, na.rm = TRUE), .groups = 'drop') %>% 
+  mutate(fsm_pct = round(fsm/number_of_pupils, 2)) %>% 
+  relocate(fsm_pct, .after = fsm) %>% 
+  st_drop_geometry()
+
+optionC_stats <- brighton_sec_schools_sml %>%
+  select(optionC, school_capacity, number_of_pupils, fsm, pan2024, pan2026, pan2030, contains('count')) %>%
+  group_by(optionC) %>%
+  summarise(across(where(is.numeric), sum, na.rm = TRUE), .groups = 'drop') %>% 
+  mutate(fsm_pct = round(fsm/number_of_pupils, 2)) %>% 
+  relocate(fsm_pct, .after = fsm) %>% 
+  st_drop_geometry()
 
 
+#now join the stats back to the catchment polygons
 
-yr7_2024_optionX <- yr7_admissions %>% 
-  
+optionX_summarised <- optionX_summarised %>% 
+  left_join(optionX_stats, by = c("catchment" = "optionX"))
+
+optionA_summarised <- optionA_summarised %>%
+  left_join(optionA_stats, by = c("catchment" = "optionA"))
+
+optionB_summarised <- optionB_summarised %>%
+  left_join(optionB_stats, by = c("catchment" = "optionB"))
+
+optionC_summarised <- optionC_summarised %>%
+  left_join(optionC_stats, by = c("catchment" = "optionC"))
+
+# Display the results
+
+# Create the map for optionC
+tm_shape(optionA_summarised) +
+  tm_polygons(
+    col = "fsm_pct",
+    popup.vars = c("Catchment" = "catchment", "FSM %" = "fsm_pct"),
+    palette = "Purples",
+    title = "FSM %"
+  ) +
+  tm_layout(
+    legend.show = TRUE,
+    title = "Option A"
+  ) +
+tm_shape(optionB_summarised) +
+  tm_polygons(
+    col = "fsm_pct",
+    popup.vars = c("Catchment" = "catchment", "FSM %" = "fsm_pct"),
+    palette = "Purples",
+    title = "FSM %"
+  ) +
+  tm_layout(
+    legend.show = TRUE,
+    title = "Option B"
+  ) +
+tm_shape(optionC_summarised) +
+  tm_polygons(
+    col = "fsm_pct",
+    popup.vars = c("Catchment" = "catchment", "FSM %" = "fsm_pct"),
+    palette = "Purples",
+    title = "FSM %"
+  ) +
+  tm_layout(
+    legend.show = TRUE,
+    title = "Option C"
+  )
+
+
 
 ```
 
-
 Work out total commuting time as minutes x pupils for each place in each catchment currently
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(sf)
 library(dplyr)
 
@@ -689,20 +747,53 @@ BTN_LSOA_Point_Proj <- BTN_LSOA_Point_Proj %>%
 
 ```
 
-```{r}
-sub <- BTN_LSOA_Point_Proj %>% 
-  filter(optionX == "Long")
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#sub <- BTN_LSOA_Point_Proj %>% 
+#  filter(optionX == "Long")
+
+# Filter the data
+sub <- BTN_LSOA_Point_Proj %>%
+  filter(optionB == "SBTN")
+
+# Round the specified columns to zero decimal places
+sub <- sub %>%
+  mutate(across(c("2021":"2030_scaled_BTN_places"), ~ round(.x, 0)))
+
+library(tmap)
+
+# Create the map with raw numbers in the circles
+map <- tm_shape(sub) +  
+  tm_dots(
+    col = "optionB",
+    size = "2026_scaled_BTN_places",
+    alpha = 0.5
+  ) +  
+  tm_text(
+    text = "2026_scaled_BTN_places", 
+    size = "2026_scaled_BTN_places", 
+    col = "black", 
+    alpha = 1
+  ) +  
+  tm_layout(
+    legend.show = TRUE, 
+    title = "Option B"
+  )
+
+# Print the map
+map
+
 
 ```
 
-
-
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 total_commute_longhill_2024 <- brighton_sch_Commute_lines 
 ```
 
+Picking a distance-decay beta parameter
 
-```{r}
+https://transportgeography.org/contents/methods/spatial-interactions-gravity-model/spatial-interactions-beta-alpha-lambda/
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 ##Try a basic demand model
 
 brighton_sec_schools_sml$urn1 <- as.character(brighton_sec_schools_sml$urn)
@@ -725,8 +816,8 @@ btn_cij$fixed_attr <- 100
 ##############
 ##modeling and parameters
 
-beta <- 0.57
-#beta <- 0.8
+#beta <- 0.57
+beta <- 1.5
 alpha <- 1
 
 #calculate some new wj^alpha and dij^beta values
@@ -754,14 +845,16 @@ btn_sch_gravity1 <- btn_cij %>%
 print(btn_sch_gravity1)
 
 brighton_sec_schools_sml$prodsim1 <- btn_sch_gravity1$prodSIM1[match(brighton_sec_schools_sml$urn, btn_sch_gravity1$dest)]
+
 temp <- brighton_sec_schools_sml %>%
   select(establishment_name, pan2024, prodsim1) %>% 
   mutate(prodsim1 = round(prodsim1, 0))
 
 
+
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 #flow map
 
 btn_cij_flow <- btn_cij %>%
@@ -771,8 +864,14 @@ btn_cij_flow <- btn_cij %>%
 summary(btn_cij_flow)
 summary(simple_ttm2)
 
-simple_ttm3 <- simple_ttm2 %>% 
-  cbind(btn_cij_flow$flow)
+#simple_ttm3 <- simple_ttm2 %>% 
+#  cbind(btn_cij_flow$flow)
+
+#write_csv(simple_ttm3, here("data", "simple_ttm3.csv"))
+simple_ttm3 <- read_csv(here("data", "simple_ttm3.csv"))
+
+nrow(simple_ttm2)
+nrow(btn_cij_flow)
 
 
 brighton_sch_Commute_lines <- od2line(flow = simple_ttm2, zones = brighton_lsoa_points_r52, destinations = bh_sec_sch2)
@@ -784,9 +883,9 @@ brightopia_lines <- od2line(flow = simple_ttm3, zones = brighton_lsoa_points_r52
 
 ```
 
+Gravity Model Longhill
 
-
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 brighton_sch_Commute <- brightopia_lines %>% 
   filter(dest == 114581) %>% 
   filter(`btn_cij_flow$flow` > 1)
@@ -811,7 +910,9 @@ map <- tm_shape(brighton_sch_Commute) +
 map
 ```
 
-```{r}
+Gravity Model BACA
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 brighton_sch_Commute <- brightopia_lines %>% 
   filter(dest == 136164) %>% 
   filter(`btn_cij_flow$flow` > 1)
@@ -836,8 +937,7 @@ map <- tm_shape(brighton_sch_Commute) +
 map
 ```
 
-
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 brighton_sch_Commute <- brightopia_lines %>% 
   filter(dest == 114579) %>% 
   filter(`btn_cij_flow$flow` > 1)
@@ -860,3 +960,4 @@ map <- tm_shape(brighton_sch_Commute) +
           tm_polygons(col = NA, alpha = 0)
 
 map
+```
