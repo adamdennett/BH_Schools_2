@@ -26,10 +26,10 @@ website:
       - icon: github
         menu:
           - text: Source Code
-            url:  https://github.com/adamdennett/BH_Secondary_Admissions_Analysis
+            url:  https://github.com/adamdennett/BH_Schools_2
           - text: Report a Bug
-            url:  https://github.com/adamdennett/BH_Secondary_Admissions_Analysis/issues
-  repo-url: https://github.com/adamdennett/BH_Secondary_Admissions_Analysis
+            url:  https://github.com/adamdennett/BH_Schools_2/issues
+  repo-url: https://github.com/adamdennett/BH_Schools_2
   repo-actions: [source, issue]
   google-analytics: "G-HFKH18TWMG"
   open-graph: true
