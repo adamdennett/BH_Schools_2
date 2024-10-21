@@ -113,6 +113,7 @@ tm_shape(brighton_sec_schools_sml) +
 Interactions
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
+
 data_path = here("data")
 # Check what files we have
 #list.files(data_path)
@@ -791,7 +792,7 @@ total_commute_longhill_2024 <- brighton_sch_Commute_lines
 
 Picking a distance-decay beta parameter
 
-https://transportgeography.org/contents/methods/spatial-interactions-gravity-model/spatial-interactions-beta-alpha-lambda/
+<https://transportgeography.org/contents/methods/spatial-interactions-gravity-model/spatial-interactions-beta-alpha-lambda/>
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ##Try a basic demand model
@@ -940,6 +941,56 @@ map
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 brighton_sch_Commute <- brightopia_lines %>% 
   filter(dest == 114579) %>% 
+  filter(`btn_cij_flow$flow` > 1)
+
+tmap_mode("view")
+# Create the map with thicker lines for smaller values
+map <- tm_shape(brighton_sch_Commute) +
+  tm_lines(palette = "-plasma",
+           lwd = "btn_cij_flow$flow",
+           scale = 5,
+           id="orig",
+           popup.vars= c("flow"),
+           title.lwd = "Number of 11 year olds",
+           alpha = 0.5,
+           col = "btn_cij_flow$flow",
+           title = "Number of 11 year olds")+
+  tm_shape(bh_sec_sch2)+
+          tm_dots(col="establishment_name", size=0.01,id="establishment_name", title = "establishment_name", legend.show = F) +
+  tm_shape(bh_catchments) +
+          tm_polygons(col = NA, alpha = 0)
+
+map
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+brighton_sch_Commute <- brightopia_lines %>% 
+  filter(dest == 114607) %>% 
+  filter(`btn_cij_flow$flow` > 1)
+
+tmap_mode("view")
+# Create the map with thicker lines for smaller values
+map <- tm_shape(brighton_sch_Commute) +
+  tm_lines(palette = "-plasma",
+           lwd = "btn_cij_flow$flow",
+           scale = 5,
+           id="orig",
+           popup.vars= c("flow"),
+           title.lwd = "Number of 11 year olds",
+           alpha = 0.5,
+           col = "btn_cij_flow$flow",
+           title = "Number of 11 year olds")+
+  tm_shape(bh_sec_sch2)+
+          tm_dots(col="establishment_name", size=0.01,id="establishment_name", title = "establishment_name", legend.show = F) +
+  tm_shape(bh_catchments) +
+          tm_polygons(col = NA, alpha = 0)
+
+map
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+brighton_sch_Commute <- brightopia_lines %>% 
+  filter(dest == 114606) %>% 
   filter(`btn_cij_flow$flow` > 1)
 
 tmap_mode("view")

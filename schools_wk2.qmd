@@ -492,7 +492,6 @@ FSM - Free School Meals. This is the proportion of pupils in a school or residen
 
 ```{r, echo=F, message=F, warning=F}
 library(tidyverse)
-library(plotly)
 library(tmap)
 library(here)
 library(ggplot2)
@@ -728,7 +727,7 @@ library(knitr)
 
 # Calculate the sum row
 sum_row <- admissions %>%
-  summarise(across(3:8, sum, na.rm = TRUE))
+  summarise(across(4:9, sum, na.rm = TRUE))
 
 # Add blank and "Total" labels for the sum row
 sum_row <- cbind("", "Total", sum_row)
