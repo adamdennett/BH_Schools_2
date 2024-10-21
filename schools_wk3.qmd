@@ -6,7 +6,7 @@ format: html
 editor: visual
 ---
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, include=FALSE, results='hide'}
 library(tidyr)
 library(dplyr)
 library(writexl)
@@ -30,7 +30,7 @@ library(stplanr)
 library(od)
 ```
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, include=FALSE, results='hide'}
 BrightonLSOA <- st_read(here("data","BrightonLSOA_Clean.geojson"))
 BrightonLSOA_pw_cent <- st_read(here("data","lsoa_btn_pw_cent.geojson"))
 BTN_LSOA_Proj <- st_read(here("data","LSOA_NOMIS_plus_projections.geojson")) %>% clean_names
@@ -643,7 +643,9 @@ simple_ttm3 <- read_csv(here("data", "simple_ttm3.csv"))
 
 
 brighton_sch_Commute_lines <- od2line(flow = simple_ttm2, zones = brighton_lsoa_points_r52, destinations = bh_sec_sch2)
-brightopia_lines <- od2line(flow = simple_ttm3, zones = brighton_lsoa_points_r52, destinations = bh_sec_sch2)
+brightopia_lines <- od2line(flow = simple_ttm3, zones = brighton_lsoa_points_r52, destinations = bh_sec_sch2) %>% 
+  rename(distance = flow) %>% 
+  rename(tij = `btn_cij_flow$flow`)
 
 #brightopia_lines <- od2line(flow = btn_cij, zones = brighton_lsoa_points_r52, destinations = bh_sec_sch2) 
 
@@ -656,6 +658,8 @@ brightopia_lines <- od2line(flow = simple_ttm3, zones = brighton_lsoa_points_r52
 
 ```
 
+As with my last two pieces of analysis ([here](https://adamdennett.github.io/BH_Secondary_Admissions_Analysis/BH_Sec_Sch_Analysis.html) and [here](https://adamdennett.github.io/BH_Schools_2/schools_wk2.html)), this is all very much work in progress. Produced very quickly, under a lot of pressure. There will be errors and issues. Hopefully, as with these other pieces of work, this will provide food for thought and I hope the city is given the chance to develop some of these ideas further or at least be better equipped with information than they were before reading.
+
 # Brightopia
 
 I'm going to begin this week with a little experiment. Imagine, if you can, a Brighton where all the Secondary Schools are exactly the same. They are all the same size. They are all of the same quality - no more "Outstanding" or "Requires Improvement". Just the same. All in identikit buildings, with the same allocation of green space. Same teachers. Same school dinners. They are identical in every way. The only difference between them is where they are located in the City. As it happens, they are all located *exactly* where they are today. Varndean is where Varndean is. Longhill is where Longhill is. Hove Park is where Hove Park is, this is the *only* thing to differentiate them.
@@ -664,9 +668,9 @@ Now imagine that all of the children in the city live where they currently live.
 
 In this slightly weird version of Brighton - an equal Brighton (some might say a "Brightopia") - which schools would the children in the city choose to attend if the ONLY thing that gave them preference, was how long it took them to get to school either by walking or taking the bus?
 
-If we knew the answer to this question, we might then start to understand what role location and distance plays in the choices people make. And if we know this, we can then compare this "Brightopian" reality with the situation we have in real Brighton today.
+If we knew the answer to this question, we might then start to understand what role location and distance plays in the choices people make in the real-life system. And if we know this, we can then compare this "Brightopian" model with the reality we have in Brighton today.
 
-Why is this useful? Well, if we can disentangle the spatial effects from all of the other effects (how 'good' the schools are, religious preference, what the lunches are like, which catchment they are in etc.) we can start to understand what impact things like school catchment areas or perceived quality, are having on the system. Is it the case that people want to go to this school because it is "good" or is it just because it is close to where they live?
+Why is this useful? Well, if we can disentangle the spatial effects on school choice from all of the other effects (how 'good' the schools are, religious preference, what the lunches are like, which catchment they are in etc.) we can start to understand what impact things like school catchment areas or perceived quality, are having on the system. Is it the case that people want to go to this school because it is "good" or is it just because it is close to where they live?
 
 ## A Model of Brightopia
 
@@ -687,85 +691,187 @@ tm_shape(brighton_sec_schools_sml) +
 
 Figure 1 - Brighton and Hove Secondary Schools and 11 year olds in 2024.
 
-The map above is a real map of Brighton and Hove. The orange circles represent numbers of 11 year olds in the city in 2024 and where they live - these numbers are taken from the ONS sub-national populations at the city level and distributied down into neighbourhoods according to where the 2021 Census records where they live. This is a pretty accurate representation of where the children who were going to attend secondary shcool in 2024 live.
+The map above is a real map of Brighton and Hove.
 
-The black dots are the locations of the Secondary Schools in the city and the black boundaries are the current catchment areas surrounding these schools, for context.
+-   The orange circles represent numbers of 11 year olds in the city in 2024 and where they live - these numbers are taken from the ONS sub-national populations at the city level and distributied down into neighbourhoods according to where the 2021 Census records where they live. While not perfect, this will be a pretty accurate representation of where the children who were going to attend secondary school in 2024 live.
 
-You can see in the background for this map, there is also a road network. And if we know roughly how fast people walk and if we have information on the bus network in the city and the bus timetables associated with each bus-stop in the city (to give us an idea of how fast the buses travel), we can generate some pretty good estimates of how long it would take children in the orange circles to get to the black dots.
+-   The black dots are the locations of the Secondary Schools in the city and the black boundaries are the current catchment areas surrounding these schools, for context.
 
-We can use this information to create a 'model' (a simplified version of reality) of Brighton - our "Brightopia" model and we can use this model to help us answer exactly the questions we asked above:
+-   You can see in the background for this map, there is also a road network. And if we know roughly how fast people walk and if we have information on the bus network in the city and the bus timetables associated with each bus-stop in the city (to give us an idea of how fast the buses travel), we can generate some pretty good estimates of how long it would take children in the orange circles to get to the black dots.
 
--   If the only thing that mattered was how long it took to get to school, which schools would the children in the city choose to attend?
+We can use this information to create a 'model' (a simplified version of reality) of Brighton - our "Brightopia" model and we can use this model to help us answer: ***If the only thing that mattered was how long it took to get to school, which schools would the children in the city choose to attend?***
 
 ## Running the Brightopia model
 
-In my day job, I build these kinds of models all the time. They are called 'spatial interaction models' and they are used to understand how people and commodities move around in cities. They are used to understand how people get to work, how they get to the shops, how they get to school, where they spend their money and how they make choices about where they go. Supermarket chains use them to predict store revenues, transport companies use them to predict passenger numbers, and urban planners use them to understand how cities work.
+In my day job, I build these kinds of models all the time. They are called 'spatial interaction models' and they are used to understand how people, money, commodities etc. move around in cities. They are used to understand how people get to work, how they get to the shops, how they get to school, where they spend their money and how they make choices about where they go. Supermarket chains use them to predict store revenues, transport companies use them to predict passenger numbers, and urban planners use them to understand how cities work.
 
-Spatial interaction models are sometimes simply referred to as 'gravity models'. This is because the number of people moving between two places is proportional to the size of the two places and inversely proportional to the distance between them - a concept exactly the same as Sir Isaac Newton's formula for gravity - the bigger the two objects and the closer they are, the stronger the force between them.
+The most basic spatial interaction models are sometimes simply referred to as 'gravity models'. The maths underneath is identical to Sir Isaac Newton's formula for gravity - the bigger the two objects and the closer they are, the stronger the force between them.
 
-If you would like to understand a little more about the theory and the mathematics behind these models - I wrote an explainer some years ago here - https://rpubs.com/adam_dennett/376877
+If you would like to understand a little more about the theory and the mathematics behind these models - I wrote an explainer some years ago here - <https://rpubs.com/adam_dennett/376877>
 
-The model I have decided to run is called a "Production" or "Origin Constrained" model - what this means is that the number of children who can go to each school are constrained to the numbers we know are living in different neighbourhoods in the city. The numbers actually arriving at schools reflect demand based only on geography.
+-   The model I have decided to run is called a "Production" or "Origin Constrained" model - what this means is that the number of children who can go to each school are constrained to the numbers we know are living in different neighbourhoods in the city.
 
-Which schools students decide to go to is then only determined by the time it takes to get to school and nothing else. This is a simplification of course - in reality, there are many other factors that determine where children go to school - but it is through this simplification that we uncover the importance of space.
+-   The numbers actually arriving at schools will vary and reflect demand based only on how long it takes to get to those schools. The effect of distance is controlled by what's known as a '[distance decay parameter](https://transportgeography.org/contents/methods/spatial-interactions-gravity-model/spatial-interactions-beta-alpha-lambda)' and it controls how fast travel declines with increasing distance.
+
+Which schools students decide to go to is then only determined by the time it takes to get to school from where they live and nothing else. This is a simplification of course - in reality, there are many other factors that determine where children go to school - but it is through this simplification that we uncover the importance of space.
 
 I have gone a step further and constrained these numbers to the total PAN of 2560 11-year old places in the council's published material so what we will end up with are estimates that we can compare with actual PAN numbers to see how close we get.
 
 ## What does the Brightopia Model tell us?
 
-The model gives us two useful outputs.
+The model gives us two useful outputs:
 
--   The first is if we aggregate all of the flows by school we can see how many people would choose each school in the city
+-   The first the total expected Yr 7 PAN numbers (relative to current PANs) for each school if the ONLY thing that mattered was distance. This will tell us how well arranged schools are in the city relative to the population.
+-   Estimates of flows from residential areas to those schools - so we can get a better understanding of where children would be coming from to attend the schools in Brightopia
 
-If you don't want to wade through my opinions, you may wish to jump straight to [Some New Analysis] and find out what this map is all about - otherwise, read on below.
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
+library(knitr)
+# Drop the geometry column
+temp1 <- temp %>% 
+  st_drop_geometry() %>% 
+  mutate(Difference = pan2024-prodsim1)
 
-## Review to Date
+# Rename the columns
+colnames(temp1) <- c("School", "PAN 2024", "Model Estimate", "Surplus/Deficit")
 
-Since the announcement of the 'engagement exercise' by the council, and frustrated by the evidence made available, I have made it my mission to try and fill the information vacuum with data and evidence collated, analysed and presented from a variety of different sources.
+# Create the kable table
+kable(temp1, format = "html", table.attr = "class='table table-striped'")
+```
 
-In the last couple of weeks, I have produced two pieces of analysis ([here](https://adamdennett.github.io/BH_Secondary_Admissions_Analysis/BH_Sec_Sch_Analysis.html) and [here](https://adamdennett.github.io/BH_Schools_2/schools_wk2.html)) which have helped zoom in where the real issues in the system are. These can be summarised as:
+Gravity Model Longhill - Modelled Flows to School (current catchments for reference only)
 
--   The spatial distribution of schools and places available in those schools, relative to where pupils actually live. Some (well, one as we'll see below) of the schools in Brighton are simply in the wrong place ([piece 1](https://adamdennett.github.io/BH_Secondary_Admissions_Analysis/BH_Sec_Sch_Analysis.html)).
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+brighton_sch_Commute <- brightopia_lines %>% 
+  filter(dest == 114581) %>% 
+  filter(tij > 1)
 
--   Illogical reductions in Published Admission Numbers for some schools and the maintenance of other, relative to current and future demand, driven largely by a desire to artificially prop up a school of the wrong size in the wrong location ([piece 2](https://adamdennett.github.io/BH_Schools_2/schools_wk2.html)).
+tmap_mode("view")
+# Create the map with thicker lines for smaller values
+map <- tm_shape(brighton_sch_Commute) +
+  tm_lines(palette = "-plasma",
+           lwd = "tij",
+           scale = 5,
+           id="tij",
+           popup.vars= c("tij"),
+           title.lwd = "Number of 11 year olds",
+           alpha = 0.5,
+           col = "tij",
+           title = "Number of 11 year olds")+
+  tm_shape(bh_sec_sch2)+
+          tm_dots(col="establishment_name", size=0.01,id="establishment_name", title = "establishment_name", legend.show = F) +
+  tm_shape(bh_catchments) +
+          tm_polygons(col = NA, alpha = 0)
 
-Unfortunately, the effort taken in digging through the data and to unearly these issues means that I've not yet been able to address some of the other crucial parts of the story. In particular:
+map
+```
 
--   The fact that the educational disadvantage partially caused by the spatial arrangement of current schools, is most keenly felt by those in the city who unfairly suffer from other forms of social and economic disadvantage - in particular residents of Whitehawk whose access to secondary education is poor. The issues raised by [Class Divide](https://www.classdivide.co.uk/) around the closure of the COMART school in East Brighton in 2005 and their subsequent lack of accessibility to ANY secondary education in the city, let alone high-quality education, is very real.
+Gravity Model Varndean - Modelled Flows to School (current catchments for reference only)
 
-But in not being fully honest about all dimensions of problem - or possibly just ignorant of them - and in trying to portray the whole of the Brighton schools system as a problem, and a narrative of the 'middle classes' of north Brighton closing ranks to thwart a just cause (rather than a fundamentally flawed process), the whole community has been let down by the Council. I am now even more strongly of the opinion that the 'solutions' on the table are nothing of the sort and will only serve to do more harm than good.
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+brighton_sch_Commute <- brightopia_lines %>% 
+  filter(dest == 114579) %>% 
+  filter(tij > 1)
 
-### My Current Fears - I hope unfounded
+tmap_mode("view")
+# Create the map with thicker lines for smaller values
+map <- tm_shape(brighton_sch_Commute) +
+  tm_lines(palette = "-plasma",
+           lwd = "tij",
+           scale = 5,
+           id="tij",
+           popup.vars= c("tij"),
+           title.lwd = "Number of 11 year olds",
+           alpha = 0.5,
+           col = "tij",
+           title = "Number of 11 year olds")+
+  tm_shape(bh_sec_sch2)+
+          tm_dots(col="establishment_name", size=0.01,id="establishment_name", title = "establishment_name", legend.show = F) +
+  tm_shape(bh_catchments) +
+          tm_polygons(col = NA, alpha = 0)
 
-At the beginning of the exercise, I had real hope that the lack of information coming from the council was perhaps a mistake - an oversight due to an inexperienced or over-worked team. Unfortunately, as the weeks have gone by, and as I have listened to members of the council during the 'engagement' Q&A sessions, the council are giving the impression that the lack of information is intentional. By not engaging with the requests for information and the clearly articulated fears of the community - and at worst, being dismissive of them - it feels like they have already made up their minds. It feels like an engagement in name only. I hope this is not the case.
+map
+```
 
-Having reviewed all of the data I have gathered, it has become clear that only one option on the table - Option B (or something which looks a lot like it) - will result in the mass transition of students from the centre of the City, to Longhill in the East. A school which while once an appropriate size for a catchment stretching out towards Peacehaven, thanks to long-term demographic shifts (an ageing population and decline in families) no longer serves its original constituency. In recent years it's cohorts of students have been swelled by children bussed out from Whitehawk in the East of the City - a demographic sticking plaster made easier to apply thanks to a population with less financial and social capital to resist.
+Hove Park - Modelled Flows to School (current catchments for reference only)
 
-To its credit, the Council - if not quite able to own up to its failures in closing COMART in 2005 - at least is now listening to that part of the city and has enacted a new policy to allow the financially worst off students - those on Free School Meals - to choose to study elsewhere in the city, should they wish. However, it's clear that Option B is also the only option that stands to mitigate the inevitable effects of this policy, which will lead to still more students deserting Longhill. A policy that, if the council do rush through with a consultation immediately after the engagement period ends, won't have had time to come to fruition or the initial results to be reviewed. It can be the only explanation for the haste with which council is proceeding.
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+brighton_sch_Commute <- brightopia_lines %>% 
+  filter(dest == 114607) %>% 
+  filter(tij > 1)
 
-I fear that in all of this, if the council pushes forward against the increasing weight of evidence, the people they are supposedly championing - those particularly in Whitehawk - will actually lose out in the long term. This is because, as I will show in some new analysis below - Longhill is poorly located and will continue to be poorly located, relative to where pupils live in the city. The council may try to argue that a new housing estate in Ovingdean will generate the demand required to keep Longhill afloat in the medium term, but as the numbers show below, unless this estate is the size of something like Whitehawk (it is far from that) it will be a drop in the ocean and barely move the dial. And the distraction of making a bad catchment system even worse, means that a real, sustainable, long-term, solution will be kicked down the road in favour of a poorly thought through short term solution, which is unlikely to work anyway.
+tmap_mode("view")
+# Create the map with thicker lines for smaller values
+map <- tm_shape(brighton_sch_Commute) +
+  tm_lines(palette = "-plasma",
+           lwd = "tij",
+           scale = 5,
+           id="tij",
+           popup.vars= c("tij"),
+           title.lwd = "Number of 11 year olds",
+           alpha = 0.5,
+           col = "tij",
+           title = "Number of 11 year olds")+
+  tm_shape(bh_sec_sch2)+
+          tm_dots(col="establishment_name", size=0.01,id="establishment_name", title = "establishment_name", legend.show = F) +
+  tm_shape(bh_catchments) +
+          tm_polygons(col = NA, alpha = 0)
 
-### My Hopes
+map
+```
 
-On the plus side, it is not too late for the council to take notice of the hundreds of good ideas and suggestions that are now emerging from individuals and self-organised groups in the city. I hope that they really do listen.
+### Observations
 
-I hope that some of the evidence I have provided to fill the vacuum has helped some people understand what the underlying problem is a little better. And that armed with this information, they have felt emboldened to pose good questions to the council and make their voice heard.
+-   The space-only gravity model shows that for a lot of schools in the system, they are pretty well positioned, relative to the populations that they might draw from. Indeed this is not all that surprising given that many people with children will choose residential locations near to schools if that choice is available to them.
 
-I hope that the council takes the city up on its offer of help, whether through a Citizens Assembly, through the offers of help from experts who live in the city and care about it deeply.
+-   Hove Park School, according to the model, could attract 142 more students than it currently is, due to where it is located. Although from the map of the flow breakdown, it is an artefact of the model that it is drawing these from a wide area due to the comparative accessibility of this part of town (the model has to send all students somewhere and accessible places hoover up a larger share).
 
-In [my last piece](https://adamdennett.github.io/BH_Schools_2/schools_wk2.html) I offered the council a viable option which would allow them to slow down and take an evidence-based approach. Myself and other members of the newly formed [Parent Support Group](https://www.parentsupport.group/) intend to present the council with a worked through alternative to their current plans - and "Option D" if you like which will offer both a short-term and longer term sustainable alternatives to those that are currently on the table.
+-   If distance were the only thing that mattered, Dorothy Stringer would attract 49 fewer pupils than its current PAN. Blatchington Mill, 57 fewer, and Longhill would attract 94 fewer than it currently does. The maps show that Longhill's location and lack of accessibility means it is only drawing students from a primarily, local area.
 
-I hope that our proposals do buy the time the Council needs to do this properly. In my last piece I called for a systems thinking approach and I think this is the only way a lasting and sustainable solution can be reached. This will need to be carried out with a full range of view gathered from a Citizens Assembly - and idea I have seen recently promoted by Class Divide and one which was put to the council the last time they tried to re-draw the catchment boundaries, but one which clearly has not been enacted yet. And the council need to engage with a diverse and full range of expert views. It is great that the view of Prof Gorard and Dr Greaves were heard, and their educational perspective is important, but as I have shown this is as much a problem of geography and community, of flows and interactions, as it is of education. And there are hundreds of other voices with equally important perspectives that need to be heard.
+-   What this shows, uneqivocally, is that that many of the observations about Longhill's declining application and admission numbers in my last piece are not simply down to its performance as many suggest, but a large factor in its problems is its location relative to where children live.
 
-## Some New Analysis
+    -   As it is so far out on its own to the East and as so few pupils live in the vicinity, any pupils it would be getting in excess of this number would be due to non-spatial influences.
 
-## "***A Stain on our City***" - really?
+-   Longhill is not in a good location for pupils from Whitehawk. Students in this part of the city are not near any school and the fact they have been forced to attend Longhill rather than a closer school has been terrible for them. Given the number of students in the vicinity of the current Longhill, relative to the number of students in Whitehawk, a utilitarian approach that would reduce travel for the most number of students in the city would be to re-locate the school to the near-East of the city.
+
+-   What this gravity modelling suggests quite strongly is Longhill would stand a better chance of demographic sustainability if it were re-located, perhaps somewhere to the East of the City, near the General Hospital or the Race Course at the top of Elm Grove. If it were re-located here, it would also stand a much better change of naturally achieving the demographic mix (students from Whitehawk, the 'deans and Hannover would be in the natural geographic catchment for a school here.
+
+### Further Work
+
+This is only a very basic gravity model and it can be extended to develop and even more nuanced picture of school supply and demand in the city. I have not got that far yes as this takes time to do properly - and I have not had time. But I would be more than willing to work with the Council to develop some more nuanced spatial interaction models, calibrated against their data, to help derive a decision support tool which would enable a fully evidenced decision to be made on location and capacity of schools. This work could include, for example:
+
+-   An extended gravity model where the Longhill *is* re-located to other parts of the city. What would demand look like if it were moved to:
+
+    -   The old COMART site?
+
+    -   A new site at the top of Elm Grove near the General Hospital or Dobbies?
+
+    -   Woodingdean?
+
+    -   Disused farm/warehouse site at the top of Bear Road?
+
+-   How might the demographic mix of a re-located Longhill look? From where would it most likely draw it's students (in the absence of catchments?)
+
+-   A more complex model to explore what happens when we change the attractiveness of schools according to the kinds of factors that parents and students rank highly? Educational outcomes? SEND provision? Green Space?
+
+-   A better calibrated model using actual student locations and flow data from the council to explore different
+
+-   How can spatial interaction be used to better inform an alternative to the current catchments? Do we even need catchments or can we come up with a much better solution which incorporates distance and socio-demographic diversity AT THE SAME TIME? What would such a system look like?
+
+## Conclusions
+
+-   Brightopia is a model - but one which, through simplifying the school system in the city to just its spatial components, allows us to disentangle the role that space and distance plays in school choice, relative to any other factors.
+
+-   It's a simple fact that the objection to the council proposals that I have heard over and over and over again is - "we don't want our children to have to travel long distances to school." There are so many reasons for why this is the case that have been voiced in the public domain, that I won't go over them again here. Space/Place/Location matters. It *really* matters. And to deny this physical fact is akin to claiming the world is flat!
+
+-   The only lasting sustainable solution to the city's problems in the school system is one that pays full attention to geographic reality while also considering how this geography interacts with disadvantage and opportunities.
+
+# "***A Stain on our City***" - really?
 
 The phrase "***A Stain on our City***" has been in the back of my mind ever since it was used in reference to one of the opening slides that Jacob Taylor produced during the face-to-face consultation meeting on Tuesday 8/10/2024. It is highly a highly charged statement used as an oratorical device in making his case. Somebody pulled him up on the emotive language in the audience. Clearly taking this onboard he then went on to use it again in the People, Overview and Scrutiny Committee Meeting - it can be seen here near the opening of his speech - <https://aisapps.mediasite.com/AuditelScheduler/Player/Index/?id=c1841cfa-af61-45cf-85b5-bb8d274e6b75&presID=32ca1cfe29e14291be27a478fdbf76d01d>
 
 As a reminder, this is the graph that he was referring to when he made these comments:
 
-![A Stain On Our City?](data/stain.png)
+![A Stain On Our City?](data/stain.png){width="75%"}
 
 The 'stain' in this context is in reference to the 24% of Brighton & Hove's disadvantaged pupil population getting grade 5 or above in Maths and English. Being below the national figure of 25.4 for England constituted a "stain on our city" in JT's mind. Strong stuff. Especially considering Brighton seems to be doing better than the rest of the South East region.
 
@@ -923,7 +1029,7 @@ avg_gap_excl_london <- sm_data_wide %>%
   summarise(avg_gap = mean(gap, na.rm = TRUE)) %>%
   pull(avg_gap)
 
-list(avg_gap_all = avg_gap_all, avg_gap_excl_london = avg_gap_excl_london)
+#list(avg_gap_all = avg_gap_all, avg_gap_excl_london = avg_gap_excl_london)
 
 
 ```
@@ -946,7 +1052,7 @@ The characterisation of Brighton and Hove's ability to help it's more deprived s
 
 I know London is an entirely different context in many ways, but we should be striving to achieve something closer to the 42.1% FSM attainment rates achieved in Inner London - West and ignoring where the problems are most acute is not going to be the way to do it. And it absolutely should be in the Council's mission to improve further, but in doing so, getting a better understanding of the various factors at play in London (demographic, financial, geographical, educational etc.) and the specific routes to success and turnaround is crucial, as then better solutions could be trialled here.
 
-## The Importance of Boundaries and distributions of people within them
+# The Importance of Boundaries and distributions of people within them
 
 ***I would like to thank Bea Taylor for helping me and producing the illustrated account below of the problems of statistical smoothing and the modifiable areal unit problem.***
 
@@ -962,15 +1068,15 @@ Something to watch out for in the options being presented by the council is stat
 
 Here's a simple example to explain. Suppose we have four schools with four catchment areas. Let dots represent pupils, and for simplicity let’s assume that the school caters to all, and only, the pupils in the catchment.
 
-![](images/stat_smoothing_1.png)
+![](images/stat_smoothing_1.png){width="75%"}
 
 Now suppose the catchments are re-drawn so each catchment area serves two schools, and schools randomly select pupils from the catchment according to school capacity.
 
-![](images/stat_smoothing_2.png)
+![](images/stat_smoothing_2.png){width="75%"}
 
 Under the original catchments the % of pupils eligible for free school meals varied from 15%-60% across the schools. Under the new catchments the % of pupils eligible for free school meals varies from 30%-40% across the schools.
 
-![](images/stat_smoothing_3.png)
+![](images/stat_smoothing_3.png){width="50%"}
 
 The number of pupils eligible for free school meals has not changed, and the distribution of where these pupils reside in the city has not changed.
 
@@ -988,11 +1094,11 @@ School A is in the suburbs of the city. School B and C are in the centre of the 
 
 Now suppose this area around school A is now less densely populated by families, for example there might be an ageing population in this area. Simultaneously due to inequalities in the city, the distribution of pupils eligible for free school meals in not even across the city, for example perhaps due to rising rent prices in the city centre, lower income households have had to move to the suburbs – contributing to higher rates of pupils eligible for free school meals in this area.
 
-![](images/FSMrule_1.png)
+![](images/FSMrule_1.png){width="50%"}
 
 Now lets think about how these pupils might be assigned to secondary schools in the city. Prior to assignment we have:
 
-![](images/FSMrule_2.png)
+![](images/FSMrule_2.png){width="50%"}
 
 Now lets assume the school admits pupils according to the following rules, until the school’s maximum capacity is reached:
 
@@ -1006,7 +1112,7 @@ I’m going to make one final assumption that for \~90% of pupils their first ch
 
 So according to Rule 1, we start by looking at where pupils eligible for free school meals go to school. Let’s assume that all pupils would normally choose the school they are in the catchment area for. However, under the new rule, which allows pupils eligible for free school meal to attend any school in the city, 2 pupils in the catchment for school A elect to attend school B instead.
 
-![](images/FSMrule_3.png)
+![](images/FSMrule_3.png){width="50%"}
 
 After rule 1, School A has an intake of 4, School B an intake of 4, and School C an intake of 3.
 
@@ -1016,73 +1122,21 @@ School B has 6 spaces remaining, it randomly admits 6/8 pupils from it’s local
 
 School B has 11 places remaining, and admits the 9 remaining pupils in its catchment – resulting in 12 pupils total.
 
-![](images/FSMrule_4.png)
+![](images/FSMrule_4.png){width="50%"}
 
 Returning to the two pupils whose school in undecided - School B is completely full and can no longer admit students, however School A and school C still have capacity. Since school C is almost as good as B, as well as being nearby in the city centre, these pupils elect school C – resulting in 14 pupils at school C.
 
-![](images/FSMrule_5.png)
+![](images/FSMrule_5.png){width="50%"}
 
 Now looking at the table from earlier again:
 
-![](images/FSMrule_6.png)
+![](images/FSMrule_6.png){width="50%"}
 
 In this example situation, both schools B and C have reached capacity. School A and B have a more equal distribution of pupils eligible for free school meals, but the percent of pupils eligible for free school meals has decreased at school C, since it has had an influx of pupils not on free school meals.
 
 Now, in terms of excess capacity, this all lies in school A, it has filled just 50% of its potential capacity. When given a choice, pupils move to the better schools, or failing that the next best school until they reach capacity.
 
 This is a really simplified example. How the school allocates places is more complicated. Consider the rule for children eligible for free school meals – the actual rule states that ‘the number of places in this priority are limited so that the school has no more than the average number of free school meals children attending.’
-
-Any 'improvement' such as this would be merely statistical averaging. In Geography this is called and you can see it in operation in the map below - click on the layers to see how changing the boundaries (with exactly the same schools underneath) alters the FSM percentages.
-
-```{r}
-# Create the map for optionC
-tm_shape(optionA_summarised) +
-  tm_polygons(
-    col = "fsm_pct",
-    popup.vars = c("Catchment" = "catchment", "FSM %" = "fsm_pct"),
-    palette = "Purples",
-    title = "FSM %"
-  ) +
-  tm_layout(
-    legend.show = TRUE,
-    title = "Option A"
-  ) +
-tm_shape(optionB_summarised) +
-  tm_polygons(
-    col = "fsm_pct",
-    popup.vars = c("Catchment" = "catchment", "FSM %" = "fsm_pct"),
-    palette = "Purples",
-    title = "FSM %"
-  ) +
-  tm_layout(
-    legend.show = TRUE,
-    title = "Option B"
-  ) +
-tm_shape(optionC_summarised) +
-  tm_polygons(
-    col = "fsm_pct",
-    popup.vars = c("Catchment" = "catchment", "FSM %" = "fsm_pct"),
-    palette = "Purples",
-    title = "FSM %"
-  ) +
-  tm_layout(
-    legend.show = TRUE,
-    title = "Option C"
-  )
-
-```
-
-Figure 2 - Statistical Averaging for Options A, B and C - FSM across Brighton.
-
-### Observations
-
--   In the Figure above, I have taken the published school level FSM percentages from the DfE annual database - these are published at School level and thus slightly different from the figures published by Brighton Council (again, please just make more of this data publicly available!)
--   Turning the different layers on and off, it's possible to see the effects of this statistical averaging across the catchments - the underlying data remains EXACTLY the same - these are percentages of students on FSM in each school, just averaged differently across the different catchment options.
-    -   In Option A - the BACA catchment has the highest concentrations of FSM at 42%, closely followed by Longhill at 40%
-    -   In Option B - as BACA has now merged with Patcham and Varndean, it's average is brought closer to theirs and to the city average at 26%. Longhill also appears to have improved to 27%.
--   However, NOTHING HAS CHANGED. It's the same underlying data for the same schools. The only thing that is different is some statistical averaging. Imagine if we kept expanding the catchments until there was just 1 - covering the whole city. The FSM for this catchment would of course be the city average!
--   So any claims from the council that having larger catchments somehow magically FSM distributions needs to be questioned. If the pupils and the schools stay the same, it's merely statistical averaging.
--   Now, of course, I am fully aware that in having larger catchments and random allocation to schools within those catchments, then there's a good chance that there will be a lot more mixing, but this will take years to propagate through and the council can't yet predict how that will play out, so be cautions of justifications based on statistical averaging.
 
 ## Brighton and Hove - Demographic Patterns
 
@@ -1092,21 +1146,17 @@ One question that keeps coming up relates to what the school population of Brigh
 
 While, as I showed in my last piece, it's fairly certain from ONS projections that the city is going to lose quite a number of young people over the next decade - maybe a couple of thousand - what is not clear is how that will play out across the city. Will it be an even decline, or will some places suffer worse than others?
 
-The Office for National Statistics produces a number of data products. Firstly a product called the LSOA population estimates - <https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/lowersuperoutputareamidyearpopulationestimates>
+The Office for National Statistics produces a number of data products. Firstly a product called the [LSOA population estimates](https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/lowersuperoutputareamidyearpopulationestimates) - these are small-area estimates for neighbourhoods and can be examined back in time to look at past changes.
 
-These are small-area estimates for neighbourhoods and can be examined back in time to look at past changes.
-
-The second product is called the sub national population projections - <https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationprojections/bulletins/subnationalpopulationprojectionsforengland/previousReleases>
-
-These don't quite go down to the LSOA level, but are available at the local authority level and go a number of years into the future.
+The second product is called the [sub national population projections](https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationprojections/bulletins/subnationalpopulationprojectionsforengland/previousReleases) - these don't quite go down to the LSOA level, but are available at the local authority level and go a number of years into the future.
 
 What is noticable is the relative distributions of the LSOA populations don't change that much over time, so we can use the distributions in the past estimates, to apply to future projections to create a full neighbourhood-level picture of Brighton for a 20 year period.
 
 One of my colleagues, Dr Andy Maclachlan, has created an interactive map where you can explore the period from 2011 until 2031 for the city. <https://amaclachlan.shinyapps.io/Brighton_school_children_catchments/> - all data have been downloaded from the ONS via the NOMIS website.
 
-An alternative view of change can be seen in the map below.
+An alternative view of Andy's interactive map can be seen in the maps and the plot below.
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 # Selecting just the columns geography and geometry from BrightonLSOA
 BrightonLSOA_selected <- BrightonLSOA %>%
   select(lsoa21cd, geometry)
@@ -1115,10 +1165,6 @@ BrightonLSOA_selected <- BrightonLSOA %>%
 # Performing the left join
 BrightonLSOA_selected <- BrightonLSOA_selected %>%
   left_join(BTN_LSOA_Proj_wide, join_by("lsoa21cd" == "geography"))
-
-# Checking the result
-qtm(BrightonLSOA_selected)
-
 
 # Selecting the relevant columns (assuming the columns are named "year_2011" to "year_2031")
 year_cols <- grep("20[1-3][0-9]", colnames(BrightonLSOA_selected), value = TRUE)
@@ -1134,24 +1180,50 @@ BrightonLSOA_long <- BrightonLSOA_selected %>%
 # Converting year column to numeric if necessary
 BrightonLSOA_long$year <- as.numeric(gsub("year_", "", BrightonLSOA_long$year))
 
+BrightonLSOA_long <- BrightonLSOA_long %>%
+  filter(year != 2031)
+# Calculate the number of years in the dataset
+num_years <- length(unique(BrightonLSOA_long$year))
+# Determine the number of years per split
+years_per_split <- 4
+# Split the dataset into parts
+splits <- split(BrightonLSOA_long, (as.numeric(as.factor(BrightonLSOA_long$year)) - 1) %/% years_per_split)
 
-# Creating the cleaned-up faceted ggplot map
-ggplot(BrightonLSOA_long) +
-  geom_sf(aes(fill = value), color = NA) +  # Remove polygon boundaries with color = NA
-  facet_wrap(~ year, ncol = 4) +
-  theme_minimal() +
-  theme(
-    axis.text = element_blank(),        # Remove axis text
-    axis.title = element_blank(),       # Remove axis titles
-    panel.grid = element_blank()        # Remove grid lines
-  ) +
-  labs(title = "11 year olds in Brighton over time",
-       fill = "Value")
+
+library(ggplot2)
+library(sf)
+
+# Function to create faceted maps with reversed color scale
+create_faceted_map <- function(data, part_number) {
+  ggplot(data) +
+    geom_sf(aes(fill = value), color = NA) +  # Remove polygon boundaries with color = NA
+    facet_wrap(~ year, ncol = 2) +  # Adjusted to fit 4 maps in each plot (2x2)
+    scale_fill_viridis_c(option = "D", direction = -1) +  # Reverse the color scale
+    theme_minimal() +
+    theme(
+      axis.text = element_blank(),        # Remove axis text
+      axis.title = element_blank(),       # Remove axis titles
+      panel.grid = element_blank()        # Remove grid lines
+    ) +
+    labs(title = paste("11 year olds in Brighton over time - Part", part_number),
+         fill = "Value")
+}
+
+# Create maps for each split
+maps <- lapply(1:length(splits), function(i) create_faceted_map(splits[[i]], i))
+
+# Display the maps
+maps[[1]]
+maps[[2]]
+maps[[3]]
+maps[[4]]
+maps[[5]]
+
 
 
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 # Create the yearly_sum dataframe
 yearly_sum <- BrightonLSOA_long %>%
@@ -1179,46 +1251,186 @@ ggplot(yearly_sum, aes(x = year)) +
 
 ```
 
--   One thing to point out is that while numbers in a given neighbourhood may fluctuate a little, **areas don't change very much relative to each other.**
+-   One thing to point out is that while numbers in a given neighbourhood may fluctuate a little (a corner of woodingdean had high numbers of 11 year olds in 2012, which have dropped off since), you can see from the maps that, **areas don't change very much relative to each other.**
 
--   Between 2011 and up to 2031, we can see that the number of 11 year-olds in the city hit a peak in 2019 with another small peak in 2024, but there is a projected decline of 200-300 students
+-   In the graph, we can observe that between 2011 and up to 2031, the number of 11 year-olds in the city hit a peak in 2019 with another small peak in 2024, but there is a projected decline of 200-300 students until 2030.
 
 -   Demographic trends are long term generally, so the patterns for schools which draw from large parts of the city, can be fairly predictable. In the East of the City, for example, the interactive map shows that in the 'Deans' most LSOAs (except for one between Ovingdean and Woodingdean, which might be around 5 11 year-olds higher in 2031 than in 2011) there is nothing to suggest anything other than the same decline experienced elsewhere in the city.
 
-### Demographic Distribution
+-   One issue with standard choropleth maps such as the ones above, is that there are visual distortions created by the large amounts of green space in parts of Brighton. Open spaces makes zones based on population (like these LSOAs) physically larger which draws your eye to. A truer picture of actual demographic distribution in the city can be seen in maps like the one below.
 
-The crucial thing in Brighton, however, relates to the spatial distribution of school age Children.
+### Demographic Distribution and Catchments
 
-I posted this map a few days ago as it is fundamental to understanding the problems in the City
+The crucial thing in Brighton, however, relates to the spatial distribution of school age Children relative to catchments. I posted this map a few days ago and also at the top of this piece, but now I have allowed the different options A, B and C (as well as the current situation described as OptionX in the map to be overlaid.
 
-```{r}
-# Create the tmap
-tmap_mode("view")
-tm_shape(BrightonLSOA_pw_cent) +
-  tm_dots(size = "2024", col = "2024", alpha = 0.5, border.alpha = 0, title = "Total Children") +
-  tm_layout(legend.show = TRUE, title = "11 year olds, 2024") +
-tm_shape(bh_catchments) +
+If you play with the layer options on the left you can see how distributions of catchments vary according to the different catchment options.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Create the map with all four options and the specified settings
+map <- tm_shape(BTN_LSOA_Point_Proj) +
+  tm_dots(
+    size = "2024_scaled_BTN_places",
+    col = "2024_scaled_BTN_places",
+    alpha = 0.5,
+    border.alpha = 0,
+    palette = "Purples",  # Change color palette to purples
+    title = "Total Children"
+  ) +
+  tm_layout(
+    legend.show = TRUE,
+    title = "11 year places, 2024"
+  ) +
+  tm_shape(optionX) +
   tm_borders() +
   tm_fill(alpha = 0) +
-tm_shape(brighton_sec_schools_sml) +
+  tm_shape(optionA) +
+  tm_borders() +
+  tm_fill(alpha = 0) +
+  tm_shape(optionB) +
+  tm_borders() +
+  tm_fill(alpha = 0) +
+  tm_shape(optionC) +
+  tm_borders() +
+  tm_fill(alpha = 0) +
+  tm_shape(brighton_sec_schools_sml) +
   tm_dots()
+
+# Print the map
+map
+
 
 ```
 
 Figure - - The spatial distribution of 11 year olds in 2024, relative to current secondary school catchment boundaries.
 
--   In Figure x above, the circles relate to LSOA neighbourhoods in the city. The numbers relate to the 2024 sub-national population projections at City Level, distributed down to LSOAs using the last know recorded distributions in 2021. There is bound to be some error, but as you will see from the historical 2011 to 2021 patterns shown above and on the interactive site, demographics are stable enough to be confident this is a pretty fair representation of the real distribution of 11 year olds.
+-   The circles relate to LSOA neighbourhoods in the city. The numbers relate to the 2024 sub-national population projections at City Level, distributed down to LSOAs using the last know recorded distributions in 2021. There is bound to be some error, but as you will see from the historical 2011 to 2021 patterns shown above and on the interactive site, demographics are stable enough to be confident this is a pretty fair representation of the real distribution of 11 year olds.
 
 -   Normally these sorts of data are shown on a choropleth map of contiguous zones, but here I have chosen to take the population-weighted centroids of the LSOA zones and scale those centroid locations according to estimated numbers of 11-year olds. In doing this, the distorting effects of open space are controlled for and a truer picture of the real population distribution in the city can be gained.
 
--   Overlaid onto this map are the current secondary school catchment boundaries in the city.
+-   Overlaid onto this map are the current and proposed secondary school catchment boundaries in the city.
 
 -   It becomes very clear that most catchments are well populated although the BACA catchment in the north-east of the city appears to have a low population within its boundary. This is born out in the analysis I conducted in my last piece.
 
 -   The other thing to note is how sparse the Longhill Catchment to the East is, with it clear that other than a small concentration of children to the north in Woodingdean, the majority of the catchment population is made up of children coming from Whitehawk to the West. Without those children from Whitehawk, it would be difficult to see Longhill having enough children to keep running in its current form.
 
+## Option B and the inevitable mass-transfer of children from Central Brighton to the East
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#sub <- BTN_LSOA_Point_Proj %>% 
+  #filter(optionX == "Long")
+
+# Filter the data
+sub <- BTN_LSOA_Point_Proj %>%
+  filter(optionB == "SBTN")
+
+# Round the specified columns to zero decimal places
+sub <- sub %>%
+  mutate(across(c("2021":"2030_scaled_BTN_places"), ~ round(.x, 0)))
+
+library(tmap)
+
+# Create the map with raw numbers in the circles
+map <- tm_shape(sub) +  
+  tm_dots(
+    col = "optionB",
+    size = "2026_scaled_BTN_places",
+    alpha = 0.5
+  ) +  
+  tm_text(
+    text = "2026_scaled_BTN_places", 
+    size = "2026_scaled_BTN_places", 
+    col = "black", 
+    alpha = 1
+  ) +  
+  tm_layout(
+    legend.show = TRUE, 
+    title = "Option B"
+  ) +
+  tm_shape(optionB) +
+  tm_borders() +
+tm_shape(brighton_sec_schools_sml) +
+  tm_dots()
+
+# Print the map
+map
+
+```
+
+-   One of the inevitable consequences of the rearrangement of the Catchment areas and in particular Option B, is the certain transfer of large numbers of students from Central to East Brighton on a daily basis (along with some counter-currents in the opposite direction).
+
+-   Looking at the map above, it's possible to use the estimated numbers of children in 2026 as an example.
+
+    -   Dorothy Stringer, in the North West Corner of the South Brighton Catchment, is proposed to have a PAN of 300 in 2026
+
+    -   Longhill a PAN of 240
+
+    -   If we assume anyone close to DS is going to put that as 1st choice (geographically and as it is a good school), moving South and East away from DS, they fill up their PAN by just the other side of Queens Park - 292 Yr 7 children north and west of Sutherland Road.
+
+    -   Between there and the Marina, there are about 146 Children - mainly in Whitehawk.
+
+    -   If we assume everyone East of Woodingdean picks Longhill (we know they won't, but useful for now), we get to 180.
+
+    -   Even if just 50% of children from the area including Whitehawk pick and get offered DS
+        (it will probably be more due to FSM proportions being high there). That’s 73
+        children just in yr 7 who live West of Queens Park, who would be forced to travel
+        to Longhill. And that’s a conservative estimate.
+
+    -   Propagate that through for 5 years after the policy implemented and you’ve got something like 365 children a day having to travel from East of Queens Park, across the city to get to school.
+
+    -   If a bus has a capacity of around 80. That's 5 buses to take all of these children east.
+
+-   To an extent, this is back of the envelope stuff, but at least gets us to some sort of number for the level of commuting. 50% of those journey’s by car? Get e sense of the level of traffic disruption it would cause. 
+
 ## Conclusions
 
-Long-term demographic trends in the city show
+-   Long-term demographic trends in the city show that we are indeed heading into a demographic decline in school children in the next decade. However, this decline is not felt the same across all places in the city.
 
-## The Importance of Geography and Distance
+-   Sparsity and decline are additional factors which are making Longhill, at its current size and in it's current location, a challenging school for the council.
+
+-   At present, only Option B would result in the transfer of students required *en masse* to the East of the City, to keep the status quo in this school. A conservative estimate would be that if the policy is in place for 5 years, this might lead to a minimum of 365 children a day travelling from central Brighton to the East of the City.
+
+    -   How is this a sustainable or indeed affordable option for the Council?
+
+-   I have focused on South Brighton in this example (I am running out of time and steam) but the situation might be even worse in North Brighton with students moving around between three schools in the catchment. This would lead to hundreds more children bussing around the city.
+
+    -   Again, how is this a sustainable or indeed affordable option for the Council?
+
+## Review of the Last 3 Weeks
+
+Since the announcement of the 'engagement exercise' by the council, and frustrated by the evidence made available, I have made it my mission to try and fill the information vacuum with data and evidence collated, analysed and presented from a variety of different sources.
+
+Hopefully this week, alongside my other two pieces of analysis ([here](https://adamdennett.github.io/BH_Secondary_Admissions_Analysis/BH_Sec_Sch_Analysis.html) and [here](https://adamdennett.github.io/BH_Schools_2/schools_wk2.html)), have helped highlight where the real issues in the system are. These can be summarised as:
+
+-   The spatial distribution of schools and places available in those schools, relative to where pupils actually live. Some (well, one as we'll see below) of the schools in Brighton are simply in the wrong place ([piece 1](https://adamdennett.github.io/BH_Secondary_Admissions_Analysis/BH_Sec_Sch_Analysis.html)).
+
+-   Illogical reductions in Published Admission Numbers for some schools and the maintenance of other, relative to current and future demand, driven largely by a desire to artificially prop up a school of the wrong size in the wrong location ([piece 2](https://adamdennett.github.io/BH_Schools_2/schools_wk2.html)).
+
+Unfortunately, the effort taken in digging through the data and to unearly these issues means that I've not yet been able to address some of the other crucial parts of the story. In particular:
+
+-   The fact that the educational disadvantage partially caused by the spatial arrangement of current schools, is most keenly felt by those in the city who unfairly suffer from other forms of social and economic disadvantage - in particular residents of Whitehawk whose access to secondary education is poor. The issues raised by [Class Divide](https://www.classdivide.co.uk/) around the closure of the COMART school in East Brighton in 2005 and their subsequent lack of accessibility to ANY secondary education in the city, let alone high-quality education, is very real.
+
+But in not being fully honest about all dimensions of problem - or possibly just ignorant of them - and in trying to portray the whole of the Brighton schools system as a problem, and a narrative of the 'middle classes' of north Brighton closing ranks to thwart a just cause (rather than a fundamentally flawed process), the whole community has been let down by the Council. I am now even more strongly of the opinion that the 'solutions' on the table are nothing of the sort and will only serve to do more harm than good.
+
+### My Current Fears - I hope unfounded
+
+At the beginning of the exercise, I had real hope that the lack of information coming from the council was perhaps a mistake - an oversight due to an inexperienced or over-worked team. Unfortunately, as the weeks have gone by, and as I have listened to members of the council during the 'engagement' Q&A sessions, the council are giving the impression that the lack of information is intentional. By not engaging with the requests for information and the clearly articulated fears of the community - and at worst, being dismissive of them - it feels like they have already made up their minds. It feels like an engagement in name only. I hope this is not the case.
+
+Having reviewed all of the data I have gathered, it has become clear that only one option on the table - Option B (or something which looks a lot like it) - will result in the mass transition of students from the centre of the City, to Longhill in the East. A school which while once an appropriate size for a catchment stretching out towards Peacehaven, thanks to long-term demographic shifts (an ageing population and decline in families) no longer serves its original constituency. In recent years it's cohorts of students have been swelled by children bussed out from Whitehawk in the East of the City - a demographic sticking plaster made easier to apply thanks to a population with less financial and social capital to resist.
+
+To its credit, the Council - if not quite able to own up to its failures in closing COMART in 2005 - at least is now listening to that part of the city and has enacted a new policy to allow the financially worst off students - those on Free School Meals - to choose to study elsewhere in the city, should they wish. However, it's clear that Option B is also the only option that stands to mitigate the inevitable effects of this policy, which will lead to still more students deserting Longhill. A policy that, if the council do rush through with a consultation immediately after the engagement period ends, won't have had time to come to fruition or the initial results to be reviewed. It can be the only explanation for the haste with which council is proceeding.
+
+I fear that in all of this, if the council pushes forward against the increasing weight of evidence, the people they are supposedly championing - those particularly in Whitehawk - will actually lose out in the long term. This is because, as I will show in some new analysis below - Longhill is poorly located and will continue to be poorly located, relative to where pupils live in the city. The council may try to argue that a new housing estate in Ovingdean will generate the demand required to keep Longhill afloat in the medium term, but as the numbers show below, unless this estate is the size of something like Whitehawk (it is far from that) it will be a drop in the ocean and barely move the dial. And the distraction of making a bad catchment system even worse, means that a real, sustainable, long-term, solution will be kicked down the road in favour of a poorly thought through short term solution, which is unlikely to work anyway.
+
+### My Hopes
+
+On the plus side, it is not too late for the council to take notice of the hundreds of good ideas and suggestions that are now emerging from individuals and self-organised groups in the city. I hope that they really do listen.
+
+I hope that some of the evidence I have provided to fill the vacuum has helped some people understand what the underlying problem is a little better. And that armed with this information, they have felt emboldened to pose good questions to the council and make their voice heard.
+
+I hope that the council takes the city up on its offer of help, whether through a Citizens Assembly, through the offers of help from experts who live in the city and care about it deeply.
+
+In [my last piece](https://adamdennett.github.io/BH_Schools_2/schools_wk2.html) I offered the council a viable option which would allow them to slow down and take an evidence-based approach. Myself and other members of the newly formed [Parent Support Group](https://www.parentsupport.group/) intend to present the council with a worked through alternative to their current plans - and "Option D" if you like which will offer both a short-term and longer term sustainable alternatives to those that are currently on the table.
+
+I hope that our proposals do buy the time the Council needs to do this properly. In my last piece I called for a systems thinking approach and I think this is the only way a lasting and sustainable solution can be reached. This will need to be carried out with a full range of view gathered from a Citizens Assembly - and idea I have seen recently promoted by Class Divide and one which was put to the council the last time they tried to re-draw the catchment boundaries, but one which clearly has not been enacted yet. And the council need to engage with a diverse and full range of expert views. It is great that the view of Prof Gorard and Dr Greaves were heard, and their educational perspective is important, but as I have shown this is as much a problem of geography and community, of flows and interactions, as it is of education. And there are hundreds of other voices with equally important perspectives that need to be heard.
+
+Adam Dennett 22/10/24

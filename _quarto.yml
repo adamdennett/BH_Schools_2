@@ -1,6 +1,9 @@
 project:
   type: website
   output-dir: docs
+  render: 
+    - schools_wk2.qmd
+    - schools_wk3.qmd
 
 website:
   title: "Brighton and Hove Secondary Schools Admission - Evidence Pages"
@@ -13,6 +16,8 @@ website:
       - about.qmd
       - text: "Week 2 Analysis"
         href: schools_wk2.qmd
+      - text: "Week 3 Analysis"
+        href: schools_wk3.qmd
     right:
       - icon: person-circle
         href: https://adamdennett.co.uk
