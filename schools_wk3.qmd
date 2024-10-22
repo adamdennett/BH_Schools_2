@@ -871,7 +871,7 @@ The phrase "***A Stain on our City***" has been in the back of my mind ever sinc
 
 As a reminder, this is the graph that he was referring to when he made these comments:
 
-![A Stain On Our City?](data/stain.png){width="75%"}
+![A Stain On Our City?](images/stain.png){width="75%"}
 
 The 'stain' in this context is in reference to the 24% of Brighton & Hove's disadvantaged pupil population getting grade 5 or above in Maths and English. Being below the national figure of 25.4 for England constituted a "stain on our city" in JT's mind. Strong stuff. Especially considering Brighton seems to be doing better than the rest of the South East region.
 
