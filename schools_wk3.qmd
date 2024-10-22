@@ -1370,10 +1370,7 @@ map
 
     -   If we assume everyone East of Woodingdean picks Longhill (we know they won't, but useful for now), we get to 180.
 
-    -   Even if just 50% of children from the area including Whitehawk pick and get offered DS
-        (it will probably be more due to FSM proportions being high there). That’s 73
-        children just in yr 7 who live West of Queens Park, who would be forced to travel
-        to Longhill. And that’s a conservative estimate.
+    -   Even if just 50% of children from the area including Whitehawk pick and get offered DS (it will probably be more due to FSM proportions being high there). That’s 73 children just in yr 7 who live West of Queens Park, who would be forced to travel to Longhill. And that’s a conservative estimate.
 
     -   Propagate that through for 5 years after the policy implemented and you’ve got something like 365 children a day having to travel from East of Queens Park, across the city to get to school.
 
