@@ -713,6 +713,8 @@ If you would like to understand a little more about the theory and the mathemati
 
 -   The numbers actually arriving at schools will vary and reflect demand based only on how long it takes to get to those schools. The effect of distance is controlled by what's known as a '[distance decay parameter](https://transportgeography.org/contents/methods/spatial-interactions-gravity-model/spatial-interactions-beta-alpha-lambda)' and it controls how fast travel declines with increasing distance.
 
+-   Distance from home to school is not straight-line distance, but walking or via bus travel times along the real Brighton road network, obtained from [Open Street Map](https://www.openstreetmap.org/#map=13/50.83934/-0.15304). Travel Times are calculated using the [R5R](https://ipeagit.github.io/r5r/) package, with bus travel times generated from a [GTFS schedule for Brighton](https://mobilitydatabase.org/feeds?q=brighton) (actual bus timetable information and times between stops) from May 2024.
+
 Which schools students decide to go to is then only determined by the time it takes to get to school from where they live and nothing else. This is a simplification of course - in reality, there are many other factors that determine where children go to school - but it is through this simplification that we uncover the importance of space.
 
 I have gone a step further and constrained these numbers to the total PAN of 2560 11-year old places in the council's published material so what we will end up with are estimates that we can compare with actual PAN numbers to see how close we get.
@@ -845,9 +847,9 @@ This is only a very basic gravity model and it can be extended to develop and ev
 
     -   A new site at the top of Elm Grove near the General Hospital or Dobbies?
 
-    -   Woodingdean?
-
     -   Disused farm/warehouse site at the top of Bear Road?
+
+    -   Or any other potentially viable location.
 
 -   How might the demographic mix of a re-located Longhill look? From where would it most likely draw it's students (in the absence of catchments?)
 
@@ -855,7 +857,9 @@ This is only a very basic gravity model and it can be extended to develop and ev
 
 -   A better calibrated model using actual student locations and flow data from the council to explore different
 
--   How can spatial interaction be used to better inform an alternative to the current catchments? Do we even need catchments or can we come up with a much better solution which incorporates distance and socio-demographic diversity AT THE SAME TIME? What would such a system look like?
+-   How can spatial interaction be used to better inform an alternative to the current catchments? Do we even need catchments at all or can we come up with a much better solution which incorporates distance and socio-demographic diversity AT THE SAME TIME? What would such a system look like?
+
+-   I think in the medium term, the council would do well to instigate a commission - and I will happily volunteer to be part of it if they would have me - to look into real useful alternatives to the current catchment system which strike the right balance between the socio-spatial realities of the city and other motivations to improve opportunities for those with the least. It's clear that the [boundaries as implemented in 2008 are not working as intended](https://rgs-ibg.onlinelibrary.wiley.com/doi/10.1111/j.1475-5661.2012.00511.x), so perhaps boundaries and catchments are not the solution at all, and alternatives such as the marginal ballot as [suggested by the Sutton Trust](https://www.suttontrust.com/wp-content/uploads/2020/02/School-Places.pdf) are alternatives worth looking into alongside a full range of alternatives. If a balanced view of their efficacy in the specific context Brighton could be developed, then it is more likely that an appropriate long-term solution could be found.
 
 ## Conclusions
 
@@ -879,9 +883,9 @@ The 'stain' in this context is in reference to the 24% of Brighton & Hove's disa
 
 Now, of course, comparing these figures with non-disadvantaged pupils, there is clearly a big attainment gap and narrowing this gap must be (and I am sure is) a priority for every local authority in the country. It's not right that those from disadvantaged backgrounds do so much worse than their more advantaged peers.
 
-But the argument Jacob Taylor was employing cast the whole of Brighton as a failure, relative to England. But is it Brighton really doing as badly as cast?
+What I am ***not*** arguing is that a 26% gap is good, I am just questioning how we understand this number - is it big, average or small, compared to elsewhere? The argument Jacob Taylor was employing cast the whole of Brighton as a failure, relative to England, but is it fair to cast Brighton this way and does it serve to distract from where the real problems exist in the system?
 
-Two questions arise from this:
+Two specific questions arise from this:
 
 -   Is 24% as bad as is being portrayed if we examine some wider context?
 
@@ -940,7 +944,7 @@ There are a few features of note in this graph.
 
 -   Thirdly, you may have noticed something interesting at the top of the graph - the top 5-regions that perform considerably better on the attainment of their pupils in receipt of Free School Meals, are all parts of London.
 
-    -   Indeed London performs a full 10% better than the next ranked region and does a fantastic job of pulling the average up for the rest of the country. Which takes me back to the [question I asked in my first piece of work on this topic](https://adamdennett.github.io/BH_Secondary_Admissions_Analysis/BH_Sec_Sch_Analysis.html#executive-summary) - why is London doing much better than Brighton and almost everywhere else in the Country? A question I can't answer here, but one incredibly relevant to this whole issue.
+    -   Indeed London performs a full 10% better than the next ranked region and does a fantastic job of pulling the average up for the rest of the country. Which takes me back to the [question I asked in my first piece of work on this topic](https://adamdennett.github.io/BH_Secondary_Admissions_Analysis/BH_Sec_Sch_Analysis.html#executive-summary) - why is London doing much better than Brighton and almost everywhere else in the Country? A question I can't answer here, ([although Ellen Greaves and colleagues have some ideas](https://socialmobility.independent-commission.uk/app/uploads/2024/07/London_Schools_-_FINAL.pdf)), and one incredibly relevant to this whole issue.
 
 -   Forthly, without London, the average 5-9 GCSE rate for disadvantaged pupils for the rest of the country reduces to *21%.* Against which Brighton is performing ***much better than average,*** and if it were one of these regions it would be, in the top 5.
 
