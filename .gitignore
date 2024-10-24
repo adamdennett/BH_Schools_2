@@ -9,3 +9,4 @@ BrightonLSOASchoolChildren.geojson
 /.quarto/
 *.zip
 gganim/
+api_key.R

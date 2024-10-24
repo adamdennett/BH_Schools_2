@@ -4,9 +4,7 @@ library(chattr)
 library(here)
 library(janitor)
 
-#API_Key = AIzaSyCkdL9zsEQDtfaiXqWYi9qI3-fAcYOVWTE
-
-register_google(key = "AIzaSyCkdL9zsEQDtfaiXqWYi9qI3-fAcYOVWTE")
+source(here("api_key.R"))
 
 
 change.org <- read_delim(here("data", "petition_signatures_jobs_490251836_20241022201128.csv"), 
