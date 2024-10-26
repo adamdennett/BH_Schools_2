@@ -462,7 +462,7 @@ ggplot(filtered, aes(x = pt_l2basics_95, y = lad_name)) +
 
 Having carried out this new analysis and looked back at what I observed in my last piece, it doesn’t change very much at all the interpretation I posted – indeed it makes some comments more secure, with only one small change in interpretation relative to the gap.
 
-Let’s take each one in turn:
+Let’s take each one of my previous conclusions in turn:
 
 1.  **Old interpretation** - Compared to the national average for England, Brighton’s attainment at GCSE for pupils on Free School Meals is lower, however, that national average is being pulled up considerably by London, which is performing between 6.5% and 15.1% better than the best-performing non-London region
     -   **New interpretation** - Compared to the national average across all Local Authorities in England, Brighton’s attainment at GCSE for disadvantaged pupils is ***HIGHER***, and that national average is still being pulled up considerably by London, where most local authorities in the Capital are performing many percentage points higher than the best-performing non-London local authorities.
