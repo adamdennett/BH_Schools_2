@@ -1,5 +1,5 @@
 ---
-title: "Addendum - Stain Removal"
+title: "Addendum - Educational Performance in Brighton"
 author: "Professor Adam Dennett FRGS FAcSS, Professor of Urban Analytics, Bartlett Centre for Advanced Spatial Analysis, University College London - a.dennett@ucl.ac.uk - @adam_dennett"
 published-title: 26/10/24
 format: html
