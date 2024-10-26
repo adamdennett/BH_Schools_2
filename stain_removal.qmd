@@ -36,9 +36,11 @@ First of all, I'd like to say that I'm very grateful the Cllr Taylor and his tea
 
 Yesterday I received an email from Jacob alerting me that he'd discovered an issue and was concerned that some of the messages from parents he'd been receiving were using incorrect facts. In particular, in relation the attainment gap I reported in [this section](https://adamdennett.github.io/BH_Schools_2/schools_wk3.html#a-stain-on-our-city---really) of my last piece.
 
-Having looked at the point he raised and having carried out some new analysis with the data that the council had originally used to produce the graph below, I'm happy to report that three of the four observations I originally made still stand - and indeed are strengthened by the new analysis, so I would like to thank them for that (*if only a link to the data had been provided on the original documentation, we might not have even got here!*).
+Having looked at the point he raised and having carried out some new analysis with the data that the council had originally used to produce the graph below, I'm happy to report that three of the four observations I originally made still stand - and indeed are strengthened further by the new analysis, so I would like to thank them for that.
 
-One observation on the attainment gap has changed - the gap in Brighton is larger relative to the rest of the country than originally estimated, however the new data has allowed us to explore why this is. We can now see very clearly that both disadvantaged pupils *AND* non-disadvantaged pupils perform *ABOVE* the national average (median) in England (even including London).
+I would like to state that while I am very grateful for the link to some actual, real, verifiable data, it's disappointing that the first time the council were able to provide this was two days ***AFTER*** the end of the engagement exercise. This goes back to my original point in my very first piece of work - that the council need be more transparent and up-front with the data they use to make decisions and indeed charge their rhetoric. I'm glad that they have now provided this data, but it would have been much more useful to have had it at the start of the process.
+
+One observation on the attainment gap has changed in the light of this new analysis - the gap in Brighton is larger relative to the rest of the country than originally estimated from the Council's original graph (which I assume will now be corrected). However the new data has allowed us to explore why this is. We can now see very clearly that both disadvantaged pupils *AND* non-disadvantaged pupils perform *ABOVE* the national average (median) in England (even including London).
 
 I'll repeat that - In Brighton both ***disadvantaged*** pupils **AND** ***non-disadvantaged*** pupils perform ***ABOVE*** the national average (median) for GCSE grades 5-9 Attainment in Maths and English. Above.
 
@@ -56,25 +58,29 @@ Now, the issue Cllr Taylor alerted me to relates to the two green dots at the to
 
 Here's the point he raised: "You have compared Disadvantaged Attainment to ***All Pupil*** attainment, which is not how the Attainment Gap is calculated. Disadvantaged attainment has to be compared to Non-Disadvantaged Attainment (not all pupils)."
 
-A good point - and a correct one. An even better point had it have been raised when he put his own slides together as you can see that this is exactly what the bar chart at the top is showing!
+A good point - and a correct one. An even better point had it have been raised when he put his own slides together as you can see that this is exactly what the bar chart at the top is showing! In drawing these green dots and time was short and data was sparse, I took those figures from the Council graph.
 
-But mistakes happen - my graph above was actually using FSM regional data below the green dots - not ideal, but the best I could lay my hands on at the time without a link to the original data. Fortunately, Cllr Taylor was kind enough to send me the link to the [original data](https://explore-education-statistics.service.gov.uk/find-statistics/key-stage-4-performance), and after a bit of digging around I found the correct file and have been able to correct the analysis.
+But mistakes happen - the rest of my graph above (below the green dot) was actually using FSM regional data - not ideal, but the best I could lay my hands on at the time without a link to the original data. As I note above, Cllr Taylor was kind enough to send me the link to the [original data](https://explore-education-statistics.service.gov.uk/find-statistics/key-stage-4-performance), and after a bit of digging around I found the correct file and have been able to correct the analysis.
 
-## New Analysis - Are we stained again?
+## New Analysis - Are we still stained?
 
-Well, short answer is, no. We are no more stained than we were before.
+Well, short answer is, no. We are no more stained than we were before. And much of the stain (the attainment gap in Brighton being worse than the attainment gap nationally) is actually an artefact of the council using the wrong 'average' - as I will explain below. Had they used the correct average - the median - a different picture emerges.
 
-There still appears to be some confusion, which hopefully this bit of analysis will clear up once and for all.
+There still appears to be some confusion online, which hopefully this bit of analysis will clear up once and for all.
 
-Cllr Taylor - "Non-Disadvantaged attainment in Brighton and Hove was 57.5 in 2022-23, giving us an attainment gap of 33.5." - looking at the data, this observation is true.
+-   Cllr Taylor - "Non-Disadvantaged attainment in Brighton and Hove was 57.5 in 2022-23, giving us an attainment gap of 33.5." - looking at the data, this observation is ***true***.
 
-Cllr Taylor on Facebook - "Indeed - when compared to individual local authorities, our city has the 16th highest attainment gap of 152 local authorities - nearly in the top decile." - this observation is false. Brighton and Hove, with an attainment gap of 33.5%, ranks 56 of 298 Local Authorities in that dataset. I'm not sure where this figure of 16th came from, it is not borne out in the data as I will show below.
+-   Cllr Taylor on Facebook - "Indeed - when compared to individual local authorities, our city has the 16th highest attainment gap of 152 local authorities - nearly in the top decile." - ***this observation is false***.
+
+    -   Brighton and Hove, with an attainment gap of 33.5%, ranks 56 of 298 Local Authorities ***in that dataset***. I'm not sure where this figure of 16th came from, it is not borne out in the data Cllr Taylor linked me to, as I will show below.
+
+    -   I'm not quite sure where 152 Local Authorities comes from either, as in the data linked to in the Facebook post and in Table - ***2233_sl_lad_fsm_dis_data_revised.csv*** - (where I think the data from the original Council bar chart come from - again, I'm not told specifically) - there are 298 Local Authorities. It's possible that Cllr Taylor is referring to the 152 'Upper Tier' local authorities - <https://www.ons.gov.uk/census/census2021dictionary/areatypedefinitions> - however if he had interrogated the data he was linking to, it's clear that the data relate to a much larger number of 'lower tier' local authorities, of which there are around 300.
 
 ### Data
 
-The file I have used in the subsequent analysis is called *2233_sl_lad_fsm_dis_data_revised.csv* – the data in Cllr Taylor's original graph comes from the field “pt_l2basics_95” - Percentage of pupils achieving grades 5 or above in English and Mathematics GCSEs.
+The file I have used in the analysis below is called ***2233_sl_lad_fsm_dis_data_revised.csv*** – I am now almost certain that the data in Cllr Taylor's original graph comes from the field “pt_l2basics_95” - ***Percentage of pupils achieving grades 5 or above in English and Mathematics GCSEs.*** Even more specifically, the 50% for Brighton comes from cell W266 in that file and the 24% for disadvantaged pupils comes from Cell W262 in the same sheet.
 
-I pre-filtered that file above (I know, I'd normally do it all in R but today I did filter in excel first - slaps-wrists). Those two files, derived from *2233_sl_lad_fsm_dis_data_revised.csv* downloaded from [here](https://explore-education-statistics.service.gov.uk/find-statistics/key-stage-4-performance) can be downloaded from [here](https://www.dropbox.com/scl/fi/3g8wmdocqn0du3rikagte/dis_vs_non.csv?rlkey=6n8m416q41nsqpdndf2jebahz&dl=0) and [here](https://www.dropbox.com/scl/fi/penjbjr196k4wb9gvplp8/all_vs_disadv.csv?rlkey=daxgv1op76z5yh3c42ygb4p3a&dl=0). OK, so w're all set.
+I pre-filtered that file above (I know, I'd normally do it all in R but today I did filter in excel first - slaps-wrists - but I really wanted to eyeball the data first to make sure mistakes did not creep in). Those two files, derived from *2233_sl_lad_fsm_dis_data_revised.csv* can be downloaded from [here](https://explore-education-statistics.service.gov.uk/find-statistics/key-stage-4-performance) can be downloaded from [here](https://www.dropbox.com/scl/fi/3g8wmdocqn0du3rikagte/dis_vs_non.csv?rlkey=6n8m416q41nsqpdndf2jebahz&dl=0) and [here](https://www.dropbox.com/scl/fi/penjbjr196k4wb9gvplp8/all_vs_disadv.csv?rlkey=daxgv1op76z5yh3c42ygb4p3a&dl=0). OK, so we're all set.
 
 We can plot that Brighton data. And even better than showing England and the South East, we can show all Local Authorities in England. This gives us a much better way of comparing where Brighton sits relative to everywhere else. We can view this data below in a histogram:
 
@@ -150,6 +156,16 @@ median_total <- all_vs_disad_ordered %>%
   summarise(median = median(pt_l2basics_95)) %>%
   pull(median)
 
+mean_total <- all_vs_disad_ordered %>%
+  filter(disadvantage == "Total") %>%
+  summarise(mean = mean(pt_l2basics_95)) %>%
+  pull(mean)
+
+mean_disadv <- all_vs_disad_ordered %>%
+  filter(disadvantage == "Disadvantaged") %>%
+  summarise(mean = mean(pt_l2basics_95)) %>%
+  pull(mean)
+
 
 # Create the overlaid histograms
 ggplot() +
@@ -176,17 +192,21 @@ ggplot() +
 
 Figure 1 - Disadvantaged Pupils vs Total
 
--   First thing to say is I am aware that this is stil the WRONG data - the disadvantaged pupils in this graph are also included in the Total - so double counted. I will correct this in the next graph, but it's useful to see that it actually doesn't make a huge amount of difference. Still, it's worth doing things properly.
+-   First thing to say is I am aware that this is still the "***wrong***" data - the disadvantaged pupils in this graph are also included in the Total - so double counted. I will correct this in the next graph, but it's useful to have this here to see that it actually doesn't make a huge amount of difference. Still, it's worth doing things properly.
 
 -   The second thing to note is The median values for disadvantaged pupils and advantaged pupils are shown by the solid lines, with the Brighton and Hove values in dashed lines.
 
--   The third thing to note is this is a histogram. Each bar represents a count of local authorities that fall into the range of the x-axis value. It's a nice way of seeing where Brighton sits relative to every other local authority in the country.
+    -   As an important aside, I have used the ***median*** value as my measure of 'average' here - this is actually quite important and something the Council overlooked in their original bar-chart shown at the top where it appears they have used the artithmetic ***mean***. Both are measures of central tendancy (mode being the other one that you might have heard of at school), but median is more appropriate where there there might be outliers (London, for example) and a a skewed distribution (more values at one end of the distribution as we can see in the disadvantaged historam above). and the reason why I have used it here. (various online guides as to when to use Median rather than mean, but most will probably start with [wikipedia](https://en.wikipedia.org/wiki/Median) - this BBC Bitesize guide is genuinely great - <https://www.bbc.co.uk/bitesize/articles/z99jpbk>)
 
--   As the dotted lines for Brighton fall to the right of the solid vertical lines, it means that Brighton is above the median for 9-5 Maths and English GSCE grades for both disadvantaged and advantaged pupils. Advantaged pupils do achieve a bit higher above average then disadvantaged pupils.
+    -   Relatedly, much of the original "stain" that was identified was because the figure of 25.4% for England was the arithmetic mean for the country (according to the data - \[40,074/157,963\]\*100). This is the average 9-5 Maths GCES Pass rate across all children in the county. However, if we took all of local pass rates for each local Authority - e.g. Brighton and Hove = 129/537 = 24% - and do the same for every other local authority, then median is the middle value in this set - and is 21.9%. Brighton is above average - as we already know by looking at the histogram above.
+
+-   The third thing to note is this is a ***histogram***. Not a bar chart. Each bar represents a ***count*** of local authorities that fall into the range of the x-axis value. It's a nice way of seeing where Brighton sits relative to every other local authority in the country. If you look where Brighton is (on the blue side of the graph), it means there are another 22 local authorities (out of 298) whose Total number of pupils achieving 9-5 grades in English and Maths is between 49-51%.
+
+-   As the dotted lines for Brighton fall to the right of the solid vertical lines, it means that Brighton is above the median for 9-5 Maths and English GSCE grades for both disadvantaged ***and*** advantaged pupils. Advantaged pupils do achieve a bit higher above the average than disadvantaged pupils.
 
 ### Disadvantaged vs Non-Disadvantaged Pupils
 
-Below is a slightly different histogram created with slightly different data from the same table. The disadvantaged data are exactly the same, but this time it is paired with data for non-disadvantaged pupils. If you add the two together, you get the total data from the previous graph. This is a better way of representing the data as it doesn't double count the disadvantaged pupils.
+Below is a slightly different histogram created with slightly different data from the same dataset. The disadvantaged data are exactly the same, but this time it is paired with data for non-disadvantaged pupils. If you add the two together, you get the total data from the previous graph. This is a better way of representing the data as it doesn't double count the disadvantaged pupils.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 library(dplyr)
@@ -264,11 +284,11 @@ ggplot() +
 
 ```
 
-What's changed - well not very much. The frequency distribution has changed on the right as the data are different, but:
+What's changed - well not very much (although I have used Brighton and Hove Albion colours in this one for fun!). The frequency distribution has changed on the right as the data are different, but:
 
 -   Brighton still does better than average for both its disadvantaged and non-disadvantaged pupils.
 
--   The second important thing to note is the size of the gap between the solid line and the dotted line for disadvantaged and non-disadvantaged pupils. It is smaller on the left than on the right. This is because the non-disadvantaged pupils are doing better than the disadvantaged pupil, relatively speaking. Although they are both performing above the national average.
+-   The second important thing to note is the size of the gap between the solid line and the dotted line for disadvantaged and non-disadvantaged pupils. It is smaller on the left than on the right. This is because the non-disadvantaged pupils are doing better than the disadvantaged pupils, relatively speaking. Although they are both performing above the national average.
 
 -   The attainment gap is the gap between the two dotted lines and in this data, as Cllr Taylor correctly pointed out, it's 33.5%.
 
@@ -326,8 +346,9 @@ ggplot(dis_vs_non_longer, aes(x = pt_l2basics_95, y = lad_name)) +
 
 ```
 
--   The graph above ranks every local authority in England by the performance of disadvantaged pupils. And it's clear to see that Brighton is in the top half - as we would know from the histogram above.
--   It's also clear that the relationship between disadvantaged and non-disadvantaged pupils is not the same across the country. In some places, the gap is much smaller, in others larger, but no discernable pattern between the two at this stage.
+-   The graph above ranks every local authority in England by the performance of disadvantaged pupils, while also displaying, to the right, the relative performance of the non-disadvantaged pupils. Each pair of dots represents a single local authority.
+-   And it's clear to see that Brighton is in the top half - as we would know from the histogram above.
+-   It's also clear that the relationship between disadvantaged and non-disadvantaged pupils is not the same across the country. In some places, the gap is much smaller, in others larger, but no discernible pattern between the two at this stage.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 library(dplyr)
@@ -443,12 +464,16 @@ Having carried out this new analysis and looked back at what I observed in my la
 
 Let’s take each one in turn:
 
-1.  Compared to the national average for England, Brighton’s attainment at GCSE for pupils on Free School Meals is lower, however, that national average is being pulled up considerably by London, which is performing between 6.5% and 15.1% better than the best-performing non-London region
-    1.  New interpretation - Compared to the national average for England, Brighton’s attainment at GCSE for disadvantaged pupils HIGHER, and that national average is being pulled up considerably by London, we’re most local authorities are performing between man percentage points hight than the best-performing non-London local authorities.
-2.  If Brighton were one of these 33 regions, it would still be achieving better results for pupils on FSM than 2/3 of other places in England. If we take London out of the equation, it would appear in the top 5.
-    1.  New Interpretation – For disadvantaged Pupils, Brighton ranks 106 out of 298 local authorities on this level of attainment – this means it achieving better results for disadvantaged pupils than 2/3 of other places in England. If we take London out of the equation, it would rank considerably higher
-3.  Rather than being ‘a stain on our city’, it should be regarded as a badge of pride that Brighton and Hove is able to achieve such good results for pupils in receipt of Free School Meals, relative to the rest of England.
-    1.  New interpretation - Rather than being ‘a stain on our city’, it should be regarded as a badge of pride that Brighton and Hove is able to achieve such good results for pupils disadvantaged pupils, relative to the rest of England.
-4.  If we look at the attainment gap between those who are on Free School Meals and those who aren’t as well, Brighton still performs far better than average, even with London in the equation. If Brighton were one of the regions above, it would be just outside the top 1/3.
-    1.  New Interpretation - If we look at the attainment gap between disadvantaged pupils and non-disadvantaged pupils, Brighton still performs worse than average if we look at the raw gap, even with London in the equation. If we look at the gap relative to the non-disadvantaged pupils in the city, it would rank 130th worst out of 298 local authorities – so in the bottom half. However, if we examine the national medians for disadvantaged and non-disadvantaged, Brighton is above average for both and it’s larger gap is only because non-disadvantaged students are doing even better than average.
-5.  My comments on this being a distraction for the real problem existing in Whitehawk – still remain valid.
+1.  **Old interpretation** - Compared to the national average for England, Brighton’s attainment at GCSE for pupils on Free School Meals is lower, however, that national average is being pulled up considerably by London, which is performing between 6.5% and 15.1% better than the best-performing non-London region
+    -   **New interpretation** - Compared to the national average across all Local Authorities in England, Brighton’s attainment at GCSE for disadvantaged pupils is ***HIGHER***, and that national average is still being pulled up considerably by London, where most local authorities in the Capital are performing many percentage points higher than the best-performing non-London local authorities.
+2.  **Old interpretation -** If Brighton were one of these 33 regions, it would still be achieving better results for pupils on FSM than 2/3 of other places in England. If we take London out of the equation, it would appear in the top 5.
+    -   **New Interpretation** – For disadvantaged Pupils, Brighton ranks 107 out of 298 local authorities (in the dataset) on this level of attainment – this means it is achieving better results for disadvantaged pupils than in around 2/3 of other local authorities in England. If we take London out of the equation (which has 27 of the top 31 local authorities on this measure), it would rank considerably higher.
+3.  **Old interpretation -** Rather than being ‘a stain on our city’, it should be regarded as a badge of pride that Brighton and Hove is able to achieve such good results for pupils in receipt of Free School Meals, relative to the rest of England.
+    -   **New interpretation** - Rather than being ‘a stain on our city’, it should be regarded as a badge of pride that Brighton and Hove is able to achieve such good results for pupils disadvantaged pupils, relative to the rest of England. It is performing above the national average already for both disadvantaged and non-disadvantaged students.
+4.  **Old interpretation** - If we look at the attainment gap between those who are on Free School Meals and those who aren’t as well, Brighton still performs far better than average, even with London in the equation. If Brighton were one of the regions above, it would be just outside the top 1/3.
+    -   **New Interpretation** - If we look at the attainment gap between disadvantaged pupils and non-disadvantaged pupils, Brighton performs worse than average if we look at the raw gap, even with London in the equation. If we look at the gap relative to the non-disadvantaged pupils in the city, it would rank 130th worst out of 298 local authorities – so in the bottom half. However, if we examine the national medians for disadvantaged and non-disadvantaged, Brighton is above average for both and it’s larger gap is only because non-disadvantaged students are doing even better than average, not because disadvantaged students are doing worse than expected.
+5.  My comments on this being a distraction for the real problem existing in Whitehawk – still remain valid. I said it before and will re-iterate here: Statistics are incredibly useful tools for developing an understanding of systems of interest, but aggregation - however it is done - while revealing overall trends and patterns, can mask important concentrated local issues.
+    -   It has become very clear to me while doing this analysis over the last few weeks that there is a real and very acute problem with educational disadvantage in some parts of the city - and particularly in the near-East of the city here Whitehawk is located and where students from that part of town have no choice at the moment other than to travel further than other students in the city to attend Longhill.
+    -   The city is clearly already doing well for some of its disadvantaged students (disadvantage while is has some pockets of spatial concentration in the city, is also something which occurs across neighbourhoods). But it is not doing well for all.
+    -   Casting the whole city as a failure - a community with a stain on it - is demonstrably unfair. The attainment gap owes more to high achievement for non-disadvantaged students than it does to under achievement for disadvantaged students, but that is not to say that we shouldn't try to do better for those students and bring the bottom end up. I would argue that if bringing the top end down reduces that gap - through forcing more non-disadvantaged students to travel long distances to attend school and impacting their learning, while it could be touted as a statistical victory, it would be a detriment to the city.
+    -   I will re-iterate. From all of the evidence I have seen, it is not clear to me at all that playing with catchment area boundaries and reducing the intakes for schools already doing incredible things to close the educational gaps in the city, will lead to better outcomes for those who are most disadvantaged. The council should focus its attention, not on ill-conceived tinkering, but in producing a serious long-term plan and more immediate actionable 'sticking plaster' option to to help bridge the gap for the most deprived in the city.
