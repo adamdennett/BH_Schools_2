@@ -1,0 +1,450 @@
+---
+title: "Addendum to A Stain on our City - Really?"
+author: "Professor Adam Dennett FRGS FAcSS, Professor of Urban Analytics, Bartlett Centre for Advanced Spatial Analysis, University College London - a.dennett@ucl.ac.uk - @adam_dennett"
+published-title: 26/10/24
+format: html
+editor: visual
+---
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, include=FALSE, results='hide'}
+library(tidyr)
+library(dplyr)
+library(writexl)
+library(tidyverse)
+library(here)
+library(janitor)
+library(sf)
+library(usethis)
+library(tmap)
+library(readxl)
+library(r5r)
+library(RColorBrewer)
+library(accessibility)
+library(data.table)
+library(ggplot2)
+library(interp)
+library(h3jsr)
+library(h3r)
+library(osmextract)
+library(stplanr)
+library(od)
+```
+
+# Introduction
+
+First of all, I'd like to say that I'm very grateful the Cllr Taylor and his team have been reading my analysis so carefully.
+
+Yesterday I received an email from Jacob alerting me that he'd discovered an issue and was concerned that some of the messages from parents he'd been receiving were using incorrect facts. In particular, in relation the attainment gap I reported in [this section](https://adamdennett.github.io/BH_Schools_2/schools_wk3.html#a-stain-on-our-city---really) of my last piece.
+
+Having looked at the point he raised and having carried out some new analysis with the data that the council had originally used to produce the graph below, I'm happy to report that three of the four observations I originally made still stand - and indeed are strengthened by the new analysis, so I would like to thank them for that (if only a link to the data had been provided on the original documentation, we might not have even got here!).
+
+One observation on the attainment gap has changed - the gap in Brighton is larger relative to the rest of the country than originally estimated, although the new data has allowed us to explore why that is, and we can now see very clearly that both disadvantaged pupils AND non-disadvantaged pupils perform ABOVE the national average (median) in England (even including London). It's just that the non-disadvantaged pupils perform even better than average - meaning the gap is larger relative to other places with similar achievement for disadvantaged pupils.
+
+Here is the original graph from the council:
+
+![](images/stain.png){width="75%"}
+
+Now the graph that Cllr Taylor was concerned about in my last analysis was this one:
+
+![](images/stain2.png)
+
+Now, the issue Cllr Taylor alerted me to relates to the two green dots at the top of this chart.
+
+Here's the point he raised: "You have compared Disadvantaged Attainment to ***All Pupil*** attainment, which is not how the Attainment Gap is calculated. Disadvantaged attainment has to be compared to Non-Disadvantaged Attainment (not all pupils)."
+
+A good point - and a correct one. An even better point had it have been raised when he put his own slides together as you can see that this is exactly what the bar chart at the top is showing!
+
+But mistakes happen - my graph above was actually using FSM regional data below the green dots - not ideal, but the best I could lay my hands on at the time without a link to the original data. Fortunately, Cllr Taylor was kind enough to send me the link to the [original data](https://explore-education-statistics.service.gov.uk/find-statistics/key-stage-4-performance), and after a bit of digging around I found the correct file and have been able to correct the analysis.
+
+## New Analysis - Are we stained again?
+
+Well, short answer is, no. We are no more stained than we were before.
+
+There still appears to be some confusion, which hopefully this bit of analysis will clear up once and for all.
+
+Cllr Taylor - "Non-Disadvantaged attainment in Brighton and Hove was 57.5 in 2022-23, giving us an attainment gap of 33.5." - looking at the data, this observation is true.
+
+Cllr Taylor on Facebook - "Indeed - when compared to individual local authorities, our city has the 16th highest attainment gap of 152 local authorities - nearly in the top decile." - this observation is false. Brighton and Hove, with an attainment gap of 33.5%, ranks 56 of 298 Local Authorities in that dataset. I'm not sure where this figure of 16th came from, it is not borne out in the data as I will show below.
+
+### Data
+
+The file I have used in the subsequent analysis is called *2233_sl_lad_fsm_dis_data_revised.csv* – the data in Cllr Taylor's original graph comes from the field “pt_l2basics_95” - Percentage of pupils achieving grades 5 or above in English and Mathematics GCSEs.
+
+I pre-filtered that file above (I know, I'd normally do it all in R but today I did filter in excel first - slaps-wrists). Those two files, derived from *2233_sl_lad_fsm_dis_data_revised.csv* downloaded from [here](https://explore-education-statistics.service.gov.uk/find-statistics/key-stage-4-performance) can be downloaded from [here](https://www.dropbox.com/scl/fi/3g8wmdocqn0du3rikagte/dis_vs_non.csv?rlkey=6n8m416q41nsqpdndf2jebahz&dl=0) and [here](https://www.dropbox.com/scl/fi/penjbjr196k4wb9gvplp8/all_vs_disadv.csv?rlkey=daxgv1op76z5yh3c42ygb4p3a&dl=0). OK, so w're all set.
+
+We can plot that Brighton data. And even better than showing England and the South East, we can show all Local Authorities in England. This gives us a much better way of comparing where Brighton sits relative to everywhere else. We can view this data below in a histogram:
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
+all_vs_disad <- read_csv(here("data", "all_vs_disadv.csv"))
+dis_vs_non <- read_csv(here("data", "dis_vs_non.csv"))
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
+library(dplyr)
+library(ggplot2)
+
+# Select the relevant columns and order the data
+all_vs_disad_ordered <- all_vs_disad %>%
+  select(lad_name, disadvantage, pt_l2basics_95) %>%
+  arrange(lad_name)
+
+all_vs_disad_filtered <- all_vs_disad %>%
+  select(lad_name, disadvantage, pt_l2basics_95) %>% 
+  mutate(lad_name = factor(lad_name, levels = unique(lad_name[order(pt_l2basics_95)])))
+
+# Step 1: Pivot Wider
+all_vs_disad_wider <- all_vs_disad_filtered %>%
+  pivot_wider(names_from = disadvantage, values_from = pt_l2basics_95)
+
+# Step 2: Calculate Gap
+all_vs_disad_wider <- all_vs_disad_wider %>%
+  mutate(Gap = Total - Disadvantaged) %>% 
+  mutate(Gap_vs_total = (Gap / Total)*100)
+
+# Step 3: Pivot Longer
+all_vs_disad_longer <- all_vs_disad_wider %>%
+  pivot_longer(cols = c(Total, Disadvantaged, Gap, Gap_vs_total), names_to = "disadvantage", values_to = "pt_l2basics_95")
+
+# Step 4: Adjust factor levels for lad_name based on 'Gap'
+all_vs_disad_longer <- all_vs_disad_longer %>%
+  mutate(lad_name = factor(lad_name, levels = all_vs_disad_wider %>% 
+                            arrange(Gap) %>%
+                            pull(lad_name)))
+
+
+
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
+library(dplyr)
+library(ggplot2)
+
+# Select the relevant columns and order the data
+all_vs_disad_ordered <- all_vs_disad %>%
+  select(lad_name, disadvantage, pt_l2basics_95) %>%
+  arrange(pt_l2basics_95)
+
+# Extract the value for Brighton and Hove for "Disadvantaged" and "Total"
+brighton_value_disadv <- all_vs_disad_ordered %>%
+  filter(lad_name == "Brighton and Hove" & disadvantage == "Disadvantaged") %>%
+  pull(pt_l2basics_95)
+
+brighton_value_total <- all_vs_disad_ordered %>%
+  filter(lad_name == "Brighton and Hove" & disadvantage == "Total") %>%
+  pull(pt_l2basics_95)
+
+# Calculate medians
+median_disadv <- all_vs_disad_ordered %>%
+  filter(disadvantage == "Disadvantaged") %>%
+  summarise(median = median(pt_l2basics_95)) %>%
+  pull(median)
+
+median_total <- all_vs_disad_ordered %>%
+  filter(disadvantage == "Total") %>%
+  summarise(median = median(pt_l2basics_95)) %>%
+  pull(median)
+
+
+# Create the overlaid histograms
+ggplot() +
+  geom_histogram(data = filter(all_vs_disad_ordered, disadvantage == "Disadvantaged"), 
+                 aes(x = pt_l2basics_95, fill = "Disadvantaged"), binwidth = 2, alpha = 0.5, position = "identity", color = "black") +
+  geom_histogram(data = filter(all_vs_disad_ordered, disadvantage == "Total"), 
+                 aes(x = pt_l2basics_95, fill = "Total"), binwidth = 2, alpha = 0.5, position = "identity", color = "black") +
+  geom_vline(xintercept = brighton_value_disadv, color = "red", linetype = "dashed") +
+  geom_vline(xintercept = brighton_value_total, color = "blue", linetype = "dashed") +
+  geom_vline(xintercept = median_disadv, color = "orange", linetype = "solid", size = 1) +
+  geom_vline(xintercept = median_total, color = "lightblue", linetype = "solid", size = 1) +
+  annotate("text", x = brighton_value_disadv, y = Inf, label = "Brighton and Hove (Disadvantaged)", color = "red", vjust = 2.5, angle = 90) +
+  annotate("text", x = brighton_value_total, y = Inf, label = "Brighton and Hove (Total)", color = "blue", vjust = 2.5, angle = 90) +
+  theme_minimal() +
+  labs(
+    title = "Percentage Achieving 9-5 grades in English and Maths, \nAll England Local Authorities",
+    x = "Percentage Achieving 9-5 grades in English and Maths",
+    y = "Frequency",
+    fill = "Disadvantage"
+  ) +
+  scale_fill_manual(values = c("Disadvantaged" = "orange", "Total" = "lightblue"))
+
+```
+
+Figure 1 - Disadvantaged Pupils vs Total
+
+-   First thing to say is I am aware that this is stil the WRONG data - the disadvantaged pupils in this graph are also included in the Total - so double counted. I will correct this in the next graph, but it's useful to see that it actually doesn't make a huge amount of difference. Still, it's worth doing things properly.
+
+-   The second thing to note is The median values for disadvantaged pupils and advantaged pupils are shown by the solid lines, with the Brighton and Hove values in dashed lines.
+
+-   The third thing to note is this is a histogram. Each bar represents a count of local authorities that fall into the range of the x-axis value. It's a nice way of seeing where Brighton sits relative to every other local authority in the country.
+
+-   As the dotted lines for Brighton fall to the right of the solid vertical lines, it means that Brighton is above the median for 9-5 Maths and English GSCE grades for both disadvantaged and advantaged pupils. Advantaged pupils do achieve a bit higher above average then disadvantaged pupils.
+
+### Disadvantaged vs Non-Disadvantaged Pupils
+
+Below is a slightly different histogram created with slightly different data from the same table. The disadvantaged data are exactly the same, but this time it is paired with data for non-disadvantaged pupils. If you add the two together, you get the total data from the previous graph. This is a better way of representing the data as it doesn't double count the disadvantaged pupils.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
+library(dplyr)
+library(ggplot2)
+
+# Select the relevant columns and order the data
+dis_vs_non_ordered <- dis_vs_non %>%
+  select(lad_name, disadvantage, pt_l2basics_95) %>%
+  arrange(pt_l2basics_95)
+
+dis_vs_non_filtered <- dis_vs_non %>%
+  select(lad_name, disadvantage, pt_l2basics_95) %>%
+  arrange(lad_name)
+
+# Step 1: Pivot Wider
+dis_vs_non_wider <- dis_vs_non_filtered %>%
+  pivot_wider(names_from = disadvantage, values_from = pt_l2basics_95)
+
+# Step 2: Calculate Gap
+dis_vs_non_wider <- dis_vs_non_wider %>%
+  mutate(Gap = `Disadvantaged all other` - Disadvantaged) %>% 
+  mutate(Gap_vs_total = (Gap / `Disadvantaged all other`)*100)
+
+# Step 3: Pivot Longer
+dis_vs_non_longer <- dis_vs_non_wider %>%
+  pivot_longer(cols = c(`Disadvantaged all other`, Disadvantaged, Gap, Gap_vs_total), names_to = "disadvantage", values_to = "pt_l2basics_95")
+
+# Step 4: Adjust factor levels for lad_name based on 'Gap'
+dis_vs_non_longer <- dis_vs_non_longer %>%
+  mutate(lad_name = factor(lad_name, levels = dis_vs_non_wider %>% 
+                            arrange(Gap) %>%
+                            pull(lad_name)))
+
+
+# Extract the value for Brighton and Hove for "Disadvantaged" and "Total"
+brighton_value_disadv <- dis_vs_non_ordered %>%
+  filter(lad_name == "Brighton and Hove" & disadvantage == "Disadvantaged") %>%
+  pull(pt_l2basics_95)
+
+brighton_value_total <- dis_vs_non_ordered %>%
+  filter(lad_name == "Brighton and Hove" & disadvantage == "Disadvantaged all other") %>%
+  pull(pt_l2basics_95)
+
+# Calculate medians
+median_disadv <- dis_vs_non_ordered %>%
+  filter(disadvantage == "Disadvantaged") %>%
+  summarise(median = median(pt_l2basics_95)) %>%
+  pull(median)
+
+median_total <- dis_vs_non_ordered %>%
+  filter(disadvantage == "Disadvantaged all other") %>%
+  summarise(median = median(pt_l2basics_95)) %>%
+  pull(median)
+
+# Create the overlaid histograms with median lines
+ggplot() +
+  geom_histogram(data = filter(dis_vs_non_ordered, disadvantage == "Disadvantaged"), 
+                 aes(x = pt_l2basics_95, fill = "Disadvantaged"), binwidth = 2, alpha = 0.5, position = "identity", color = "black") +
+  geom_histogram(data = filter(dis_vs_non_ordered, disadvantage == "Disadvantaged all other"), 
+                 aes(x = pt_l2basics_95, fill = "Non-Disadvantaged"), binwidth = 2, alpha = 0.5, position = "identity", color = "black") +
+  geom_vline(xintercept = brighton_value_disadv, color = "#FFCD00", linetype = "dashed", size = 1.5) +
+  geom_vline(xintercept = brighton_value_total, color = "#0057B8", linetype = "dashed", size = 1.5) +
+  geom_vline(xintercept = median_disadv, color = "#FFCD00", linetype = "solid", size = 1.5) +
+  geom_vline(xintercept = median_total, color = "#0057B8", linetype = "solid", size = 1.5) +
+  annotate("text", x = brighton_value_disadv, y = Inf, label = "Brighton and Hove (Disadvantaged)", color = "#FFCD00", vjust = 1.5, angle = 90) +
+  annotate("text", x = brighton_value_total, y = Inf, label = "Brighton and Hove (Non-Disadvantaged)", color = "#0057B8", vjust = 1.5, angle = 90) +
+  theme_minimal() +
+  labs(
+    title = "Percentage Achieving 9-5 grades in English and Maths, \nAll England Local Authorities",
+    x = "Percentage Achieving 9-5 grades in English and Maths",
+    y = "Frequency",
+    fill = "Disadvantage"
+  ) +
+  scale_fill_manual(values = c("Disadvantaged" = "#FFCD00", "Non-Disadvantaged" = "#0057B8"))
+
+```
+
+What's changed - well not very much. The frequency distribution has changed on the right as the data are different, but:
+
+-   Brighton still does better than average for both its disadvantaged and non-disadvantaged pupils.
+
+-   The second important thing to note is the size of the gap between the solid line and the dotted line for disadvantaged and non-disadvantaged pupils. It is smaller on the left than on the right. This is because the non-disadvantaged pupils are doing better than the disadvantaged pupil, relatively speaking. Although they are both performing above the national average.
+
+-   The attainment gap is the gap between the two dotted lines and in this data, as Cllr Taylor correctly pointed out, it's 33.5%.
+
+But how does attainment and the gap compare with the rest country?
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
+
+
+dis_vs_non_ordered <- dis_vs_non %>%
+  select(lad_name, disadvantage, pt_l2basics_95, region_name) %>%
+  arrange(pt_l2basics_95)
+
+dis_vs_non_filtered <- dis_vs_non %>%
+  select(lad_name, disadvantage, pt_l2basics_95, region_name) %>% 
+  mutate(lad_name = factor(lad_name, levels = unique(lad_name[order(pt_l2basics_95)])))
+
+# Step 1: Pivot Wider
+dis_vs_non_wider <- dis_vs_non_filtered %>%
+  pivot_wider(names_from = disadvantage, values_from = pt_l2basics_95)
+
+# Step 2: Calculate Gap
+dis_vs_non_wider <- dis_vs_non_wider %>%
+  mutate(Gap = `Disadvantaged all other` - Disadvantaged) %>% 
+  mutate(Gap_vs_non_dis = (Gap / `Disadvantaged all other`)*100)
+
+# Step 3: Pivot Longer
+dis_vs_non_longer <- dis_vs_non_wider %>%
+  pivot_longer(cols = c(`Disadvantaged all other`, Disadvantaged, Gap, Gap_vs_non_dis), names_to = "disadvantage", values_to = "pt_l2basics_95")
+
+# Step 4: Adjust factor levels for lad_name based on 'Gap'
+dis_vs_non_longer <- dis_vs_non_longer %>%
+  mutate(lad_name = factor(lad_name, levels = dis_vs_non_wider %>% 
+                            arrange(Disadvantaged) %>%
+                            pull(lad_name))) %>% 
+  filter(disadvantage %in% c("Disadvantaged", "Disadvantaged all other"))
+
+
+# Filter out Brighton and Hove
+brighton_data <- dis_vs_non_longer %>%
+  filter(lad_name == "Brighton and Hove")
+
+# Create the ggplot point graph
+ggplot(dis_vs_non_longer, aes(x = pt_l2basics_95, y = lad_name)) +
+  geom_point(aes(color = disadvantage)) +
+  theme_minimal() +
+  labs(
+    x = "Percentage Achieving 9-5 grades in English and Maths",
+    y = "",
+    title = "Attainment Gap, Disadvantaged as a Proportion of Non-Disadvantaged \n9-5 grades in English and Maths"
+  ) +
+  theme(axis.text.y = element_blank()) +
+  geom_point(data = brighton_data, aes(x = pt_l2basics_95, y = lad_name), color = "black", size = 3) +
+  scale_color_manual(values = c("Disadvantaged" = "#FFCD00", "Disadvantaged all other" = "#0057B8"),
+                     labels = c("Disadvantaged", "Non-Disadvantaged"))
+
+```
+
+-   The graph above ranks every local authority in England by the performance of disadvantaged pupils. And it's clear to see that Brighton is in the top half - as we would know from the histogram above.
+-   It's also clear that the relationship between disadvantaged and non-disadvantaged pupils is not the same across the country. In some places, the gap is much smaller, in others larger, but no discernable pattern between the two at this stage.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
+library(dplyr)
+library(ggplot2)
+
+dis_vs_non_ordered <- dis_vs_non %>%
+  select(lad_name, disadvantage, pt_l2basics_95, region_name) %>%
+  arrange(pt_l2basics_95)
+
+dis_vs_non_filtered <- dis_vs_non %>%
+  select(lad_name, disadvantage, pt_l2basics_95, region_name) %>% 
+  mutate(lad_name = factor(lad_name, levels = unique(lad_name[order(pt_l2basics_95)])))
+
+  # Step 1: Pivot Wider
+dis_vs_non_wider <- dis_vs_non_filtered %>%
+  pivot_wider(names_from = disadvantage, values_from = pt_l2basics_95)
+
+# Step 2: Calculate Gap
+dis_vs_non_wider <- dis_vs_non_wider %>%
+  mutate(Gap = `Disadvantaged all other` - Disadvantaged) %>% 
+  mutate(Gap_vs_non_dis = (Gap / `Disadvantaged all other`)*100)
+
+# Step 3: Pivot Longer
+dis_vs_non_longer <- dis_vs_non_wider %>%
+  pivot_longer(cols = c(`Disadvantaged all other`, Disadvantaged, Gap, Gap_vs_non_dis), names_to = "disadvantage", values_to = "pt_l2basics_95")
+
+# Step 4: Adjust factor levels for lad_name based on 'Gap'
+dis_vs_non_longer <- dis_vs_non_longer %>%
+  mutate(lad_name = factor(lad_name, levels = dis_vs_non_wider %>% 
+                            arrange(Gap_vs_non_dis) %>%
+                            pull(lad_name))) %>% 
+  filter(disadvantage %in% c("Gap_vs_non_dis"))
+
+
+# Filter out Brighton and Hove
+brighton_data <- dis_vs_non_longer %>%
+  filter(lad_name == "Brighton and Hove")
+
+# Create the ggplot point graph
+ggplot(dis_vs_non_longer, aes(x = pt_l2basics_95, y = lad_name)) +
+  geom_point(aes(color = disadvantage)) +
+  theme_minimal() +
+  labs(
+    x = "Percentage of Disadvantaged, relative to non-disadvantaged \nAchieving 9-5 grades in English and Maths",
+    y = "",
+    title = "Attainment Gap, Disadvantaged as a Proportion of Non-Disadvantaged \n9-5 grades in English and Maths"
+  ) +
+  theme(axis.text.y = element_blank()) +
+  geom_point(data = brighton_data, aes(x = pt_l2basics_95, y = lad_name), color = "black", size = 3) 
+
+```
+
+But what about the gap? Given there is so much noise, it would make sense to try and standardise the gap by either disadvantaged or non-disadvantaged attainment. If we look at the gap relative to advantaged attainment – i.e. how do Disadvantaged students do relative to the performance of the advantaged students in the same local authority – a reasonable way of standardising - we get the plot above.
+
+What this shows is that in Brighton, the gap of 33.5% between disadvantaged (24%) and advantaged (57.5%) pupils is around 58% of that higher level of achievement in the City. Lower figures are better in this particular graph, so this gap is not in the top half of the English league table, but as the histogram above shows from the same data, this is because non-disadvantaged students are doing even better than the disadvantaged students, who are already doing better than average.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
+library(dplyr)
+library(ggplot2)
+
+# Step 1: Pivot Wider
+dis_vs_non_wider <- dis_vs_non_filtered %>%
+  pivot_wider(names_from = disadvantage, values_from = pt_l2basics_95)
+
+# Step 2: Calculate Gap
+dis_vs_non_wider <- dis_vs_non_wider %>%
+  mutate(Gap = `Disadvantaged all other` - Disadvantaged) %>% 
+  mutate(Gap_vs_non_dis = (Gap / `Disadvantaged all other`)*100)
+
+# Step 3: Pivot Longer
+dis_vs_non_longer <- dis_vs_non_wider %>%
+  pivot_longer(cols = c(`Disadvantaged all other`, Disadvantaged, Gap, Gap_vs_non_dis), names_to = "disadvantage", values_to = "pt_l2basics_95")
+
+# Step 4: Adjust factor levels for lad_name based on 'Gap'
+dis_vs_non_longer <- dis_vs_non_longer %>%
+  mutate(lad_name = factor(lad_name, levels = dis_vs_non_wider %>% 
+                            arrange(Disadvantaged) %>%
+                            pull(lad_name))) 
+
+
+filtered <- dis_vs_non_longer %>%
+  filter(disadvantage == "Disadvantaged")
+
+# Filter out Brighton and Hove
+brighton_data <- filtered %>%
+  filter(lad_name == "Brighton and Hove")
+
+# Calculate the median
+median_value <- median(filtered$pt_l2basics_95)
+
+# Create the ggplot point graph with median line
+ggplot(filtered, aes(x = pt_l2basics_95, y = lad_name)) +
+  geom_point(aes(color = region_name)) +
+  theme_minimal() +
+  labs(
+    x = "Percentage Achieving 9-5 grades in English and Maths",
+    y = "",
+    title = "Disadvantaged Percentage Achieving 9-5 grades in English and Maths"
+  ) +
+  theme(axis.text.y = element_blank()) +
+  geom_point(data = brighton_data, aes(x = pt_l2basics_95, y = lad_name), color = "black", size = 3) +
+  geom_vline(xintercept = median_value, color = "grey", linetype = "dotted", size = 1.5) +
+  annotate("text", x = median_value, y = Inf, label = "Median", color = "grey", vjust = 1.5, angle = 90) +
+  geom_text(data = brighton_data, aes(x = pt_l2basics_95, y = reorder(lad_name, pt_l2basics_95), label = lad_name), hjust = -0.1)
+
+```
+
+-   One final plot adds a regional perspective - again, this is just disadvantaged pupils, but it's clear to see here the effect of London on the data. Brighton is in the top half of the country, a very large number of local authorities at the top of the distribution are in London.
+
+# Conclusions
+
+Having carried out this new analysis and looked back at what I observed in my last piece, it doesn’t change very much at all the interpretation I posted – indeed it makes some comments more secure, with only one small change in interpretation relative to the gap.
+
+Let’s take each one in turn:
+
+1.  Compared to the national average for England, Brighton’s attainment at GCSE for pupils on Free School Meals is lower, however, that national average is being pulled up considerably by London, which is performing between 6.5% and 15.1% better than the best-performing non-London region
+    1.   New interpretation - Compared to the national average for England, Brighton’s attainment at GCSE for disadvantaged pupils HIGHER, and that national average is being pulled up considerably by London, we’re most local authorities are performing between man percentage points hight than the best-performing non-London local authorities.
+2.  If Brighton were one of these 33 regions, it would still be achieving better results for pupils on FSM than 2/3 of other places in England. If we take London out of the equation, it would appear in the top 5.
+    1.  New Interpretation – For disadvantaged Pupils, Brighton ranks 106 out of 298 local authorities on this level of attainment – this means it achieving better results for disadvantaged pupils than 2/3 of other places in England. If we take London out of the equation, it would rank considerably higher
+3.  Rather than being ‘a stain on our city’, it should be regarded as a badge of pride that Brighton and Hove is able to achieve such good results for pupils in receipt of Free School Meals, relative to the rest of England.
+    1.  New interpretation - Rather than being ‘a stain on our city’, it should be regarded as a badge of pride that Brighton and Hove is able to achieve such good results for pupils disadvantaged pupils, relative to the rest of England.
+4.  If we look at the attainment gap between those who are on Free School Meals and those who aren’t as well, Brighton still performs far better than average, even with London in the equation. If Brighton were one of the regions above, it would be just outside the top 1/3.
+    1.  New Interpretation - If we look at the attainment gap between disadvantaged pupils and non-disadvantaged pupils, Brighton still performs worse than average if we look at the raw gap, even with London in the equation. If we look at the gap relative to the non-disadvantaged pupils in the city, it would rank 130th worst out of 298 local authorities – so in the bottom half. However, if we examine the national medians for disadvantaged and non-disadvantaged, Brighton is above average for both and it’s larger gap is only because non-disadvantaged students are doing even better than average.
+5.  My comments on this being a distraction for the real problem existing in Whitehawk – still remain valid.
