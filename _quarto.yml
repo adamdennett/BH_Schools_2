@@ -19,7 +19,7 @@ website:
         href: schools_wk2.qmd
       - text: "Week 3 Analysis"
         href: schools_wk3.qmd
-      - text: "Stain Removal"
+      - text: "Addendum"
         href: stain_removal.qmd  
     right:
       - icon: person-circle
