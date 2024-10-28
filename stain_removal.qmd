@@ -85,14 +85,26 @@ I pre-filtered that file above (I know, I'd normally do it all in R but today I 
 We can plot that Brighton data. And even better than showing England and the South East, we can show all Local Authorities in England. This gives us a much better way of comparing where Brighton sits relative to everywhere else. We can view this data below in a histogram:
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
-all_vs_disad <- read_csv(here("data", "all_vs_disadv.csv"))
-dis_vs_non <- read_csv(here("data", "dis_vs_non.csv"))
+#all_vs_disad <- read_csv("https://www.dropbox.com/scl/fi/penjbjr196k4wb9gvplp8/all_vs_disadv.csv?rlkey=daxgv1op76z5yh3c42ygb4p3a&raw=1")
+dis_vs_non <- read_csv("https://www.dropbox.com/scl/fi/3g8wmdocqn0du3rikagte/dis_vs_non.csv?rlkey=6n8m416q41nsqpdndf2jebahz&raw=1")
+full_fsm_dis <- read_csv("https://www.dropbox.com/scl/fi/kduzdg0q7cvb35s9o5nrt/2223_sl_lad_fsm_dis_data_revised.csv?rlkey=4kpfuncy0h40wp1qtzgid8vyj&raw=1")
 
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 library(dplyr)
 library(ggplot2)
+
+dis_vs_non <- full_fsm_dis %>% 
+  filter(disadvantage %in% c("Disadvantaged", "Disadvantaged all other") & 
+         free_school_meals == "Total" & 
+         !is.na(lad_code))
+
+all_vs_disad <- full_fsm_dis %>% 
+  filter(disadvantage %in% c("Disadvantaged", "Total") & 
+         free_school_meals == "Total" & 
+         !is.na(lad_code))
+
 
 # Select the relevant columns and order the data
 all_vs_disad_ordered <- all_vs_disad %>%
@@ -214,7 +226,7 @@ library(ggplot2)
 
 # Select the relevant columns and order the data
 dis_vs_non_ordered <- dis_vs_non %>%
-  select(lad_name, disadvantage, pt_l2basics_95) %>%
+  select(lad_code, lad_name, disadvantage, pt_l2basics_95, UTLA23CD, UTLA23NM) %>%
   arrange(pt_l2basics_95)
 
 dis_vs_non_filtered <- dis_vs_non %>%
