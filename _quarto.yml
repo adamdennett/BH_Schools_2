@@ -5,6 +5,7 @@ project:
     - schools_wk2.qmd
     - schools_wk3.qmd
     - stain_removal.qmd
+    - factsheet.qmd
 
 website:
   title: "Brighton and Hove Secondary Schools Admission - Evidence Pages"
