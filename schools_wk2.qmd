@@ -412,6 +412,12 @@ combined_data_long <- combined_data_long %>%
 
 ```
 
+[Week 1 Analysis](https://adamdennett.github.io/BH_Secondary_Admissions_Analysis/BH_Sec_Sch_Analysis.html)
+
+[Week 3 Analysis](https://adamdennett.github.io/BH_Schools_2/schools_wk3.html)
+
+[Addendum on Educational Performance](https://adamdennett.github.io/BH_Schools_2/stain_removal.html)
+
 ### Disclaimer and acknowledgements
 
 Everything below is very much a work in progress, but the urgency of this current situation has circumvented the usual review process. This is raw, largely unedited and very much 'beta' work - but is is a start and something that will get the conversation between the council and the citizens of Brighton heading, hopefully, in a more positive direction. There will be errors, there are some un-filtered bits (there have been many late nights this week!). Thanks to all those people who have already helped by contributing to the online conversation this week and messaged me with incredibly useful information and encouragement. I know we can reach a good solution together.
@@ -739,7 +745,7 @@ sum_row <- as.data.frame(sum_row, stringsAsFactors = FALSE)
 names(sum_row) <- names(admissions)[1:8]
 
 # Bind the sum row to the original data, after removing headers
-admissions_with_sum <- rbind(admissions[, 1:8], setNames(sum_row, names(admissions[, 1:8])))
+admissions_with_sum <- rbind(admissions[, 2:9], setNames(sum_row, names(admissions[, 2:9])))
 
 # Update the headers for columns 3-8
 colnames(admissions_with_sum)[1:8] <- c("School", "Type","PAN 2024", "PAN 2026", "PAN 2030", "PAN 2026 Scaled Popularity", "PAN 2026 Scaled Even", "PAN 2026 Kings Scenario")

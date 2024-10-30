@@ -51,8 +51,14 @@ Across the whole of Europe, the average distance travelled to secondary school i
 
 Source - Department for Education - <https://explore-education-statistics.service.gov.uk/find-statistics/key-stage-4-performance> - table ***2233_sl_lad_fsm_dis_data_revised.csv*** and
 
-Fact 2 - Detail
+### Fact 2 - Detail
 
 -   
 
-Fact 5 Detail
+### Fact 5 Detail
+
+### **Travelled distance to secondary schools per student by country and degree of urbanisation (estimated), EU27+UK**
+
+![](images/distance_europe.png)
+
+Source: <https://www.oecd.org/en/publications/2021/06/access-and-cost-of-education-and-health-services_4889b7a5/full-report/component-7.html#figure-d1e11132> -
