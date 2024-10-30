@@ -658,6 +658,12 @@ brightopia_lines <- od2line(flow = simple_ttm3, zones = brighton_lsoa_points_r52
 
 ```
 
+[Week 1 Analysis](https://adamdennett.github.io/BH_Secondary_Admissions_Analysis/BH_Sec_Sch_Analysis.html)
+
+[Week 2 Analysis](https://adamdennett.github.io/BH_Schools_2/schools_wk2.html)
+
+[Addendum on Educational Performance](https://adamdennett.github.io/BH_Schools_2/stain_removal.html)
+
 As with my last two pieces of analysis ([here](https://adamdennett.github.io/BH_Secondary_Admissions_Analysis/BH_Sec_Sch_Analysis.html) and [here](https://adamdennett.github.io/BH_Schools_2/schools_wk2.html)), this is all very much work in progress. Produced very quickly, under a lot of pressure. There will be errors and issues. Hopefully, as with these other pieces of work, this will provide food for thought and I hope the city is given the chance to develop some of these ideas further or at least be better equipped with information than they were before reading.
 
 # Brightopia
