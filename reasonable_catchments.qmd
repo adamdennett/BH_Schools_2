@@ -18,7 +18,7 @@ Both valid arguments. Given that neither of these situations is desirable - maki
 
 Now, as is often the case, it's easy to claim some kind of moral superiority when these kind of debates get going - "I used to have to walk 1hr to school every day and it never did me any harm", "2hr bus journey? You should be so lucky - my kids were fortunate if they got home before 11pm and were up again at 5am and they all ended up at Cambridge University!" etc. - None of this is useful debate.
 
-What might be useful is to look at that is usual or common. This will then give us some kind of baseline to compare other experiences to. What is the 'normal' distance travelled to Secondary school for children in England? For example. What is a common travel time for children living in cities? Because of course, we know that for those living in rural areas, long commutes to school might be normal.
+What might be useful is to look at that is usual/normal/common. This will then give us some kind of baseline to compare other experiences to. What is the 'normal' distance travelled to Secondary school for children in England? For example. What is a common travel time for children living in cities? Because of course, we know that for those living in rural areas, long commutes to school might be normal.
 
 And given that in a lot of places, the distance that a child might have to travel to school is governed by the catchment area they live in and correspondingly, the size of that catchment area, what might be considered a 'reasonable' catchment area?
 
@@ -26,4 +26,8 @@ And given that in a lot of places, the distance that a child might have to trave
 
 The concept of a "reasonable" catchment area is actually enshrined in the legislation around School Admissions. The Department for Education (DfE) published the last iteration of the School Admissions Code in 2021 - <https://www.gov.uk/government/publications/school-admissions-code--2>
 
-Within the PDF statutory guidance document that can be found on the main webpage - <https://assets.publishing.service.gov.uk/media/60ebfeb08fa8f50c76838685/School_admissions_code_2021.pdf> - there are some useful
+Within the PDF statutory guidance document that can be found on the main webpage - <https://assets.publishing.service.gov.uk/media/60ebfeb08fa8f50c76838685/School_admissions_code_2021.pdf> - under point 1.14 on p13, it states:
+
+-   "Catchment areas **must** be designed so that they are reasonable and clearly defined. Catchment areas do not prevent parents who live outside the catchment of a particular school from expressing a preference for the school."
+
+ 

@@ -969,7 +969,14 @@ ggplot(combined_data_long_filtered, aes(x = Year, y = Total, color = School, gro
   xlab("Year") +
   ylab("Total Applications") +
   theme_minimal() +
-  ggtitle("Yearly Total Applications by School")
+  ggtitle("Yearly Total Applications by School") +
+  scale_x_continuous(breaks = seq(min(combined_data_long_filtered$Year), max(combined_data_long_filtered$Year), by = 1)) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_line(color = "grey", linetype = "dashed"),
+    panel.grid.minor.x = element_blank()
+  )
+
 
 ```
 
@@ -987,7 +994,13 @@ ggplot(combined_data_long_filtered, aes(x = Year, y = Total_offer, color = Schoo
   xlab("Year") +
   ylab("Total Offers") +
   theme_minimal() +
-  ggtitle("Yearly Total Offers by School")
+  ggtitle("Yearly Total Offers by School") +
+scale_x_continuous(breaks = seq(min(combined_data_long_filtered$Year), max(combined_data_long_filtered$Year), by = 1)) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_line(color = "grey", linetype = "dashed"),
+    panel.grid.minor.x = element_blank()
+  )
 ```
 
 Figure 8 - Total Offers to Pupils by School, 2014-2024
@@ -1013,7 +1026,15 @@ ggplot(selected_schools, aes(x = Year, y = Total, color = School, group = School
   xlab("Year") +
   ylab("Total Applications") +
   theme_minimal() +
-  ggtitle("Yearly Total Applications")
+  ggtitle("Yearly Total Applications") +
+  scale_x_continuous(breaks = seq(min(combined_data_long_filtered$Year), max(combined_data_long_filtered$Year), by = 1)) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_line(color = "grey", linetype = "dashed"),
+    panel.grid.minor.x = element_blank()
+  ) +
+  geom_hline(yintercept = 270, color = "blue", linetype = "solid") +
+  annotate("text", x = max(combined_data_long_filtered$Year) - 1, y = 270, label = "Longhill PAN", color = "blue", vjust = -1)
 
 ```
 
@@ -1032,7 +1053,17 @@ ggplot(selected_schools, aes(x = Year, y = Total_offer, color = School, group = 
   xlab("Year") +
   ylab("Total Offers") +
   theme_minimal() +
-  ggtitle("Yearly Total Offers")
+  ggtitle("Yearly Total Offers") +
+  scale_x_continuous(breaks = seq(min(combined_data_long_filtered$Year), max(combined_data_long_filtered$Year), by = 1)) +
+  scale_y_continuous(limits = c(70, 290), breaks = seq(0, 280, by = 20)) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_line(color = "grey", linetype = "dashed"),
+    panel.grid.minor.x = element_blank()
+  ) +
+  geom_hline(yintercept = 270, color = "blue", linetype = "solid") +
+  annotate("text", x = max(combined_data_long_filtered$Year) - 1, y = 270, label = "Longhill PAN", color = "blue", vjust = -1)
+
 
 ```
 

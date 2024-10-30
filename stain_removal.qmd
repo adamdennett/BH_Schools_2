@@ -233,6 +233,7 @@ Below is a slightly different histogram created with slightly different rows of 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 library(dplyr)
 library(ggplot2)
+library(ggtext)
 
 # Select the relevant columns and order the data
 dis_vs_non_ordered <- dis_vs_non %>%
@@ -341,12 +342,15 @@ ggplot() +
   annotate("text", x = brighton_value_total, y = Inf, label = "Brighton and Hove (Non-Disadvantaged)", color = "#0057B8", vjust = 1.5, angle = 90) +
   theme_minimal() +
   labs(
-    title = "Percentage Achieving 9-5 grades in English and Maths, \nAll England Local Education Authorities",
+    title = "Percentage Pupils Achieving 9-5 grades in English and Maths,  \nAll England Local *Education* Authorities (Upper Tier)",
     x = "Percentage Achieving 9-5 grades in English and Maths",
     y = "Frequency",
     fill = "Disadvantage"
   ) +
-  scale_fill_manual(values = c("Disadvantaged" = "#FFCD00", "Non-Disadvantaged" = "#0057B8"))
+  theme(title = ggtext::element_markdown()) +
+  scale_fill_manual(values = c("Disadvantaged" = "#FFCD00", "Non-Disadvantaged" = "#0057B8")) 
+
+#+ ggsave(here("images", "attainmentgap_95.png"))
 
 
 ```
@@ -410,7 +414,7 @@ ggplot() +
   annotate("text", x = brighton_value_total, y = Inf, label = "Brighton and Hove (Non-Disadvantaged)", color = "#0057B8", vjust = 1.5, angle = 90) +
   theme_minimal() +
   labs(
-    title = "Percentage Achieving 9-5 grades in English and Maths, \nAll England Local Authorities",
+    title = "Percentage Achieving 9-5 grades in English and Maths, \nAll England Local Authorities (Lower Tier)",
     x = "Percentage Achieving 9-5 grades in English and Maths",
     y = "Frequency",
     fill = "Disadvantage"
@@ -709,11 +713,12 @@ ggplot() +
   annotate("text", x = brighton_value_total, y = Inf, label = "Brighton and Hove (Non-Disadvantaged)", color = "#7a0177", vjust = 1.5, angle = 90) +
   theme_minimal() +
   labs(
-    title = "Percentage Achieving 9-4 grades in English and Maths, \nAll England Local Education Authorities",
+    title = "Percentage Achieving 9-4 grades in English and Maths,  \nAll England Local *Education* Authorities (Upper Tier)",
     x = "Percentage Achieving 9-4 grades in English and Maths",
     y = "Frequency",
     fill = "Disadvantage"
   ) +
+  theme(title = ggtext::element_markdown()) +
   scale_fill_manual(values = c("Disadvantaged" = "#fbb4b9", "Non-Disadvantaged" = "#7a0177"))
 
 ```
