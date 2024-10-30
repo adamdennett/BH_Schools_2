@@ -1303,7 +1303,7 @@ There are, as ever, a few things to note here:
       xlab("Year") +
       ylab("Count") +
       theme_minimal() +
-      ggtitle("Yearly Trends in ONS SNPP Age 11\nBTN All Schools and BTN ONS Rate")
+      ggtitle("Yearly Trends in ONS Sub-National Population Projections, Age 11. \nBrighton Council All Schools Projection, \nand ONS SNPP Rate applied to Brighton")
 
     ```
 
