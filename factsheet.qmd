@@ -49,7 +49,7 @@ In a world recognising the benefits of the '15-minute city' - <https://www.moren
 
 Source: <https://www.oecd.org/en/publications/2021/06/access-and-cost-of-education-and-health-services_4889b7a5/full-report/component-7.html#figure-d1e11132>
 
-## Fact 6 - Beware of Statistical Smoothing 
+## Fact 6 - Beware of Statistical Smoothing
 
 Redrawing boundaries and enlarging catchments may give the illusion of improvement when really everything is just moving closer to the city average
 
