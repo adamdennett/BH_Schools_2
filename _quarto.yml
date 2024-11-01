@@ -6,6 +6,7 @@ project:
     - schools_wk3.qmd
     - stain_removal.qmd
     - factsheet.qmd
+    - data_processing_scripts.qmd
 
 website:
   title: "Brighton and Hove Secondary Schools Admission - Evidence Pages"
@@ -21,7 +22,9 @@ website:
       - text: "Week 3 Analysis"
         href: schools_wk3.qmd
       - text: "Addendum"
-        href: stain_removal.qmd  
+        href: stain_removal.qmd
+      - text: "Factsheet"
+        href: factsheet.qmd
     right:
       - icon: person-circle
         href: https://adamdennett.co.uk

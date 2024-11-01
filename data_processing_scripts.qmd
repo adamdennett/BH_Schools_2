@@ -207,26 +207,26 @@ library(dplyr)
 library(tidyr)
 library(knitr)
 
-# Create the original data frame
+# Create the original data frame for 2020
 yr_7_admissions_2020 <- data.frame(
   School = c("Blatchington Mill", "Brighton Aldridge Community Academy", "Cardinal Newman", "Dorothy Stringer",
              "Hove Park", "Kings School", "Longhill", "Patcham High", "Portslade Aldridge Community Academy", 
              "Varndean", "Total"),
-  No_1st_pref = c("350 (279)", "89 (89)", "349 (311)", "438 (357)", "80 (80)", "253 (145)", 
-                            "159 (159)", "219 (206)", "174 (174)", "307 (268)", "2418 (2068)"),
-  No_2nd_pref = c("281 (45)", "50 (7)", "221 (39)", "489 (73)", "227 (33)", "282 (5)", 
-                            "38 (3)", "65 (11)", "95 (21)", "530 (36)", "2278 (215)"),
-  No_3rd_pref = c("237 (6)", "62 (10)", "326 (10)", "203 (10)", "281 (24)", "257 (10)", 
-                            "38 (7)", "304 (8)", "77 (8)", "231 (0)", "2016 (73)"),
-  Total = c("868 (330)", "201 (106)", "896 (360)", "1130 (440)", "588 (137)", "792 (150)", 
-            "235 (177)", "588 (225)", "346 (203)", "1068 (304)", "6712 (2356)")
+  No_1st_preferences = c("350 (279)", "89 (89)", "349 (311)", "438 (357)", "80 (80)", "253 (145)", 
+                         "159 (159)", "219 (206)", "174 (174)", "307 (268)", "2418 (2068)"),
+  No_2nd_preferences = c("281 (45)", "50 (7)", "221 (39)", "489 (7)", "227 (33)", "282 (5)", 
+                         "38 (11)", "65 (11)", "95 (21)", "530 (36)", "2278 (215)"),
+  No_3rd_preferences = c("237 (6)", "62 (10)", "326 (10)", "203 (0)", "281 (24)", "257 (0)", 
+                         "38 (7)", "304 (8)", "77 (8)", "231 (0)", "2016 (73)"),
+  Total = c("868 (330)", "201 (106)", "896 (360)", "1130 (364)", "588 (137)", "792 (150)", 
+            "235 (177)", "588 (225)", "346 (203)", "1068 (304)", "")
 )
 
-# Separate numbers and actual values in brackets into their own columns
+# Separate numbers and actual values in brackets into their own columns with new names
 yr_7_admissions_2020 <- yr_7_admissions_2020 %>%
-  separate(No_1st_pref, into = c("No_1st_pref", "No_1st_pref_offer"), sep = " \\(", convert = TRUE) %>%
-  separate(No_2nd_pref, into = c("No_2nd_pref", "No_2nd_pref_offer"), sep = " \\(", convert = TRUE) %>%
-  separate(No_3rd_pref, into = c("No_3rd_pref", "No_3rd_pref_offer"), sep = " \\(", convert = TRUE) %>%
+  separate(No_1st_preferences, into = c("No_1st_pref", "No_1st_pref_offer"), sep = " \\(", convert = TRUE) %>%
+  separate(No_2nd_preferences, into = c("No_2nd_pref", "No_2nd_pref_offer"), sep = " \\(", convert = TRUE) %>%
+  separate(No_3rd_preferences, into = c("No_3rd_pref", "No_3rd_pref_offer"), sep = " \\(", convert = TRUE) %>%
   separate(Total, into = c("Total", "Total_offer"), sep = " \\(", convert = TRUE)
 
 # Remove closing parenthesis from actual values
@@ -241,11 +241,12 @@ yr_7_admissions_2020 <- yr_7_admissions_2020 %>%
 # Create kable table
 kable(yr_7_admissions_2020, caption = "Allocation Factsheet Year 7 Places September 2020")
 
+
 ```
 
--   \* There were 8 children in the Dorothy Stringer and Varndean Catchment area who applied for both these schools but could not initially be offered a catchment area school or a higher preference. In order to accommodate these children in a catchment area school, 4 additional children were allocated, each, to Dorothy Stringer and Varndean schools.
+There were 8 children in the Dorothy Stringer and Varndean Catchment area who applied for both these schools but could not initially be offered a catchment area school or a higher preference. In order to accommodate these children in a catchment area school, 4 additional children were allocated, each, to Dorothy Stringer and Varndean schools.
 
-2019
+## 2019
 
 <https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202019.pdf>
 
@@ -254,26 +255,26 @@ library(dplyr)
 library(tidyr)
 library(knitr)
 
-# Create the original data frame
+# Create the original data frame for 2019
 yr_7_admissions_2019 <- data.frame(
   School = c("Blatchington Mill", "Brighton Aldridge Community Academy", "Cardinal Newman", "Dorothy Stringer",
              "Hove Park", "Kings School", "Longhill", "Patcham High", "Portslade Aldridge Community Academy", 
              "Varndean", "Total"),
-  No_1st_pref = c("373 (282)", "92 (92)", "465 (340)", "447 (355)", "119 (119)", "188 (157)", 
-                            "217 (190)", "168 (164)", "104 (104)", "304 (251)", "2526 (2102)"),
-  No_2nd_pref = c("344 (37)", "40 (11)", "219 (14)", "479 (9)", "289 (62)", "209 (17)", 
-                            "83 (19)", "106 (49)", "49 (6)", "537 (47)", "2330 (281)"),
-  No_3rd_pref = c("256 (11)", "49 (7)", "344 (6)", "233 (10)", "271 (34)", "204 (4)", 
-                            "299 (16)", "136 (27)", "95 (2)", "257 (6)", "2111 (126)"),
-  Total = c("973 (330)", "181 (110)", "1028 (360)", "1159 (374)", "679 (215)", "601 (178)", 
-            "599 (225)", "410 (240)", "248 (112)", "1098 (304)", "6967 (2509)")
+  No_1st_preferences = c("373 (282)", "92 (92)", "465 (340)", "447 (355)", "119 (119)", "188 (157)", 
+                         "153 (152)", "217 (190)", "168 (164)", "304 (251)", "2526 (2102)"),
+  No_2nd_preferences = c("344 (37)", "40 (11)", "219 (14)", "470 (9)", "289 (62)", "209 (17)", 
+                         "33 (16)", "83 (19)", "106 (49)", "537 (47)", "2330 (281)"),
+  No_3rd_preferences = c("256 (11)", "49 (7)", "344 (6)", "233 (0)", "271 (34)", "204 (4)", 
+                         "62 (15)", "299 (16)", "136 (27)", "257 (6)", "2111 (126)"),
+  Total = c("973 (330)", "181 (110)", "1028 (360)", "1150 (364)", "679 (215)", "601 (178)", 
+            "248 (183)", "599 (225)", "410 (240)", "1098 (304)", "6967 (2509)")
 )
 
-# Separate numbers and actual values in brackets into their own columns
+# Separate numbers and actual values in brackets into their own columns with new names
 yr_7_admissions_2019 <- yr_7_admissions_2019 %>%
-  separate(No_1st_pref, into = c("No_1st_pref", "No_1st_pref_offer"), sep = " \\(", convert = TRUE) %>%
-  separate(No_2nd_pref, into = c("No_2nd_pref", "No_2nd_pref_offer"), sep = " \\(", convert = TRUE) %>%
-  separate(No_3rd_pref, into = c("No_3rd_pref", "No_3rd_pref_offer"), sep = " \\(", convert = TRUE) %>%
+  separate(No_1st_preferences, into = c("No_1st_pref", "No_1st_pref_offer"), sep = " \\(", convert = TRUE) %>%
+  separate(No_2nd_preferences, into = c("No_2nd_pref", "No_2nd_pref_offer"), sep = " \\(", convert = TRUE) %>%
+  separate(No_3rd_preferences, into = c("No_3rd_pref", "No_3rd_pref_offer"), sep = " \\(", convert = TRUE) %>%
   separate(Total, into = c("Total", "Total_offer"), sep = " \\(", convert = TRUE)
 
 # Remove closing parenthesis from actual values
@@ -288,11 +289,12 @@ yr_7_admissions_2019 <- yr_7_admissions_2019 %>%
 # Create kable table
 kable(yr_7_admissions_2019, caption = "Allocation Factsheet Year 7 Places September 2019")
 
+
 ```
 
 -   There were 8 children in the Dorothy Stringer/Varndean Catchment area who applied for both these schools but could not initially be offered a catchment area school or a higher preference. In order to accommodate these children in a catchment area school, 4 additional children were allocated, each, to Dorothy Stringer and Varndean schools.
 
-2018
+## 2018
 
 <https://www.brighton-hove.gov.uk/sites/default/files/migrated/subject/inline/Secondary%20Allocation%20factsheet%202018.pdf>
 
@@ -301,26 +303,26 @@ library(dplyr)
 library(tidyr)
 library(knitr)
 
-# Create the original data frame
+# Create the original data frame for 2018
 yr_7_admissions_2018 <- data.frame(
   School = c("Blatchington Mill", "Brighton Aldridge Community Academy", "Cardinal Newman", "Dorothy Stringer",
              "Hove Park", "Kings School", "Longhill", "Patcham High", "Portslade Aldridge Community Academy", 
              "Varndean", "Total"),
-  No_1st_pref = c("401 (303)", "110 (109)", "381 (342)", "413 (325)", "151 (151)", "143 (117)", 
-                            "246 (156)", "226 (191)", "168 (168)", "355 (280)", "2504 (2142)"),
-  No_2nd_pref = c("288 (22)", "42 (15)", "162 (15)", "488 (6)", "345 (71)", "133 (7)", 
-                            "28 (4)", "641 (33)", "108 (13)", "486 (20)", "2143 (190)"),
-  No_3rd_pref = c("257 (5)", "50 (6)", "274 (8)", "208 (0)", "226 (17)", "159 (7)", 
-                            "47 (11)", "368 (21)", "133 (7)", "253 (0)", "1975 (71)"),
-  Total = c("946 (330)", "202 (130)", "816 (360)", "1109 (331)", "722 (239)", "435 (132)", 
-            "321 (175)", "1235 (245)", "409 (188)", "1094 (300)", "6622 (2403)")
+  No_1st_preferences = c("401 (303)", "110 (109)", "381 (342)", "413 (325)", "151 (151)", "143 (117)", 
+                         "156 (156)", "226 (191)", "168 (168)", "355 (280)", "2504 (2142)"),
+  No_2nd_preferences = c("288 (22)", "42 (15)", "162 (15)", "488 (6)", "345 (71)", "133 (7)", 
+                         "28 (8)", "64 (13)", "108 (13)", "486 (20)", "2143 (190)"),
+  No_3rd_preferences = c("257 (5)", "50 (6)", "274 (3)", "208 (0)", "226 (17)", "159 (1)", 
+                         "47 (11)", "368 (21)", "133 (7)", "253 (0)", "1975 (71)"),
+  Total = c("946 (330)", "202 (130)", "816 (360)", "1109 (331)", "722 (239)", "435 (125)", 
+            "231 (175)", "658 (225)", "409 (188)", "1094 (300)", "6622 (2403)")
 )
 
-# Separate numbers and actual values in brackets into their own columns
+# Separate numbers and actual values in brackets into their own columns with new names
 yr_7_admissions_2018 <- yr_7_admissions_2018 %>%
-  separate(No_1st_pref, into = c("No_1st_pref", "No_1st_pref_offer"), sep = " \\(", convert = TRUE) %>%
-  separate(No_2nd_pref, into = c("No_2nd_pref", "No_2nd_pref_offer"), sep = " \\(", convert = TRUE) %>%
-  separate(No_3rd_pref, into = c("No_3rd_pref", "No_3rd_pref_offer"), sep = " \\(", convert = TRUE) %>%
+  separate(No_1st_preferences, into = c("No_1st_pref", "No_1st_pref_offer"), sep = " \\(", convert = TRUE) %>%
+  separate(No_2nd_preferences, into = c("No_2nd_pref", "No_2nd_pref_offer"), sep = " \\(", convert = TRUE) %>%
+  separate(No_3rd_preferences, into = c("No_3rd_pref", "No_3rd_pref_offer"), sep = " \\(", convert = TRUE) %>%
   separate(Total, into = c("Total", "Total_offer"), sep = " \\(", convert = TRUE)
 
 # Remove closing parenthesis from actual values
@@ -335,11 +337,12 @@ yr_7_admissions_2018 <- yr_7_admissions_2018 %>%
 # Create kable table
 kable(yr_7_admissions_2018, caption = "Allocation Factsheet Year 7 Places September 2018")
 
+
 ```
 
 -   Please note that 1 additional child was allocated a place at Dorothy Stringer School in order that twins could be kept together at the same school.
 
-2017
+## 2017
 
 <https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202017.pdf>
 
@@ -348,26 +351,26 @@ library(dplyr)
 library(tidyr)
 library(knitr)
 
-# Create the original data frame
+# Create the original data frame for 2017
 yr_7_admissions_2017 <- data.frame(
   School = c("Blatchington Mill", "Brighton Aldridge Community Academy", "Cardinal Newman", "Dorothy Stringer",
              "Hove Park", "Kings School", "Longhill", "Patcham High", "Portslade Aldridge Community Academy", 
              "Varndean", "Total"),
-  No_1st_pref = c("336 (282)", "90 (90)", "362 (330)", "459 (372)", "198 (198)", "124 (94)", 
-                            "131 (131)", "211 (185)", "158 (158)", "304 (282)", "2373 (2023)"),
-  No_2nd_pref = c("323 (14)", "22 (9)", "154 (62)", "455 (3)", "299 (45)", "83 (4)", 
-                            "33 (8)", "210 (33)", "65 (13)", "482 (35)", "2046 (163)"),
-  No_3rd_pref = c("238 (4)", "31 (9)", "278 (10)", "159 (1)", "229 (12)", "142 (2)", 
-                            "39 (11)", "183 (10)", "84 (5)", "244 (7)", "1747 (79)"),
-  Total = c("897 (300)", "143 (108)", "794 (403)", "1073 (331)", "726 (255)", "289 (100)", 
-            "203 (150)", "604 (215)", "307 (176)", "1030 (270)", "6166 (2265)")
+  No_1st_preferences = c("336 (282)", "90 (90)", "362 (330)", "459 (327)", "198 (198)", "124 (94)", 
+                         "131 (131)", "211 (185)", "158 (158)", "304 (228)", "2373 (2023)"),
+  No_2nd_preferences = c("323 (14)", "22 (9)", "154 (20)", "455 (3)", "299 (45)", "123 (4)", 
+                         "33 (8)", "90 (12)", "65 (13)", "482 (35)", "2046 (163)"),
+  No_3rd_preferences = c("238 (4)", "31 (9)", "278 (10)", "159 (1)", "229 (12)", "142 (2)", 
+                         "39 (11)", "303 (18)", "84 (5)", "244 (7)", "1747 (79)"),
+  Total = c("897 (300)", "143 (108)", "794 (360)", "1073 (331)", "726 (255)", "389 (100)", 
+            "203 (150)", "604 (215)", "307 (176)", "1030 (270)", "6167 (2282)")
 )
 
-# Separate numbers and actual values in brackets into their own columns
+# Separate numbers and actual values in brackets into their own columns with new names
 yr_7_admissions_2017 <- yr_7_admissions_2017 %>%
-  separate(No_1st_pref, into = c("No_1st_pref", "No_1st_pref_offer"), sep = " \\(", convert = TRUE) %>%
-  separate(No_2nd_pref, into = c("No_2nd_pref", "No_2nd_pref_offer"), sep = " \\(", convert = TRUE) %>%
-  separate(No_3rd_pref, into = c("No_3rd_pref", "No_3rd_pref_offer"), sep = " \\(", convert = TRUE) %>%
+  separate(No_1st_preferences, into = c("No_1st_pref", "No_1st_pref_offer"), sep = " \\(", convert = TRUE) %>%
+  separate(No_2nd_preferences, into = c("No_2nd_pref", "No_2nd_pref_offer"), sep = " \\(", convert = TRUE) %>%
+  separate(No_3rd_preferences, into = c("No_3rd_pref", "No_3rd_pref_offer"), sep = " \\(", convert = TRUE) %>%
   separate(Total, into = c("Total", "Total_offer"), sep = " \\(", convert = TRUE)
 
 # Remove closing parenthesis from actual values
@@ -382,9 +385,10 @@ yr_7_admissions_2017 <- yr_7_admissions_2017 %>%
 # Create kable table
 kable(yr_7_admissions_2017, caption = "Allocation Factsheet Year 7 Places September 2017")
 
+
 ```
 
-2016
+## 2016
 
 <https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20Factsheet%202016.pdf>
 
@@ -393,19 +397,19 @@ library(dplyr)
 library(tidyr)
 library(knitr)
 
-# Create the original data frame
+# Create the original data frame for 2016
 yr_7_admissions_2016 <- data.frame(
   School = c("Blatchington Mill", "Brighton Aldridge Community Academy", "Cardinal Newman", "Dorothy Stringer",
              "Hove Park", "Kings School", "Longhill", "Patcham High", "Portslade Aldridge Community Academy", 
              "Varndean", "Total"),
-  No_1st_preferences = c("410 (292)", "87 (87)", "375 (338)", "495 (337)", "172 (172)", "98 (70)", 
-                            "138 (138)", "217 (215)", "85 (85)", "219 (176)", "2296 (1900)"),
-  No_2nd_preferences = c("289 (6)", "24 (7)", "130 (17)", "337 (71)", "335 (82)", "102 (9)", 
-                            "111 (4)", "63 (23)", "39 (8)", "521 (100)", "1871 (270)"),
-  No_3rd_preferences = c("189 (2)", "27 (5)", "330 (65)", "191 (90)", "224 (79)", "142 (1)", 
-                            "237 (10)", "237 (101)", "58 (1)", "217 (8)", "1648 (362)"),
-  Total = c("888 (300)", "138 (99)", "835 (420)", "1023 (344)", "731 (273)", "342 (100)", 
-            "517 (152)", "517 (339)", "182 (94)", "957 (284)", "6815 (2232)")
+  No_1st_preferences = c("410 (292)", "87 (87)", "375 (338)", "495 (337)", "172 (172)", "98 (90)", 
+                         "138 (138)", "217 (185)", "85 (85)", "219 (176)", "2296 (1900)"),
+  No_2nd_preferences = c("289 (6)", "24 (7)", "130 (17)", "337 (7)", "335 (82)", "102 (9)", 
+                         "31 (14)", "63 (20)", "39 (8)", "521 (100)", "1871 (270)"),
+  No_3rd_preferences = c("189 (2)", "27 (5)", "330 (5)", "191 (0)", "224 (19)", "142 (1)", 
+                         "33 (11)", "237 (10)", "58 (1)", "217 (8)", "1648 (62)"),
+  Total = c("888 (300)", "138 (99)", "835 (360)", "1023 (344)", "731 (273)", "342 (100)", 
+            "202 (163)", "517 (215)", "182 (94)", "957 (284)", "5815 (2232)")
 )
 
 # Separate numbers and actual values in brackets into their own columns with new names
@@ -427,9 +431,10 @@ yr_7_admissions_2016 <- yr_7_admissions_2016 %>%
 # Create kable table
 kable(yr_7_admissions_2016, caption = "Allocation Factsheet Year 7 Places September 2016")
 
+
 ```
 
-2015
+## 2015
 
 <https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202015.pdf>
 
@@ -438,19 +443,19 @@ library(dplyr)
 library(tidyr)
 library(knitr)
 
-# Create the original data frame
+# Create the original data frame for 2015
 yr_7_admissions_2015 <- data.frame(
   School = c("Blatchington Mill", "Brighton Aldridge Community Academy", "Cardinal Newman", "Dorothy Stringer",
              "Hove Park", "Kings School", "Longhill", "Patcham High", "Portslade Aldridge Community Academy", 
              "Varndean", "Total"),
   No_1st_preferences = c("389 (287)", "120 (120)", "385 (345)", "471 (329)", "215 (200)", "90 (90)", 
-                            "141 (141)", "208 (184)", "86 (86)", "210 (176)", "2315 (1958)"),
-  No_2nd_preferences = c("323 (13)", "17 (4)", "132 (3)", "366 (4)", "387 (77)", "71 (7)", 
-                            "34 (3)", "72 (13)", "35 (24)", "480 (94)", "1917 (268)"),
+                         "141 (141)", "208 (184)", "86 (86)", "210 (176)", "2315 (1958)"),
+  No_2nd_preferences = c("323 (13)", "17 (4)", "132 (13)", "366 (4)", "387 (77)", "71 (17)", 
+                         "34 (9)", "72 (13)", "35 (24)", "480 (94)", "1917 (268)"),
   No_3rd_preferences = c("234 (1)", "39 (6)", "306 (2)", "189 (4)", "220 (22)", "108 (14)", 
-                            "73 (8)", "250 (13)", "19 (13)", "233 (17)", "1682 (88)"),
-  Total = c("946 (301)", "176 (130)", "823 (350)", "1026 (337)", "822 (300)", "289 (121)", 
-            "250 (156)", "530 (210)", "191 (123)", "923 (277)", "5914 (2314)")
+                         "33 (6)", "250 (13)", "70 (13)", "233 (7)", "1682 (88)"),
+  Total = c("946 (301)", "176 (130)", "823 (360)", "1026 (337)", "823 (299)", "269 (121)", 
+            "208 (156)", "530 (210)", "191 (123)", "923 (277)", "5915 (2214)")
 )
 
 # Separate numbers and actual values in brackets into their own columns with new names
@@ -472,11 +477,12 @@ yr_7_admissions_2015 <- yr_7_admissions_2015 %>%
 # Create kable table
 kable(yr_7_admissions_2015, caption = "Allocation Factsheet Year 7 Places September 2015")
 
+
 ```
 
 \*\*\* There were 14 children in the Dorothy Stringer/Varndean Catchment area who applied for both these schools but could not initially be offered a catchment area school or a higher preference. In order to accommodate these children in a catchment area school, 7 additional children were allocated each to Dorothy Stringer and Varndean schools.
 
-2014
+## 2014
 
 <https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202014.pdf>
 
@@ -485,19 +491,15 @@ library(dplyr)
 library(tidyr)
 library(knitr)
 
-# Create the original data frame
+# Create the original data frame for 2014
 yr_7_admissions_2014 <- data.frame(
   School = c("Blatchington Mill", "Brighton Aldridge Community Academy", "Cardinal Newman", "Dorothy Stringer",
              "Hove Park", "Kings School", "Longhill", "Patcham High", "Portslade Aldridge Community Academy", 
              "Varndean", "Total"),
-  No_1st_preferences = c("349 (286)", "68 (68)", "393 (355)", "493 (316)", "181 (181)", "105 (105)", 
-                            "209 (179)", "202 (179)", "85 (85)", "216 (165)", "2290 (1931)"),
-  No_2nd_preferences = c("287 (1)", "18 (5)", "135 (3)", "414 (5)", "343 (95)", "54 (7)", 
-                            "67 (11)", "61 (7)", "38 (6)", "495 (95)", "1889 (223)"),
-  No_3rd_preferences = c("212 (3)", "27 (9)", "296 (2)", "178 (10)", "195 (21)", "77 (3)", 
-                            "222 (20)", "235 (12)", "39 (1)", "254 (10)", "1532 (75)"),
-  Total = c("848 (300)", "113 (82)", "824 (360)", "1085 (331)", "719 (200)", "236 (115)", 
-            "498 (210)", "498 (210)", "162 (92)", "965 (270)", "6654 (1975)")
+  No_1st_preferences = c("349 (286)", "68 (68)", "393 (355)", "493 (316)", "181 (181)", "105 (105)", "191 (191)"  ,"209 (179)", "85 (85)", "216 (165)", "2290 (1931)"),
+  No_2nd_preferences = c("287 (11)", "18 (5)", "135 (3)", "414 (15)", "343 (58)", "54 (7)", "38 (12)" ,"67 (11)", "38 (6)", "495 (95)", "1889 (223)"),
+  No_3rd_preferences = c("212 (3)", "27 (9)", "296 (2)", "178 (0)", "195 (21)", "77 (3)", "32 (6)"  ,"222 (20)", "39 (1)", "254 (10)", "1532 (75)"),
+  Total = c("848 (300)", "113 (82)", "824 (360)", "1085 (331)", "719 (260)", "236 (115)", "261 (209)" ,"498 (210)", "162 (92)", "965 (270)", "6654 (1975)")
 )
 
 # Separate numbers and actual values in brackets into their own columns with new names
@@ -519,11 +521,12 @@ yr_7_admissions_2014 <- yr_7_admissions_2014 %>%
 # Create kable table
 kable(yr_7_admissions_2014, caption = "Allocation Factsheet Year 7 Places September 2014")
 
+
 ```
 
 There were 23 children In catchment area who couldn’t be offered Varndean School or a higher preference.
 
-2013
+## 2013
 
 <https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202013.pdf>
 
@@ -570,6 +573,7 @@ kable(yr_7_admissions_2013, caption = "Allocation Factsheet Year 7 Places Septem
 
 2012
 
+
 2011
 
 <https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/downloads/education/3740_school_booklets_secondary_AW_final.pdf>
@@ -579,6 +583,8 @@ kable(yr_7_admissions_2013, caption = "Allocation Factsheet Year 7 Places Septem
 <https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/downloads/education/Secondary_School_Admissions_2011-12.pdf>
 
 2009
+
+
 
 2008
 
@@ -595,12 +601,12 @@ library(dplyr)
 library(tidyr)
 
 # List of data frames
-data_frames <- list(yr_7_admissions_2014, yr_7_admissions_2015, yr_7_admissions_2016, yr_7_admissions_2017,
+data_frames <- list(yr_7_admissions_2013, yr_7_admissions_2014, yr_7_admissions_2015, yr_7_admissions_2016, yr_7_admissions_2017,
                     yr_7_admissions_2018, yr_7_admissions_2019, yr_7_admissions_2020, yr_7_admissions_2021,
                     yr_7_admissions_2022, yr_7_admissions_2023, yr_7_admissions_2024)
 
 # Assign years to each data frame
-years <- 2014:2024
+years <- 2013:2024
 
 # Combine data frames with a year column
 combined_data <- bind_rows(lapply(seq_along(data_frames), function(i) {
@@ -642,7 +648,13 @@ ggplot(combined_data_long_filtered, aes(x = Year, y = Total_offer, color = Schoo
   xlab("Year") +
   ylab("Total Offers") +
   theme_minimal() +
-  ggtitle("Yearly Total Offers by School")
+  ggtitle("Yearly Total Offers by School") +
+  scale_x_continuous(breaks = seq(min(combined_data_long_filtered$Year), max(combined_data_long_filtered$Year), by = 1)) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_line(color = "grey", linetype = "dashed"),
+    panel.grid.minor.x = element_blank()
+  ) 
 
 ```
 
@@ -660,7 +672,13 @@ ggplot(combined_data_long_filtered, aes(x = Year, y = Total, color = School, gro
   xlab("Year") +
   ylab("Total Applications") +
   theme_minimal() +
-  ggtitle("Yearly Total Applications by School")
+  ggtitle("Yearly Total Applications by School") +
+  scale_x_continuous(breaks = seq(min(combined_data_long_filtered$Year), max(combined_data_long_filtered$Year), by = 1)) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_line(color = "grey", linetype = "dashed"),
+    panel.grid.minor.x = element_blank()
+  ) 
 
 ```
 
@@ -677,7 +695,16 @@ ggplot(selected_schools, aes(x = Year, y = Total_offer, color = School, group = 
   xlab("Year") +
   ylab("Total Offers") +
   theme_minimal() +
-  ggtitle("Yearly Total Offers")
+  ggtitle("Yearly Total Offers") +
+  scale_x_continuous(breaks = seq(min(combined_data_long_filtered$Year), max(combined_data_long_filtered$Year), by = 1)) +
+  scale_y_continuous(limits = c(70, 290), breaks = seq(0, 280, by = 20)) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_line(color = "grey", linetype = "dashed"),
+    panel.grid.minor.x = element_blank()
+  ) +
+  geom_hline(yintercept = 270, color = "blue", linetype = "solid") +
+  annotate("text", x = max(combined_data_long_filtered$Year) - 1, y = 270, label = "Longhill PAN", color = "blue", vjust = -1)
 
 
 ```
@@ -695,14 +722,23 @@ ggplot(selected_schools, aes(x = Year, y = Total, color = School, group = School
   xlab("Year") +
   ylab("Total Applications") +
   theme_minimal() +
-  ggtitle("Yearly Total Applications")
+  ggtitle("Yearly Total Applications") +
+  scale_x_continuous(breaks = seq(min(combined_data_long_filtered$Year), max(combined_data_long_filtered$Year), by = 1)) +
+  scale_y_continuous(limits = c(100, 800), breaks = seq(100, 800, by = 100)) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_line(color = "grey", linetype = "dashed"),
+    panel.grid.minor.x = element_blank()
+  ) +
+  geom_hline(yintercept = 270, color = "blue", linetype = "solid") +
+  annotate("text", x = max(combined_data_long_filtered$Year) - 1, y = 270, label = "Longhill PAN", color = "blue", vjust = -1)
 
 ```
 
 ```{r, echo=F, message=F, warning=F}
 # Filter data for the specified schools
 selected_schools <- combined_data_long %>%
-  filter(School %in% c("Varndean", "Dorothy Stringer", "Hove Park", "Blatchington Mill"))
+  filter(School %in% c("Varndean", "Dorothy Stringer", "Hove Park", "Blatchington Mill", "Patcham High"))
 
 # Create the plot
 ggplot(selected_schools, aes(x = Year, y = Total, color = School, group = School)) +
@@ -712,8 +748,13 @@ ggplot(selected_schools, aes(x = Year, y = Total, color = School, group = School
   xlab("Year") +
   ylab("Total Applications") +
   theme_minimal() +
-  ggtitle("Yearly Total Applications")
-
+  ggtitle("Yearly Total Applications") +
+  scale_x_continuous(breaks = seq(min(combined_data_long_filtered$Year), max(combined_data_long_filtered$Year), by = 1)) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_line(color = "grey", linetype = "dashed"),
+    panel.grid.minor.x = element_blank()
+  ) 
 ```
 
 ```{r, echo=F, message=F, warning=F}
@@ -729,6 +770,12 @@ ggplot(selected_schools, aes(x = Year, y = Total_offer, color = School, group = 
   xlab("Year") +
   ylab("Total Offers") +
   theme_minimal() +
-  ggtitle("Yearly Total Offers")
+  ggtitle("Yearly Total Offers") +
+  scale_x_continuous(breaks = seq(min(combined_data_long_filtered$Year), max(combined_data_long_filtered$Year), by = 1)) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_line(color = "grey", linetype = "dashed"),
+    panel.grid.minor.x = element_blank()
+  ) 
 
 ```
