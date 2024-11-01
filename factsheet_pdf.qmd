@@ -2,8 +2,7 @@
 title: "Brighton and Hove Secondary School Admissions - Factsheet"
 author: "Professor Adam Dennett FRGS FAcSS, Professor of Urban Analytics, Bartlett Centre for Advanced Spatial Analysis, University College London - a.dennett@ucl.ac.uk - @adam_dennett"
 published-title: 26/10/24
-format: html
-editor: visual
+format: pdf
 ---
 
 ## Fact 1 - Disadvantaged Attainment
@@ -16,7 +15,7 @@ In 2024, all students in Brighton and Hove - both disadvantaged and non-disadvan
 
 ## Fact 2 - School Demand
 
-Demand for schools varies significantly across the city. At the lower end, in the last 11-years, Longhill has received fewer ***total applications*** (1st, 2nd and 3rd choice combined) than its Published Admission Number (PAN) of 270. In-demand schools would normally expect considerably more *total applications* than places available as 2nd and 3rd choices are often allocated places elsewhere. For comparison, another single catchment school - Patcham High, has generally received around ***twice as many*** total applications than PAN.
+Demand for schools varies significantly across the city. At the lower end, in the last 11-years, Longhill has received fewer ***total applications*** (1st, 2nd and 3rd choice combined) than its Published Admission Number (PAN) of 270. For comparison, another single catchment school - Patcham High, has generally received around twice as many total applications than PAN.
 
 Over the last 11 years (since 2013), Longhill's total offers have trended down every year, and it has never achieved anywhere near 270 offers. It's peak was in 2014 when it made 209 offers. Last year it made 94 offers.
 
