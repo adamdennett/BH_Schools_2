@@ -13,15 +13,17 @@ In 2024, all students in Brighton and Hove - both disadvantaged and non-disadvan
 
 ## Fact 2 - School Demand
 
-Demand for schools varies significantly across the city. At the lower end, in the last 5-years, Longhill has received significantly fewer ***total applications*** (1st, 2nd and 3rd choice combined) than its Published Admission Number (PAN) of 270.
+Demand for schools varies significantly across the city. At the lower end, in the last 11-years, Longhill has received fewer ***total applications*** (1st, 2nd and 3rd choice combined) than its Published Admission Number (PAN) of 270. For comparison, another single catchment school - Patcham High, has generally received around twice as many total applications than PAN.
 
-Over the last 10 years (since 2014), Longhill's total offers have trended down every year, and it has never achieved anywhere near 270 offers. It's peak was in 2019 when it made 225 offers. Last year it made 94 offers.
+Over the last 11 years (since 2013), Longhill's total offers have trended down every year, and it has never achieved anywhere near 270 offers. It's peak was in 2014 when it made 209 offers. Last year it made 94 offers.
+
+![](images/yearly_apps_sml.png)
 
 ![](images/yearly_offers_sml.png)
 
 ## Fact 3 - Geodemographic Reality
 
-School children in Brighton and Hove are not distributed evenly across the city and not all school locations correspond to where pupils live. Both Longhill and, to a lesser extent, BACA are located away from where students current live and are likely to live in the future.
+School children in Brighton and Hove are not distributed evenly across the city and not all school locations correspond to where pupils live. Both Longhill and, to a lesser extent, BACA are located away from where students current live and are likely to live in the future. Any desire to "Maintain the geographic spread of secondary schools in the city" makes no sense if that spread bears no relation to where children live.
 
 ![](images/map_11_year_olds_2024.png)
 
