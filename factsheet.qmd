@@ -58,7 +58,7 @@ Under Option B, significant numbers of children ([estimates of up to 365 a day](
 
 In a world recognising the benefits of the '15-minute city' - <https://www.moreno-web.net/new-book-the-15-minute-city-a-solution-to-saving-our-time-and-our-planet/> - forcing more long-distance travel would be a regressive policy. The Brighton and Hove School Model of Travel Survey found, in 2024, that 26.2% of journeys to and from secondary school were made by car. <https://www.brighton-hove.gov.uk/travel-and-road-safety/travel-transport-and-road-safety/school-mode-travel-survey-2024-guidance-letter>
 
-![](images/distance_europe.png)
+![](images/distance_europe_btn.png)
 
 Source: <https://www.oecd.org/en/publications/2021/06/access-and-cost-of-education-and-health-services_4889b7a5/full-report/component-7.html#figure-d1e11132>
 
