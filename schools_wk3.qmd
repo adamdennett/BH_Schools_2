@@ -695,7 +695,7 @@ tm_shape(brighton_sec_schools_sml) +
 
 ```
 
-Figure 1 - Brighton and Hove Secondary Schools and 11 year olds in 2024.
+Figure 1 - Location of Secondary Schools (black) and LSOA-level 11-year old populations in the state sector (orange), Brighton, 2024. - Source: Estimates from [ONS mid-year small area population estimates of 11-year-olds](https://www.nomisweb.co.uk/sources/pest), 2018-2020 - constrained to Brighton and Hove Council total places 2024 information.
 
 The map above is a real map of Brighton and Hove.
 
