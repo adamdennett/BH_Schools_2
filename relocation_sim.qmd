@@ -1,0 +1,718 @@
+---
+title: "RelocateLonghill"
+author: "Adam Dennett"
+---
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, include=FALSE, results='hide'}
+library(tidyr)
+library(dplyr)
+library(writexl)
+library(tidyverse)
+library(here)
+library(janitor)
+library(sf)
+library(usethis)
+library(tmap)
+library(readxl)
+library(r5r)
+library(RColorBrewer)
+library(accessibility)
+library(data.table)
+library(ggplot2)
+library(interp)
+library(h3jsr)
+library(h3r)
+library(osmextract)
+library(stplanr)
+library(od)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, include=FALSE, results='hide'}
+BrightonLSOA <- st_read(here("data","BrightonLSOA_Clean.geojson"))
+BrightonLSOA_pw_cent <- st_read(here("data","lsoa_btn_pw_cent.geojson"))
+BTN_LSOA_Proj <- st_read(here("data","LSOA_NOMIS_plus_projections.geojson")) %>% clean_names
+
+
+bh_catchments <- st_read(here("data","BrightonSecondaryCatchments.geojson"))
+bh_catchments <- bh_catchments %>%
+  rename(catchment = AreaName)
+bh_optionA <- st_read(here("data","optionA.geojson"))
+bh_optionB <- st_read(here("data","optionB.geojson"))
+
+#wait, this is same as projections file
+bh_lsoa_places <- read_csv(here("data","bh_lsoa_projections_2020_31.csv"))
+
+# Assuming your dataframe is called BTN_LSOA_Proj and your other dataframe is BrightonLSOA
+BTN_LSOA_Proj_wide <- BTN_LSOA_Proj %>%
+  select(geography, date, obs_value) %>%
+  pivot_wider(names_from = date, values_from = obs_value) %>%
+  st_drop_geometry()
+
+BrightonLSOA <- BrightonLSOA %>%
+  mutate(`2024` = BTN_LSOA_Proj_wide$`2024`[match(lsoa21cd, BTN_LSOA_Proj_wide$geography)])
+
+#wait, this is same as projections file
+bh_lsoa_places <- read_csv(here("data","bh_lsoa_projections_2020_31.csv"))
+bh_lsoa_projections <- read_csv(here("data", "bh_lsoa_projections_2020_31.csv"))
+
+# Join the data
+BrightonLSOA_pw_cent <- BrightonLSOA_pw_cent %>%
+  mutate(`2024` = BTN_LSOA_Proj_wide$`2024`[match(lsoa21cd, BTN_LSOA_Proj_wide$geography)])
+
+#########################################################
+
+brighton_sec_schools <- read_csv("https://www.dropbox.com/scl/fi/fhzafgt27v30lmmuo084y/edubasealldata20241003.csv?rlkey=uorw43s44hnw5k9js3z0ksuuq&raw=1") %>% 
+  clean_names() %>% 
+  filter(la_name == "Brighton and Hove") %>% 
+  filter(phase_of_education_name == "Secondary") %>% 
+  filter(establishment_status_name == "Open") %>%
+  st_as_sf(., coords = c("easting", "northing")) %>% 
+  st_set_crs(27700)
+
+#st_write(brighton_sec_schools, here("data", "brighton_sec_schools.geojson"))
+
+names <- cbind(names(brighton_sec_schools))
+brighton_sec_schools_sml <- brighton_sec_schools %>% 
+  select(c("urn", "establishment_name", "type_of_establishment_name", "school_capacity","number_of_pupils","fsm", "percentage_fsm", "geometry" ))
+
+
+coords <- st_coordinates(brighton_sec_schools_sml)
+
+brighton_sec_schools_sml1 <- brighton_sec_schools_sml
+brighton_sec_schools_sml1$x <- coords[, 1] 
+brighton_sec_schools_sml1$y <- coords[, 2]
+
+#write_csv(brighton_sec_schools_sml1,here("data", "brighton_sec_schools_sml1.csv"))
+
+brighton_sec_schools_relocate <- read_csv(here("data", "brighton_sec_schools_relocate.csv")) %>% 
+  st_as_sf(coords = c("x", "y"), crs = 27700)
+
+yr7_admissions <- read_csv(here("data", "Yr7_admissions.csv"))
+
+brighton_sec_schools_sml <- brighton_sec_schools_sml %>% 
+  left_join(yr7_admissions, by = "urn")
+
+brighton_sec_schools_relocate <- brighton_sec_schools_relocate %>% 
+  left_join(yr7_admissions, by = "urn") 
+
+##########################################################
+
+data_path = here("data")
+# Check what files we have
+#list.files(data_path)
+
+# Allow 10 GiB of memory
+rJava::.jinit()
+rJava::.jcall("java.lang.System", "S", "getProperty", "java.version")
+options(java.parameters = "-Xmx10G")
+
+brighton_oa <- st_read(here("data","oa_brighton.geojson"))
+
+#oe_match("East Sussex")
+roads_w_sussex = oe_get(c("West Sussex"), stringsAsFactors = FALSE, quiet = TRUE)
+roads_e_sussex = oe_get(c("East Sussex"), stringsAsFactors = FALSE, quiet = TRUE)
+#names(roads_w_sussex)
+#summary(roads_w_sussex)
+
+ht = c("motorway", "trunk", "primary", "secondary", "tertiary", "residential", "unclassified")
+osm_w_sussex_maj_roads = roads_w_sussex[roads_w_sussex$highway %in% ht, ]
+#class(osm_w_sussex_maj_roads)
+osm_e_sussex_maj_roads = roads_e_sussex[roads_e_sussex$highway %in% ht, ]
+
+osm_sussex_maj_roads <- rbind(osm_w_sussex_maj_roads, osm_e_sussex_maj_roads) %>% st_transform(27700)
+#summary(osm_sussex_maj_roads)
+#summary(brighton_oa)
+
+#osm_roads_buffered <- st_buffer(osm_sussex_maj_roads, dist = 100)
+brighton_oa_buffer <- st_buffer(brighton_oa, dist = 500)
+brighton_blob <- st_union(brighton_oa_buffer)
+
+brighton_outline <- st_union(brighton_oa)
+write_sf(brighton_outline, here("data", "brighton_outline.geojson"))
+
+#tm_shape(brighton_blob) +
+ # tm_polygons(alpha = 0.5)
+
+brighton_roads <- st_intersection(osm_sussex_maj_roads, brighton_blob)
+
+
+##################################################################
+# Create the routable network by indicating the path where OSM, GTFS and possible DEM data are stored
+r5r_core = setup_r5(data_path = data_path)
+
+#################################################################
+
+#set up the destinations for R5R
+bh_sec_sch1 <- brighton_sec_schools_relocate %>% 
+  select(urn, establishment_name, geometry) %>%
+  rename(id = urn) %>% 
+  st_transform(4326)
+
+coords <- st_coordinates(bh_sec_sch1)
+bh_sec_sch1$lon <- coords[, 1]
+bh_sec_sch1$lat <- coords[, 2]
+
+#now set up the origins
+BrightonLSOA_pw_cent <- BrightonLSOA_pw_cent %>%
+  mutate(fid = row_number())
+BrightonLSOA_pw_cent <- BrightonLSOA_pw_cent %>% 
+  st_transform(4326)
+coords <- st_coordinates(BrightonLSOA_pw_cent)
+BrightonLSOA_pw_cent$lon <- coords[, 1]
+BrightonLSOA_pw_cent$lat <- coords[, 2]
+
+
+names(BrightonLSOA_pw_cent)
+
+brighton_lsoa_points_r51 <- BrightonLSOA_pw_cent %>% 
+  select(fid, lsoa21cd ,lat, lon) %>% 
+  rename(lon = lon, lat = lat, id = fid) %>% 
+  st_transform(4326) %>% 
+  st_set_crs(4326)
+
+
+################################################################
+
+
+#travel time matrix
+
+# Set parameters
+mode = c("WALK", "BUS")
+max_walk_time = 360 # minutes
+max_trip_duration = 520 # minutes
+departure_datetime = as.POSIXct("23-05-2024 8:30:00",
+                                 format = "%d-%m-%Y %H:%M:%S", 
+                                tz = "GMT")
+
+#note the code below already requires the h3 core matrix to be set up
+
+# Calculate the travel time matrix by Transit
+ttm_btn_lsoa_to_School = travel_time_matrix(r5r_core = r5r_core,
+                          origins = bh_sec_sch1,
+                          destinations = brighton_lsoa_points_r51,
+                          mode = mode,
+                          departure_datetime = departure_datetime,
+                          max_walk_time = max_walk_time,
+                          max_trip_duration = max_trip_duration)
+
+nrow(bh_sec_sch1) * nrow(brighton_lsoa_points_r51)
+ttm_btn_lsoa_to_School[, to_id:=as.numeric(to_id)]
+
+#join codes back to the matrix and get it ready from plotting
+ttm_btn_lsoa_to_School$orig_lsoa <- brighton_lsoa_points_r51$lsoa21cd[match(ttm_btn_lsoa_to_School$to_id, brighton_lsoa_points_r51$id)]
+
+ttm_btn_lsoa_to_School$dest_sch <- bh_sec_sch1$establishment_name[match(ttm_btn_lsoa_to_School$from_id, bh_sec_sch1$id)]
+
+#origs and dests all messed up
+ttm_btn_lsoa_to_School <- ttm_btn_lsoa_to_School %>%
+  mutate(to_id = as.factor(to_id)) %>%
+  unite(od_code, orig_lsoa, from_id, sep = "_", remove = FALSE)
+
+simple_ttm <- ttm_btn_lsoa_to_School %>%
+  select(orig_lsoa, from_id, travel_time_p50) %>% 
+  rename(orig = orig_lsoa, dest = from_id, flow = travel_time_p50)
+
+class(ttm_btn_lsoa_to_School)
+
+simple_ttm <- na.omit(simple_ttm) %>% 
+  unite("od_code", c("orig","dest"), sep = "_", remove = FALSE)
+
+```
+
+```{r}
+########################################################################
+
+# Switch to view mode
+tmap_mode("view")
+
+
+#nrow(brighton_lsoa_points_r51) * nrow(bh_sec_sch1)
+brighton_lsoa_points_r52 <- brighton_lsoa_points_r51 %>% 
+  select(c("lsoa21cd", "lat", "lon", "geometry")) %>% 
+  rename(orig = lsoa21cd)
+
+bh_sec_sch2 <- bh_sec_sch1 %>%
+  rename(dest = id)
+
+simple_ttm2 <- simple_ttm %>% 
+  select(orig, dest, flow) %>% 
+  rename(orig = orig, dest = dest, flow = flow)
+
+
+
+##big matrix for the whole of Brighton - won't need this now. 
+lsoa_btn_to_school_matrix <- 
+  matrix(0, nrow = nrow(brighton_lsoa_points_r51), ncol = nrow(bh_sec_sch1), dimnames = list(brighton_lsoa_points_r51$lsoa21cd,bh_sec_sch1$id))
+
+###############
+#matrix to paired list
+#all of London - and add an od_id
+lsoa_btn_to_school_matrix_all <- odmatrix_to_od(lsoa_btn_to_school_matrix) %>% 
+  unite("od_code", c("orig","dest"), sep = "_", remove = FALSE)
+
+brighton_sch_Commute_lines <- od2line(flow = simple_ttm2, zones = brighton_lsoa_points_r52, destinations = bh_sec_sch2)
+
+brighton_sch_Commute_lines1 <- od::od_to_sf(x = simple_ttm2, z = brighton_lsoa_points_r52, zd = bh_sec_sch2, crs = 4326)
+
+
+##################################################################
+
+brighton_sch_Commute_longhill <- brighton_sch_Commute_lines %>% 
+  filter(dest == 114581)
+
+#####################################
+
+#analysis of 2024, 2026 and 2030 lsoa places by catchment
+
+optionA_1 <- st_read(here("data", "BTN_catchments","Catchment vectorised" ,"catchment_01.geojson"))
+optionB_1 <- st_read(here("data", "BTN_catchments","Catchment vectorised" ,"catchment_02.geojson"))
+OptionC_1 <- st_read(here("data", "BTN_catchments","Catchment vectorised" ,"catchment_03a.geojson"))
+
+###
+#now just set up the catchments I want to use
+
+optionX <- bh_catchments
+optionA <- bh_optionA
+optionB <- bh_optionB
+optionC <- OptionC_1
+
+
+
+optionX <- st_make_valid(optionX)
+optionA <- st_make_valid(optionA)
+optionB <- st_make_valid(optionB)
+optionC <- st_make_valid(optionC)
+
+#harmonise the catchment names
+optionX <- optionX %>%
+  mutate(catchment = recode(catchment,
+                            "Patcham HighSchool" = "Patch",
+                            "StringerVarndean" = "StrVarn",
+                            "BrightonAldridge" = "BACA",
+                            "Longhill" = "Long",
+                            "BlatchingtonHove" = "Hove",
+                            "Portslade" = "PACA"))
+
+optionA <- optionA %>% 
+  mutate(catchment = recode(catchment,
+                            "Patcham" = "Patch",
+                            "VarndeanStringer" = "StrVarn",
+                            "BACA" = "BACA",
+                            "Longhill" = "Long",
+                            "HoveBlatchington" = "Hove",
+                            "PACA" = "PACA"))
+
+optionB <- optionB %>% 
+  mutate(catchment = recode(catchment,
+                            "LonghillStringer" = "SBTN",
+                            "PatchamVarndeanBACA" = "NBTN",
+                            "HoveBlatchington" = "Hove",
+                            "PACA" = "PACA"))
+
+optionC <- optionC %>% 
+  st_transform(27700)
+optionC <- optionC %>% 
+  mutate(catchment = recode(catchment,
+                            "Blatchingt" = "BLM",
+                            "Varndean" = "VD",
+                            "Stringer" = "DS",
+                            "BACA" = "BACA",
+                            "Longhill" = "Long",
+                            "Patcham" = "Patch",
+                            "Hove" = "Hove",
+                            "PACA" = "PACA"))
+
+# Switch to view mode
+tmap_mode("view")
+
+# Set options
+tmap_options(check.and.fix = TRUE)
+
+# Create the map with a more subtle color palette
+map <- tm_shape(optionX) +
+  tm_polygons(col = "catchment", palette = "Set1", alpha = 0.5, title = "Catchment Areas") +
+  tm_shape(optionA) +
+  tm_polygons(col = "catchment", palette = "Set1", alpha = 0.5, title = "Option A") +
+  tm_shape(optionB) +
+  tm_polygons(col = "catchment", palette = "Set1", alpha = 0.5, title = "Option B") +
+  tm_shape(optionC) +
+  tm_polygons(col = "catchment", palette = "Set1", alpha = 0.5, title = "Option C")
+
+map
+
+```
+
+
+```{r}
+############################################
+
+##summary pupils and PANs
+
+BTN_LSOA_Point_Proj <- BrightonLSOA_pw_cent %>%
+  select(-`2024`) %>% 
+  st_drop_geometry()
+  
+
+BTN_LSOA_Point_Proj <- bh_lsoa_places %>%
+  left_join(BTN_LSOA_Point_Proj, by = c("geography" = "lsoa21cd")) 
+
+# Create the geometry column using lon and lat
+BTN_LSOA_Point_Proj <- st_as_sf(BTN_LSOA_Point_Proj, coords = c("lon", "lat"), crs = 4326)
+
+BTN_LSOA_Point_Proj <- BTN_LSOA_Point_Proj %>% 
+  st_transform(27700)
+
+# Display the resulting sf object
+print(BTN_LSOA_Point_Proj)
+
+
+# Create the map with all four options and the specified settings
+map <- tm_shape(BTN_LSOA_Point_Proj) +
+  tm_dots(
+    size = "2024_scaled_BTN_places",
+    col = "2024_scaled_BTN_places",
+    alpha = 0.5,
+    border.alpha = 0,
+    palette = "Purples",  # Change color palette to purples
+    title = "Total Children"
+  ) +
+  tm_layout(
+    legend.show = TRUE,
+    title = "11 year places, 2024"
+  ) +
+  tm_shape(optionX) +
+  tm_borders() +
+  tm_fill(alpha = 0) +
+  tm_shape(optionA) +
+  tm_borders() +
+  tm_fill(alpha = 0) +
+  tm_shape(optionB) +
+  tm_borders() +
+  tm_fill(alpha = 0) +
+  tm_shape(optionC) +
+  tm_borders() +
+  tm_fill(alpha = 0) +
+  tm_shape(brighton_sec_schools_relocate) +
+  tm_dots()
+
+map
+
+```
+
+```{r}
+##################################################
+
+library(sf)
+library(dplyr)
+
+# Function to perform spatial join and summarise only numeric fields
+sum_intersections <- function(option_df, btn_lsoa_df) {
+  joined_data <- st_join(option_df, btn_lsoa_df, join = st_intersects)
+  numeric_columns <- sapply(joined_data, is.numeric)
+  joined_data %>%
+    group_by(geometry) %>%
+    summarise(across(where(is.numeric), sum, na.rm = TRUE))
+}
+
+# Perform the spatial join and summarise for each option
+optionX_summarised <- sum_intersections(optionX, BTN_LSOA_Point_Proj)
+optionA_summarised <- sum_intersections(optionA, BTN_LSOA_Point_Proj)
+optionB_summarised <- sum_intersections(optionB, BTN_LSOA_Point_Proj)
+optionC_summarised <- sum_intersections(optionC, BTN_LSOA_Point_Proj)
+
+# Ensure geometries are valid in all dataframes
+optionX <- st_make_valid(optionX)
+optionA <- st_make_valid(optionA)
+optionB <- st_make_valid(optionB)
+optionC <- st_make_valid(optionC)
+optionX_summarised <- st_make_valid(optionX_summarised)
+optionA_summarised <- st_make_valid(optionA_summarised)
+optionB_summarised <- st_make_valid(optionB_summarised)
+optionC_summarised <- st_make_valid(optionC_summarised)
+
+# Join id and catchment from respective options to the summarised dataframes based on matching geometry
+optionX_summarised <- st_join(optionX_summarised, optionX %>% select(id, catchment), join = st_equals)
+optionA_summarised <- st_join(optionA_summarised, optionA %>% select(id, catchment), join = st_equals)
+optionB_summarised <- st_join(optionB_summarised, optionB %>% select(id, catchment), join = st_equals)
+optionC_summarised <- st_join(optionC_summarised, optionC %>% select(id, catchment), join = st_equals)
+
+
+#join IDs back a
+write_csv(optionX_summarised,here("data",  "optionX_summarised.csv"))
+write_csv(optionA_summarised,here("data",  "optionA_summarised.csv"))
+write_csv(optionB_summarised,here("data",  "optionB_summarised.csv"))
+write_csv(optionC_summarised,here("data",  "optionC_summarised.csv"))
+
+# Display results
+# Drop the geometry column
+numeric_optionX <- st_drop_geometry(optionX_summarised)
+numeric_optionA <- st_drop_geometry(optionA_summarised)
+numeric_optionB <- st_drop_geometry(optionB_summarised)
+numeric_optionC <- st_drop_geometry(optionC_summarised)
+
+# Calculate the sum of all rows in the summarized dataframes
+sum_optionX <- colSums(select(numeric_optionX, where(is.numeric)), na.rm = TRUE)
+sum_optionA <- colSums(select(numeric_optionA, where(is.numeric)), na.rm = TRUE)
+sum_optionB <- colSums(select(numeric_optionB, where(is.numeric)), na.rm = TRUE)
+sum_optionC <- colSums(select(numeric_optionC, where(is.numeric)), na.rm = TRUE)
+
+# Display the sums
+#sum_optionX
+#sum_optionA
+#sum_optionB
+#sum_optionC
+
+#############################################################
+
+
+#first aggregate PAN, FSM etc to each of the different x, a, c, C catchment designs
+
+optionX_stats <- brighton_sec_schools_relocate %>%
+  select(optionX, school_capacity, number_of_pupils, fsm, pan2024, pan2026, pan2030, contains('count')) %>%
+  group_by(optionX) %>%
+  summarise(across(where(is.numeric), sum, na.rm = TRUE), .groups = 'drop') %>% 
+  mutate(fsm_pct = round(fsm/number_of_pupils, 2)) %>% 
+  relocate(fsm_pct, .after = fsm) %>% 
+  st_drop_geometry()
+
+optionA_stats <- brighton_sec_schools_relocate %>%
+  select(optionA, school_capacity, number_of_pupils, fsm, pan2024, pan2026, pan2030, contains('count')) %>%
+  group_by(optionA) %>%
+  summarise(across(where(is.numeric), sum, na.rm = TRUE), .groups = 'drop') %>% 
+  mutate(fsm_pct = round(fsm/number_of_pupils, 2)) %>% 
+  relocate(fsm_pct, .after = fsm) %>% 
+  st_drop_geometry()
+
+optionB_stats <- brighton_sec_schools_relocate %>%
+  select(optionB, school_capacity, number_of_pupils, fsm, pan2024, pan2026, pan2030, contains('count')) %>%
+  group_by(optionB) %>%
+  summarise(across(where(is.numeric), sum, na.rm = TRUE), .groups = 'drop') %>% 
+  mutate(fsm_pct = round(fsm/number_of_pupils, 2)) %>% 
+  relocate(fsm_pct, .after = fsm) %>% 
+  st_drop_geometry()
+
+optionC_stats <- brighton_sec_schools_relocate %>%
+  select(optionC, school_capacity, number_of_pupils, fsm, pan2024, pan2026, pan2030, contains('count')) %>%
+  group_by(optionC) %>%
+  summarise(across(where(is.numeric), sum, na.rm = TRUE), .groups = 'drop') %>% 
+  mutate(fsm_pct = round(fsm/number_of_pupils, 2)) %>% 
+  relocate(fsm_pct, .after = fsm) %>% 
+  st_drop_geometry()
+
+
+#now join the stats back to the catchment polygons
+
+optionX_summarised <- optionX_summarised %>% 
+  left_join(optionX_stats, by = c("catchment" = "optionX"))
+
+optionA_summarised <- optionA_summarised %>%
+  left_join(optionA_stats, by = c("catchment" = "optionA"))
+
+optionB_summarised <- optionB_summarised %>%
+  left_join(optionB_stats, by = c("catchment" = "optionB"))
+
+optionC_summarised <- optionC_summarised %>%
+  left_join(optionC_stats, by = c("catchment" = "optionC"))
+
+
+#############################################################
+
+
+#first joint the points to different catchments
+
+# Perform spatial join to match points with polygons - first option X
+BTN_LSOA_Point_Proj <- st_join(BTN_LSOA_Point_Proj, optionX_summarised[, c("geometry", "catchment")], join = st_intersects)
+# Rename the catchment column to optionX
+BTN_LSOA_Point_Proj <- BTN_LSOA_Point_Proj %>%
+  rename(optionX = catchment)
+
+# Perform spatial join to match points with polygons - then option A
+BTN_LSOA_Point_Proj <- st_join(BTN_LSOA_Point_Proj, optionA_summarised[, c("geometry", "catchment")], join = st_intersects)
+# Rename the catchment column to optionA
+BTN_LSOA_Point_Proj <- BTN_LSOA_Point_Proj %>%
+  rename(optionA = catchment)
+
+# Perform spatial join to match points with polygons - then option B
+BTN_LSOA_Point_Proj <- st_join(BTN_LSOA_Point_Proj, optionB_summarised[, c("geometry", "catchment")], join = st_intersects)
+# Rename the catchment column to optionB
+BTN_LSOA_Point_Proj <- BTN_LSOA_Point_Proj %>%
+  rename(optionB = catchment)
+
+# Perform spatial join to match points with polygons - then option C
+BTN_LSOA_Point_Proj <- st_join(BTN_LSOA_Point_Proj, optionC_summarised[, c("geometry", "catchment")], join = st_intersects)
+# Rename the catchment column to optionC
+BTN_LSOA_Point_Proj <- BTN_LSOA_Point_Proj %>%
+  rename(optionC = catchment)
+
+
+###################################################################
+
+
+#sub <- BTN_LSOA_Point_Proj %>% 
+#  filter(optionX == "Long")
+
+# Filter the data
+sub <- BTN_LSOA_Point_Proj %>%
+  filter(optionB == "SBTN")
+
+# Round the specified columns to zero decimal places
+sub <- sub %>%
+  mutate(across(c("2021":"2030_scaled_BTN_places"), ~ round(.x, 0)))
+
+library(tmap)
+
+# Create the map with raw numbers in the circles
+map <- tm_shape(sub) +  
+  tm_dots(
+    col = "optionB",
+    size = "2026_scaled_BTN_places",
+    alpha = 0.5
+  ) +  
+  tm_text(
+    text = "2026_scaled_BTN_places", 
+    size = "2026_scaled_BTN_places", 
+    col = "black", 
+    alpha = 1
+  ) +  
+  tm_layout(
+    legend.show = TRUE, 
+    title = "Option B"
+  )
+
+# Print the map
+map
+
+```
+
+######################################################################
+
+```{r}
+total_commute_longhill_2024 <- brighton_sch_Commute_lines 
+
+##Try a basic demand model
+
+brighton_sec_schools_relocate$urn1 <- as.character(brighton_sec_schools_relocate$urn)
+
+# Start with full flow matrix
+btn_cij <- simple_ttm %>% 
+  rename("cij" = "flow")
+
+# add origin pupils
+btn_cij <- btn_cij %>% 
+  left_join(BTN_LSOA_Point_Proj %>% select("geography", "2024_scaled_BTN_places"), by = c("orig" = "geography")) %>% 
+  rename("Oi" = "2024_scaled_BTN_places")
+
+# add destination attractiveness
+btn_cij <- btn_cij %>% 
+  left_join(brighton_sec_schools_relocate %>% select("urn1", "number_of_pupils", "pan2024", "fsm"), by = c("dest" = "urn1"))
+btn_cij$fixed_attr <- 100
+
+
+##############
+##modeling and parameters
+
+#beta <- 0.57
+beta <- 1.5
+alpha <- 1
+
+#calculate some new wj^alpha and dij^beta values
+wj2_alpha <- btn_cij$fixed_attr^alpha
+dist_beta <- btn_cij$cij^-beta
+#calculate the first stage of the Ai values
+btn_cij$Ai1 <- wj2_alpha*dist_beta
+#now do the sum over all js bit
+A_i <- btn_cij %>% group_by(orig) %>% summarise(A_i = sum(Ai1))
+#now divide in to 1
+A_i[,2] <- 1/A_i[,2]
+#and write the A_i values back into the data frame
+btn_cij$A_i <- A_i$A_i[match(btn_cij$orig,A_i$orig)]
+
+#now let's model some flows
+
+btn_cij$prodSIM1 <- btn_cij$A_i*btn_cij$Oi*wj2_alpha*dist_beta
+sum(btn_cij$prodSIM1)
+sum(BTN_LSOA_Point_Proj$`2024_scaled_BTN_places`)
+btn_sch_gravity1 <- btn_cij %>%
+  group_by(dest) %>%
+  summarise(prodSIM1 = sum(prodSIM1, na.rm = TRUE))
+
+# Display the new dataframe
+#print(btn_sch_gravity1)
+
+brighton_sec_schools_relocate$prodsim1 <- btn_sch_gravity1$prodSIM1[match(brighton_sec_schools_relocate$urn, btn_sch_gravity1$dest)]
+
+temp <- brighton_sec_schools_relocate %>%
+  select(establishment_name, pan2024, prodsim1) %>% 
+  mutate(prodsim1 = round(prodsim1, 0))
+
+
+####################################################################
+
+#flow map
+
+btn_cij_flow <- btn_cij %>%
+  select(orig, dest, prodSIM1) %>% 
+  rename("flow" = "prodSIM1")
+
+#summary(btn_cij_flow)
+#summary(simple_ttm2)
+
+#simple_ttm3 <- simple_ttm2 %>% 
+#  cbind(btn_cij_flow$flow)
+
+#write_csv(simple_ttm3, here("data", "simple_ttm3.csv"))
+#simple_ttm3 <- read_csv(here("data", "simple_ttm3.csv"))
+
+write_csv(simple_ttm3, here("data", "simple_ttm_relocate.csv"))
+simple_ttm3 <- read_csv(here("data", "simple_ttm_relocate.csv"))
+
+#nrow(simple_ttm2)
+#nrow(btn_cij_flow)
+
+
+brighton_sch_Commute_lines <- od2line(flow = simple_ttm2, zones = brighton_lsoa_points_r52, destinations = bh_sec_sch2)
+brightopia_lines <- od2line(flow = simple_ttm3, zones = brighton_lsoa_points_r52, destinations = bh_sec_sch2) %>% 
+  rename(distance = flow) %>% 
+  rename(tij = `btn_cij_flow$flow`)
+
+#brightopia_lines <- od2line(flow = btn_cij, zones = brighton_lsoa_points_r52, destinations = bh_sec_sch2) 
+
+
+######################################################################
+
+  
+
+
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+# Create the tmap
+tmap_mode("view")
+tm_shape(BrightonLSOA_pw_cent) +
+  tm_dots(size = "2024", col = "2024", alpha = 0.5, border.alpha = 0, title = "Total Children") +
+  tm_layout(legend.show = TRUE, title = "11 year olds, 2024") +
+tm_shape(bh_catchments) +
+  tm_borders() +
+  tm_fill(alpha = 0) +
+tm_shape(brighton_sec_schools_relocate) +
+  tm_dots()
+
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
+library(knitr)
+# Drop the geometry column
+temp1 <- temp %>% 
+  st_drop_geometry() %>% 
+  mutate(Difference = pan2024-prodsim1)
+
+# Rename the columns
+colnames(temp1) <- c("School", "PAN 2024", "Model Estimate", "Surplus/Deficit")
+
+# Create the kable table
+kable(temp1, format = "html", table.attr = "class='table table-striped'")
+```
+
