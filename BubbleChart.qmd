@@ -1,0 +1,166 @@
+---
+title: "BubbleChart"
+---
+
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# Create the data frame
+data <- data.frame(
+  Country_Name = c("EU27-UK", "Malta", "Cyprus", "Netherlands", "Belgium", "Luxembourg", "United Kingdom", 
+                   "Germany", "Poland", "Denmark", "Slovak Republic", "Italy", "Austria", "Czech Republic", 
+                   "Slovenia", "Portugal", "France", "Hungary", "Romania", "Croatia", "Ireland", "Spain", 
+                   "Lithuania", "Bulgaria", "Greece", "Sweden", "Latvia", "Estonia", "Finland"),
+  Sparse_rural = c(6.8, 3.5, 4.8, 4.9, 5.1, 6.2, 6.2, 6.3, 6.4, 6.4, 6.5, 6.7, 6.7, 6.7, 6.7, 6.8, 6.9, 7.1, 7.2, 7.3, 
+                   7.4, 8.0, 8.2, 8.4, 8.7, 8.7, 9.0, 9.1, 9.2),
+  Villages = c(4.5, 2.6, 3.7, 3.5, 3.7, 4.0, 4.0, 4.5, 3.7, 3.8, 4.5, 5.1, 4.4, 4.3, 4.2, 4.4, 4.2, 5.1, 4.9, 4.4, 3.8, 
+               5.4, 3.9, 5.3, 5.9, 4.6, 4.2, 4.7, 4.8),
+  Towns_and_suburbs = c(2.8, 2.4, 2.6, 2.3, 2.8, 2.6, 2.6, 3.0, 2.5, 2.8, 2.7, 2.9, 3.1, 3.0, 3.3, 2.9, 2.7, 2.9, 3.0, 
+                        3.1, 2.9, 2.7, 2.9, 3.3, 2.7, 3.2, 3.3, 4.1, 3.2),
+  Cities = c(1.6, 1.5, 1.7, 1.6, 1.6, 1.9, 1.6, 1.9, 1.5, 1.7, 1.7, 1.6, 1.5, 1.8, 1.7, 1.6, 1.4, 1.6, 1.4, 1.5, 1.8, 
+             1.4, 1.5, 1.4, 1.3, 1.8, 1.6, 1.7, 2.0)
+)
+
+# Pivot the data frame to long format
+data_long <- data %>%
+  pivot_longer(cols = -Country_Name, names_to = "Area_Type", values_to = "Distance")
+
+# Create the ggplot bubble chart
+ggplot(data_long, aes(x = Country_Name, y = Distance, color = Area_Type, size = Distance)) +
+  geom_point(alpha = 0.7) +
+  scale_size(range = c(3, 10)) +
+  labs(title = "Traveled Road Distance to Secondary Schools by Area Type",
+       x = "Country",
+       y = "Distance (km)",
+       color = "Area Type",
+       size = "Distance (km)") +
+  scale_color_manual(values = c("Cities" = "yellow", "Towns_and_suburbs" = "gray", "Villages" = "green", "Sparse_rural" = "purple")) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+
+```
+
+```{r}
+library(ggplot2)
+library(tidyr)
+
+# Create the data frame
+data <- data.frame(
+  Country_Name = c("EU27-UK", "Malta", "Cyprus", "Netherlands", "Belgium", "Luxembourg", "United Kingdom",
+                   "Germany", "Poland", "Denmark", "Slovak Republic", "Italy", "Austria", "Czech Republic",
+                   "Slovenia", "Portugal", "France", "Hungary", "Romania", "Croatia", "Ireland", "Spain",
+                   "Lithuania", "Bulgaria", "Greece", "Sweden", "Latvia", "Estonia", "Finland"),
+  Sparse_rural = c(6.8, 3.5, 4.8, 4.9, 5.1, 6.2, 6.2, 6.3, 6.4, 6.4, 6.5, 6.7, 6.7, 6.7, 6.7, 6.8, 6.9, 7.1, 
+                   7.2, 7.3, 7.4, 8.0, 8.2, 8.4, 8.7, 8.7, 9.0, 9.1, 9.2),
+  Villages = c(4.5, 2.6, 3.7, 3.5, 3.7, 4.0, 4.0, 4.5, 3.7, 3.8, 4.5, 5.1, 4.4, 4.3, 4.2, 4.4, 4.2, 5.1, 
+               4.9, 4.4, 3.8, 5.4, 3.9, 5.3, 5.9, 4.6, 4.2, 4.7, 4.8),
+  Towns_suburbs = c(2.8, 2.4, 2.6, 2.3, 2.8, 2.6, 2.6, 3.0, 2.5, 2.8, 2.7, 2.9, 3.1, 3.0, 3.3, 2.9, 2.7, 
+                    2.9, 3.0, 3.1, 2.9, 2.7, 2.9, 3.3, 2.7, 3.2, 3.3, 4.1, 3.2),
+  Cities = c(1.6, 1.5, 1.7, 1.6, 1.6, 1.9, 1.6, 1.9, 1.5, 1.7, 1.7, 1.6, 1.5, 1.8, 1.7, 1.6, 1.4, 1.6, 1.4, 
+             1.5, 1.8, 1.4, 1.5, 1.4, 1.3, 1.8, 1.6, 1.7, 2.0)
+)
+
+# Reshape the data for plotting
+data_long <- pivot_longer(data, cols = Sparse_rural:Cities, names_to = "Area_Type", values_to = "Distance")
+
+# Order the data by Sparse_rural
+data_long$Country_Name <- factor(data_long$Country_Name, levels = data$Country_Name[order(data$Sparse_rural)])
+
+# Create the ggplot
+ggplot(data_long, aes(x = Country_Name, y = Distance, color = Area_Type, size = Distance)) +
+  geom_point(alpha = 0.7) +
+  scale_size(range = c(3, 10)) +
+  labs(title = "Traveled Road Distance to Secondary Schools by Area Type",
+       x = "Country",
+       y = "Distance (km)",
+       color = "Area Type",
+       size = "Distance (km)") +
+  scale_color_manual(values = c("Cities" = "yellow", "Towns_suburbs" = "gray", "Villages" = "green", "Sparse_rural" = "purple")) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+```{r}
+library(ggplot2)
+library(tidyr)
+library(janitor)
+
+# Create the data frame
+data1 <- data.frame(
+  Country_Name = c("Old Stein > Longhill", "Whk Post Office > D Stringer", "Whk Post Office > Longhill", "Park View > Longhill", "St Peters Ch > Longhill",
+                   "EU27-UK", "Malta", "Cyprus", "Netherlands", "Belgium", "Luxembourg", "United Kingdom",
+                   "Germany", "Poland", "Denmark", "Slovak Republic", "Italy", "Austria", "Czech Republic",
+                   "Slovenia", "Portugal", "France", "Hungary", "Romania", "Croatia", "Ireland", "Spain",
+                   "Lithuania", "Bulgaria", "Greece", "Sweden", "Latvia", "Estonia", "Finland"),
+  Sparse_rural = c(8.7, 5.8, 6.0, 8.2, 7.0, 
+                   6.8, 3.5, 4.8, 4.9, 5.1, 6.2, 6.2, 6.3, 6.4, 6.4, 6.5, 6.7, 6.7, 6.7, 6.7, 6.8, 6.9, 7.1, 
+                   7.2, 7.3, 7.4, 8.0, 8.2, 8.4, 8.7, 8.7, 9.0, 9.1, 9.2),
+  Villages = c(NA, NA, NA, NA, NA,
+               4.5, 2.6, 3.7, 3.5, 3.7, 4.0, 4.0, 4.5, 3.7, 3.8, 4.5, 5.1, 4.4, 4.3, 4.2, 4.4, 4.2, 5.1, 
+               4.9, 4.4, 3.8, 5.4, 3.9, 5.3, 5.9, 4.6, 4.2, 4.7, 4.8),
+  Towns_suburbs = c(NA, NA, NA, NA, NA,
+                    2.8, 2.4, 2.6, 2.3, 2.8, 2.6, 2.6, 3.0, 2.5, 2.8, 2.7, 2.9, 3.1, 3.0, 3.3, 2.9, 2.7, 
+                    2.9, 3.0, 3.1, 2.9, 2.7, 2.9, 3.3, 2.7, 3.2, 3.3, 4.1, 3.2),
+  Cities = c(NA, NA, NA, NA, NA,
+             1.6, 1.5, 1.7, 1.6, 1.6, 1.9, 1.6, 1.9, 1.5, 1.7, 1.7, 1.6, 1.5, 1.8, 1.7, 1.6, 1.4, 1.6, 
+             1.4, 1.5, 1.8, 1.4, 1.5, 1.4, 1.3, 1.8, 1.6, 1.7, 2.0),
+  Pop = c(NA, NA, NA, NA, NA,
+          499968603, 417291, 839874, 16616526, 10984275, 508615, 63012848, 80069262, 38425274, 5526976, 
+          5370006, 59368416, 8388711, 10395196, 2045461, 10545345, 62700085, 9892044, 20052854, 4282639,
+          4565658, 46756114, 3012395, 7320659, 10627150, 9536432, 2077963, 1293012, 5337521),
+  Sparse_rural_adj = c(NA, NA, NA, NA, NA,
+                       18.1, 1.9, 13.0, 7.8, 15.7, 19.8, 8.6, 15.4, 31.6, 22.3, 20.8, 13.3, 29.9, 24.7, 39.8,
+                       23.2, 25.8, 16.5, 26.2, 31.0, 37.9, 8.2, 29.8, 18.6, 17.8, 23.6, 28.6, 27.0, 29.6),
+  Villages_adj = c(NA, NA, NA, NA, NA,
+                   12.1, 2.8, 12.7, 8.5, 9.1, 19.2, 6.3, 15.0, 9.4, 13.9, 27.0, 12.7, 14.8, 16.8, 12.6, 8.8,
+                   13.1, 19.4, 20.5, 12.8, 8.2, 9.9, 7.7, 15.9, 13.5, 10.7, 9.0, 8.7, 10.3),
+  Towns_suburbs_adj = c(NA, NA, NA, NA, NA,
+                        32.8, 33.4, 24.4, 36.5, 45.3, 42.9, 30.0, 39.0, 29.0, 36.1, 38.0, 40.9, 25.9, 34.3,
+                        33.2, 34.8, 26.3, 36.4, 20.9, 30.7, 24.3, 30.6, 30.6, 26.2, 23.5, 36.6, 29.6, 26.0,
+                        38.3),
+  Cities_adj = c(NA, NA, NA, NA, NA,
+                 36.9, 62.0, 49.9, 47.2, 29.9, 18.1, 55.1, 30.6, 30.0, 27.7, 14.2, 33.1, 29.3, 24.2, 14.4,
+                 33.3, 34.9, 27.7, 32.4, 25.5, 29.6, 51.2, 31.9, 39.3, 45.2, 29.1, 32.8, 38.3, 21.8))
+
+data1_sub <- data1[,1:5]
+data2_sub <- data1[,c(1,7:10)]
+
+
+# Reshape the data for plotting
+data_long1 <- pivot_longer(data1_sub, cols = Sparse_rural:Cities, names_to = "Area_Type", values_to = "Distance")
+# Reshape the data for plotting
+data_long2 <- pivot_longer(data2_sub, cols = Sparse_rural_adj:Cities_adj, names_to = "Area_Type", values_to = "Pop_prop")
+
+data_long1 <- cbind(data_long1, data_long2$Pop_prop) %>% 
+  clean_names()
+
+
+# Order the data by Sparse_rural
+data_long1$country_name <- factor(data_long1$country_name, levels = data1$Country_Name[order(data1$Sparse_rural)])
+
+
+# Create the ggplot
+ggplot(data_long1, aes(x = country_name, y = distance, color = area_type)) +
+  geom_point(alpha = 0.7) +
+  scale_size(range = c(3, 10)) +
+  labs(title = "Travelled distance to secondary schools per student \nby country and degree of urbanisation (estimated), EU27+UK \nand Illustrative Option B journeys, red",
+       x = "Country / Illustrative Option B Journey",
+       y = "Distance (km)",
+       color = "Area Type",
+       size = "Distance (km)") +
+  scale_color_manual(values = c("Cities" = "yellow", "Towns_suburbs" = "gray", "Villages" = "green", "Sparse_rural" = "purple")) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  annotate("point", x = data_long1$country_name[5], y = 5.8, size = 3, color = "red") +
+  annotate("point", x = data_long1$country_name[1], y = 8.7, size = 3, color = "red") +
+  annotate("point", x = data_long1$country_name[10], y = 6.0, size = 3, color = "red") +
+  annotate("point", x = data_long1$country_name[13], y = 8.2, size = 3, color = "red") +
+  annotate("point", x = data_long1$country_name[19], y = 7.0, size = 3, color = "red")
+
+```
