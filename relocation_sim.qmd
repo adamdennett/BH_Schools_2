@@ -135,6 +135,9 @@ write_sf(brighton_outline, here("data", "brighton_outline.geojson"))
 
 brighton_roads <- st_intersection(osm_sussex_maj_roads, brighton_blob)
 
+```
+
+```{r}
 
 ##################################################################
 # Create the routable network by indicating the path where OSM, GTFS and possible DEM data are stored
@@ -544,9 +547,9 @@ BTN_LSOA_Point_Proj <- st_join(BTN_LSOA_Point_Proj, optionC_summarised[, c("geom
 BTN_LSOA_Point_Proj <- BTN_LSOA_Point_Proj %>%
   rename(optionC = catchment)
 
-
+```
 ###################################################################
-
+```{r}
 
 #sub <- BTN_LSOA_Point_Proj %>% 
 #  filter(optionX == "Long")
@@ -636,6 +639,8 @@ btn_sch_gravity1 <- btn_cij %>%
   group_by(dest) %>%
   summarise(prodSIM1 = sum(prodSIM1, na.rm = TRUE))
 
+#write_csv(btn_cij, here("data", "btn_cij.csv"))
+
 # Display the new dataframe
 #print(btn_sch_gravity1)
 
@@ -657,8 +662,8 @@ btn_cij_flow <- btn_cij %>%
 #summary(btn_cij_flow)
 #summary(simple_ttm2)
 
-#simple_ttm3 <- simple_ttm2 %>% 
-#  cbind(btn_cij_flow$flow)
+simple_ttm3 <- simple_ttm2 %>% 
+  cbind(btn_cij_flow$flow)
 
 #write_csv(simple_ttm3, here("data", "simple_ttm3.csv"))
 #simple_ttm3 <- read_csv(here("data", "simple_ttm3.csv"))
@@ -716,3 +721,29 @@ colnames(temp1) <- c("School", "PAN 2024", "Model Estimate", "Surplus/Deficit")
 kable(temp1, format = "html", table.attr = "class='table table-striped'")
 ```
 
+Gravity Model Longhill - Modelled Flows to School (current catchments for reference only)
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+brighton_sch_Commute <- brightopia_lines %>% 
+  filter(dest == 114581) %>% 
+  filter(tij > 1)
+
+tmap_mode("view")
+# Create the map with thicker lines for smaller values
+map <- tm_shape(brighton_sch_Commute) +
+  tm_lines(palette = "-plasma",
+           lwd = "tij",
+           scale = 5,
+           id="tij",
+           popup.vars= c("tij"),
+           title.lwd = "Number of 11 year olds",
+           alpha = 0.5,
+           col = "tij",
+           title = "Number of 11 year olds")+
+  tm_shape(bh_sec_sch2)+
+          tm_dots(col="establishment_name", size=0.01,id="establishment_name", title = "establishment_name", legend.show = F) +
+  tm_shape(bh_catchments) +
+          tm_polygons(col = NA, alpha = 0)
+
+map
+```
