@@ -1,0 +1,76 @@
+---
+title: "Geocode Planning Data 2010-2030 - Brighton"
+author: "Adam Dennett"
+published-title: 26/10/24
+format: 
+  html:
+    code-fold: true
+    code-tools: true
+editor: visual
+---
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, include=FALSE}
+library(ggmap)
+library(chattr)
+library(here)
+library(tidyverse)
+
+source("config.R")
+
+register_google(key = api_key)
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, include=FALSE}
+shlaa <- read_csv(here("data", "shlaa_raw.csv"))
+  
+  
+#shlaa_geocode <- mutate_geocode(shlaa, location = paste0(Site, ", ", "Brighton and Hove, England"), output = "latlona")
+
+#shlaa_geocode <- mutate_geocode(shlaa, location = Site, output = "latlona")
+
+#write_csv(shlaa_geocode, here("data", "shlaa_geocode.csv"))
+shlaa_geocode <- read_csv(here("data", "shlaa_geocode.csv"))
+
+```
+
+super-sketchy google geocoding and plotting of planned housing unit data, Brighton
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
+
+library(tmap)
+library(sf)
+library(stringi)
+library(janitor)
+tmap_mode("view")
+
+
+# Remove rows with missing values in the 'lon' or 'lat' columns
+shlaa_geocode_clean <- shlaa_geocode %>%
+  filter(!is.na(lon) & !is.na(lat))
+
+# Convert dataframe to sf object
+shlaa_geocode_sf <- st_as_sf(shlaa_geocode_clean, coords = c("lon", "lat"), crs = 4326) %>% 
+  clean_names() 
+
+shlaa_geocode_sf$planning_status <- stri_enc_toutf8(shlaa_geocode_sf$planning_status, is_unknown_8bit = FALSE, validate = FALSE)
+
+shlaa_geocode_sf$site <- stri_enc_toutf8(shlaa_geocode_sf$site, is_unknown_8bit = FALSE, validate = FALSE)
+
+# Create the tmap
+#tm_shape(shlaa_geocode_sf) +
+#  tm_dots(size = "total_supply_2010_2030", col = "blue", alpha = 0.7) +
+#  tm_layout(title = "Proportional Circles of Total Supply 2010-2030")
+
+# Create the tmap
+tmap_mode("view") # If you want an interactive map
+tm_shape(shlaa_geocode_sf) +
+  tm_dots(size = "total_supply_2010_2030", 
+          col = "planning_status", 
+          alpha = 0.7, 
+          legend.size.show = TRUE, 
+          popup.vars = c("site", "total_supply_2010_2030", "planning_status")) 
+
+
+```
+

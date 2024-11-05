@@ -80,11 +80,15 @@ brighton_sec_schools_sml <- brighton_sec_schools %>%
 
 #write_csv(brighton_sec_schools_sml,here("data", "brighton_sec_schools_sml.csv"))
 
+brighton_sec_schools_relocate <- read_csv(here("data", "brighton_sec_schools_relocate.csv"))
+
 yr7_admissions <- read_csv(here("data", "Yr7_admissions.csv"))
 
 brighton_sec_schools_sml <- brighton_sec_schools_sml %>% 
   left_join(yr7_admissions, by = "urn")
 
+brighton_sec_schools_relocate <- brighton_sec_schools_relocate %>% 
+  left_join(yr7_admissions, by = "urn")
 
 ##########################################################
 

@@ -7,6 +7,7 @@ project:
     - stain_removal.qmd
     - factsheet.qmd
     - data_processing_scripts.qmd
+    - geocode_planning.qmd
 
 website:
   title: "Brighton and Hove Secondary Schools Admission - Evidence Pages"
@@ -48,5 +49,7 @@ format:
     theme: minty
     css: styles.css
     toc: true
+    code-fold: true
+    code-tools: true
 
 editor: visual

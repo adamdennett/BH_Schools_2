@@ -1,6 +1,12 @@
 ---
-title: "RelocateLonghill"
+title: "What if we relocate Longhill?"
 author: "Adam Dennett"
+published-title: 26/10/24
+format: 
+  html:
+    code-fold: true
+    code-tools: true
+editor: visual
 ---
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, include=FALSE, results='hide'}
@@ -28,6 +34,7 @@ library(od)
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, include=FALSE, results='hide'}
+
 BrightonLSOA <- st_read(here("data","BrightonLSOA_Clean.geojson"))
 BrightonLSOA_pw_cent <- st_read(here("data","lsoa_btn_pw_cent.geojson"))
 BTN_LSOA_Proj <- st_read(here("data","LSOA_NOMIS_plus_projections.geojson")) %>% clean_names
@@ -137,7 +144,7 @@ brighton_roads <- st_intersection(osm_sussex_maj_roads, brighton_blob)
 
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, include=FALSE}
 
 ##################################################################
 # Create the routable network by indicating the path where OSM, GTFS and possible DEM data are stored
@@ -222,7 +229,7 @@ simple_ttm <- na.omit(simple_ttm) %>%
 
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, include=FALSE}
 ########################################################################
 
 # Switch to view mode
@@ -346,7 +353,7 @@ map
 ```
 
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, include=FALSE}
 ############################################
 
 ##summary pupils and PANs
@@ -402,7 +409,7 @@ map
 
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, include=FALSE}
 ##################################################
 
 library(sf)
@@ -549,7 +556,7 @@ BTN_LSOA_Point_Proj <- BTN_LSOA_Point_Proj %>%
 
 ```
 ###################################################################
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, include=FALSE}
 
 #sub <- BTN_LSOA_Point_Proj %>% 
 #  filter(optionX == "Long")
@@ -589,7 +596,7 @@ map
 
 ######################################################################
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, include=FALSE}
 total_commute_longhill_2024 <- brighton_sch_Commute_lines 
 
 ##Try a basic demand model
