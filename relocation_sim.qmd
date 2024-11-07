@@ -352,7 +352,6 @@ map
 
 ```
 
-
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, include=FALSE}
 ############################################
 
@@ -555,7 +554,9 @@ BTN_LSOA_Point_Proj <- BTN_LSOA_Point_Proj %>%
   rename(optionC = catchment)
 
 ```
-###################################################################
+
+################################################################### 
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, include=FALSE}
 
 #sub <- BTN_LSOA_Point_Proj %>% 
@@ -594,7 +595,7 @@ map
 
 ```
 
-######################################################################
+###################################################################### 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, include=FALSE}
 total_commute_longhill_2024 <- brighton_sch_Commute_lines 
@@ -697,7 +698,6 @@ brightopia_lines <- od2line(flow = simple_ttm3, zones = brighton_lsoa_points_r52
 
 ```
 
-
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 # Create the tmap
@@ -712,7 +712,6 @@ tm_shape(brighton_sec_schools_relocate) +
   tm_dots()
 
 ```
-
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 library(knitr)
