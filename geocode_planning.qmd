@@ -44,11 +44,19 @@ register_google(key = api_key)
 shlaa <- read_csv(here("data", "shlaa_raw.csv")) %>% 
   clean_names() %>% 
   mutate(site_long = paste0(site, ", ", "Brighton and Hove, England"))
+
+shlaa_da <- read_csv(here("data", "shlaa_raw_da.csv")) %>% 
+  clean_names() %>% 
+  mutate(site_long = paste0(site_6_plus_units, ", ", "Brighton and Hove, England"))
   
   
 #shlaa_geocode <- mutate_geocode(shlaa, location = paste0(Site, ", ", "Brighton and Hove, England"), output = "latlona")
 
 shlaa_geocode <- mutate_geocode(shlaa, location = site_long, output = "latlona")
+
+shlaa_da_geocode <- mutate_geocode(shlaa_da, location = site_long, output = "latlona")
+
+#write_csv(shlaa_da_geocode, here("data", "shlaa_da_geocode.csv"))
 
 # Subset where address is not NA 
 shlaa_geocode_with_address <- subset(shlaa_geocode, !is.na(address)) 
@@ -65,12 +73,16 @@ shlaa_geocode_without_address <- read_csv(here("data", "shlaa_geocode_without_ad
 
 shlaa_geocode_with_address <- read_csv(here("data", "shlaa_geocode_with_address.csv"))
 
+shlaa_da_geocode <- read_csv(here("data", "shlaa_da_geocode.csv"))
+
 #write_csv(shlaa_geocode, here("data", "shlaa_geocode.csv"))
 #shlaa_geocode <- read_csv(here("data", "shlaa_geocode.csv"))
 
 
 shlaa_geocode <- rbind(shlaa_geocode_with_address, shlaa_geocode_without_address)
 ```
+
+Dwelling units outside of Designated Development Areas, Brighton and Hove, 2010-2030
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 
@@ -84,6 +96,9 @@ shlaa_geocode_clean <- read_csv(here("data", "shlaa_geocode_clean.csv"))
 
 # Convert dataframe to sf object
 shlaa_geocode_sf <- st_as_sf(shlaa_geocode_clean, coords = c("lon", "lat"), crs = 4326) %>% 
+  clean_names() 
+
+shlaa_da_geocode_sf <- st_as_sf(shlaa_da_geocode, coords = c("lon", "lat"), crs = 4326) %>% 
   clean_names() 
 
 shlaa_geocode_sf$planning_status <- stri_enc_toutf8(shlaa_geocode_sf$planning_status, is_unknown_8bit = FALSE, validate = FALSE)
@@ -107,6 +122,17 @@ tm_shape(shlaa_geocode_sf) +
           popup.vars = c("site", "total_supply_2010_2030", "planning_status")) 
 
 
+```
+
+Dwellings Inside Designated Development Areas, Brighton and Hove, 2010-2030
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
+
+tm_shape(shlaa_da_geocode_sf) +
+  tm_dots(size = "total_supply_2010_2030", 
+          col = "planning_status", 
+          alpha = 0.7, 
+          popup.vars = c("site_6_plus_units", "total_supply_2010_2030", "planning_status")) 
 ```
 
 ## Pupil Yield
