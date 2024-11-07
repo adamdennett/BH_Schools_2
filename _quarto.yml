@@ -8,6 +8,7 @@ project:
     - factsheet.qmd
     - data_processing_scripts.qmd
     - geocode_planning.qmd
+    - relocation.qmd
 
 website:
   title: "Brighton and Hove Secondary Schools Admission - Evidence Pages"
