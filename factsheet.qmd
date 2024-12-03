@@ -80,7 +80,7 @@ All DfE data have been re-calculated for Local Education Authority (LEA) or "Upp
 
 -   For disadvantaged student attainment in GCSE Maths and English, 24% achieved grade 9-5, ranking it 61st out of 153 Local *Education* Authorities (against a national median of 23%). With 27 of the top 28 being in London. Excluding London, Brighton ranks 30th best out of 122 Local Education Authorities in the rest of England for disadvantaged attainment at GCSE in 2024.
 
--   Brighton ranks 35th out of 153 Local *Education* Authorities for non-disadvantaged attainment with 57.5% of students achieved grade 9-5 in English and Maths GCSE (against a national median of . Excluding London Boroughs (as Brighton already exceeds the performance of 10 boroughs) Brighton and Hove would rank 12th best out of the remaining 122 Local Education Authorities in the rest of England.
+-   Brighton ranks 35th out of 153 Local *Education* Authorities for non-disadvantaged attainment with 57.5% of students achieved grade 9-5 in English and Maths GCSE (against a national median of 51.5%. Excluding London Boroughs (as Brighton already exceeds the performance of 10 boroughs) Brighton and Hove would rank 12th best out of the remaining 122 Local Education Authorities in the rest of England.
 
 -   The relatively large size of the attainment gap in Brighton and Hove is due more to the higher levels of achievement of its non-disadvantaged students.
 
