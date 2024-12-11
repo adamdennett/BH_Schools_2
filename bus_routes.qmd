@@ -36,6 +36,8 @@ library(tidytransit)
 ```
 
 ```{r}
+
+#https://www.buses.co.uk/open-data
 bh_gtfs <- read_gtfs("data/brightonhove_1730981726.zip")
 names(bh_gtfs)
 BTN_Bus <- gtfs_as_sf(bh_gtfs, skip_shapes = FALSE, crs = 4326, quiet = TRUE)
@@ -49,6 +51,10 @@ tm_shape(shapes_sf) +
 
 
 library(dplyr)
+
+##frequent services
+
+freq_services <- c("1","1A","N1","2","5","5A","5B","N5","6","7","N7","12","12A","12X","13X","N12","14","14C","N14","16","47","52","18","21","22","23","25","N25","24","26","46","50","27","28","29","29A","29B","37","37B","48","49")
 
 BTN_routes <- BTN_Bus$shapes %>% 
   filter(!shape_id %in% c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"))
@@ -65,10 +71,49 @@ tm_shape(route_5B) +
 
 BTN_shapes <- read_gtfs("data/brightonhove_1730981726.zip", files = c("shapes", "trips", "routes"))
 
-names(BTN_shapes)
+#names(BTN_shapes)
 
-trip_geom <- get_trip_geometry(BTN_shapes, file = "shapes")
-plot(trip_geom$geometry)
+#trip_geom <- get_trip_geometry(BTN_shapes, file = "shapes")
+#plot(trip_geom$geometry)
+```
+
+## Loop to pull out the routes
+
+```{r}
+# Function to create subsets based on pattern
+create_route_subsets <- function(df, route_number) {
+  pattern <- paste0("^i", route_number, "|^o", route_number)
+  subset <- df %>%
+    filter(grepl(pattern, shape_id))
+  return(subset)
+}
+
+# Example: Creating subset for route 5B
+route_5B <- create_route_subsets(BTN_routes, "5B")
+
+
+# Create a list to store the subsets
+route_subsets <- list()
+
+# Extract unique route identifiers without trailing numbers
+route_ids <- unique(sub("([0-9]+[A-Za-z]*).*", "\\1", BTN_routes$shape_id))
+route_ids <- as.data.frame(route_ids)
+
+# Loop through unique route identifiers and create subsets
+for (route_id in route_ids) {
+  assign(paste0("route_", route_id), create_route_subsets(BTN_routes, route_id))
+}
+
+
+# Example: Creating subset for route 5B
+route_5B <- create_route_subsets(BTN_routes, "5B")
+route_5A <- create_route_subsets(BTN_routes, "5A")
+route_2 <- create_route_subsets(BTN_routes, "2")
+subset_df <- create_route_subsets(BTN_routes, "5A")
+
+
+
+
 ```
 
 ## School Accessibility Analysis
@@ -267,7 +312,7 @@ When we look at the Car travel times in the map below that, it becomes clear wha
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 # Set parameters
-mode = c("BUS", "WALK")
+mode = c("BUS")
 max_walk_time = 360 # minutes
 max_trip_duration = 360 # minutes
 departure_datetime = as.POSIXct("23-05-2024 8:30:00",
@@ -339,8 +384,6 @@ tm_shape(geo_1) +
   tm_layout(legend.title.size = 1.5) +
 tm_shape(bh_sec_sch1) +
   tm_dots(col = "black", border.lwd=0) + 
-tm_shape(bh_catchments) +
-  tm_polygons(alpha = 0) +
   tm_layout(title = "Car Travel Time",legend.position = c("left", "bottom"))
 ```
 
@@ -348,3 +391,221 @@ tm_shape(bh_catchments) +
 r5r::stop_r5(r5r_core)
 rJava::.jgc(R.gc = TRUE)
 ```
+
+```{r}
+#Road traffic stats
+
+#https://roadtraffic.dft.gov.uk/local-authorities/136
+
+
+traffic_counts <- read_csv(here("data", "traffic_data","dft_rawcount_local_authority_id_136.csv"))
+
+traffic_counts_sf <- st_as_sf(traffic_counts, coords = c("longitude","latitude"), crs = 4326)
+
+traffic_counts_sf_2023 <- traffic_counts_sf %>% 
+  filter(year == 2023) %>% 
+  select(c("count_point_id", "count_date","hour", "cars_and_taxis", "all_motor_vehicles"))
+
+#subset on a single date
+traffic_counts_sf_2023_subset <- traffic_counts_sf_2023 %>%
+  filter(count_date == "2023-04-24")
+
+ggplot(traffic_counts_sf_2023_subset, aes(x = hour, y = all_motor_vehicles)) +
+  geom_bar(stat = "identity", fill = "#b3cde3", color = "black") +  # Use a pastel color for the bars
+  facet_wrap(~ count_point_id) +
+  labs(title = "Traffic Counts by Hour for Each Count Point (2023-04-24)",
+       x = "Hour of the Day",
+       y = "Number of All Motor Vehicles") +
+  theme_minimal()
+
+
+tmap_mode("view")
+
+tm_shape(traffic_counts_sf) +
+  tm_dots()
+
+```
+
+```{r}
+#unauthorised absence
+
+#https://explore-education-statistics.service.gov.uk/data-catalogue/data-set/be024b4d-4f91-40e4-8a58-50dc53dcc93f
+
+##school performance
+#https://www.compare-school-performance.service.gov.uk/
+
+absence <- read_csv("https://explore-education-statistics.service.gov.uk/data-catalogue/data-set/be024b4d-4f91-40e4-8a58-50dc53dcc93f/csv")
+
+names(absence)
+
+absence <- absence %>%
+  mutate(year = substr(time_period, 1, 4))
+
+# Filter the dataframe
+absence_2022 <- absence %>%
+  filter(year == "2022" & !is.na(la_name) & education_phase == "State-funded secondary")
+
+brighton_rate <- absence_2022 %>%
+  filter(la_name == "Brighton and Hove") %>%
+  pull(sess_unauth_totalreasons_rate)
+
+
+# Find the value for Brighton and Hove
+brighton_rate <- absence_2022 %>%
+  filter(la_name == "Brighton and Hove") %>%
+  pull(sess_unauth_totalreasons_rate)
+
+# Create the histogram
+ggplot(absence_2022, aes(x = sess_unauth_totalreasons_rate)) +
+  geom_histogram(binwidth = 0.2, fill = "#b3cde3", color = "black") +  # Pastel blue
+  geom_vline(xintercept = brighton_rate, color = "red", linetype = "dashed", linewidth = 1) +
+  annotate("text", x = brighton_rate, y = Inf, label = "Brighton and Hove", vjust = 1.5, color = "red", angle = 90, hjust = 2) +
+  labs(title = "Distribution of Unauthorised Absence Rates in 2022",
+       x = "Unauthorised Absence Rate",
+       y = "Count") +
+  theme_minimal()
+
+
+
+
+
+```
+
+```{r}
+##Absence 2022-23 regression analysis
+
+##All Data downloaded from here
+##https://www.compare-school-performance.service.gov.uk/
+
+#read in data for every school in the country
+
+england_abs <- read_csv(here("data", "Performancetables_Eng_2022_23", "2022-2023", "england_abs.csv"), na = c("", "NA", "SUPP", "NP", "NE"))
+england_census <- read_csv(here("data", "Performancetables_Eng_2022_23", "2022-2023", "england_census.csv"), na = c("", "NA", "SUPP", "NP", "NE"))
+england_ks4final <- read_csv(here("data", "Performancetables_Eng_2022_23", "2022-2023", "england_ks4final.csv"), na = c("", "NA", "SUPP", "NP", "NE"))
+england_school_information <- read_csv(here("data", "Performancetables_Eng_2022_23", "2022-2023", "england_school_information.csv"), na = c("", "NA", "SUPP", "NP", "NE"))
+
+england_ks4final <- england_ks4final %>%
+  mutate(URN = as.character(URN)) %>%
+  mutate(across(TOTPUPS:PTOTENT_E_COVID_IMPACTED_PTQ_EE, ~ parse_number(as.character(.))))
+
+england_ks4final <- england_ks4final %>%
+  filter(!is.na(URN))
+
+england_abs <- england_abs %>%
+  mutate(URN = as.character(URN))
+
+england_census <- england_census %>%
+  mutate(URN = as.character(URN))
+
+england_school_information <- england_school_information %>%
+  mutate(URN = as.character(URN))
+
+# Left join england_ks4final with england_abs
+england_school_2022_23 <- england_ks4final %>%
+  left_join(england_abs, by = "URN") %>%
+  left_join(england_census, by = "URN") %>%
+  left_join(england_school_information, by = "URN")
+
+data_types <- sapply(england_school_2022_23, class)
+england_school_2022_23_meta <- data.frame(Field = names(data_types), DataType = data_types)
+
+```
+
+
+```{r}
+#read in Brighton Secondary Schools Data
+brighton_sec_schools <- read_csv("https://www.dropbox.com/scl/fi/fhzafgt27v30lmmuo084y/edubasealldata20241003.csv?rlkey=uorw43s44hnw5k9js3z0ksuuq&raw=1") %>% 
+  clean_names() %>% 
+  filter(la_name == "Brighton and Hove") %>% 
+  filter(phase_of_education_name == "Secondary") %>% 
+  filter(establishment_status_name == "Open") %>%
+  st_as_sf(., coords = c("easting", "northing")) %>% 
+  st_set_crs(27700)
+
+btn_urn_list <- brighton_sec_schools %>% 
+  select(urn) 
+
+```
+
+
+```{r}
+ggplot(england_school_2022_23, aes(x = P8MEA)) +
+  geom_histogram(binwidth = 0.1, fill = "#b3cde3", color = "black") +  # Pastel color for the bars
+  labs(title = "Distribution of P8MEA",
+       x = "P8MEA",
+       y = "Count") +
+  theme_minimal()
+```
+
+
+
+```{r}
+ggplot(england_school_2022_23, aes(x = PPERSABS10
+)) +
+  geom_histogram(binwidth = 3, fill = "#b3cde3", color = "black") +  # Pastel color for the bars
+  labs(title = "Distribution of PPERSABS10",
+       x = "PPERSABS10",
+       y = "Count") +
+  theme_minimal()
+
+```
+
+
+
+```{r}
+library(ggplot2)
+library(ggrepel)
+
+
+btn_sub <- england_school_2022_23 %>%
+  filter(URN %in% btn_urn_list$urn)
+
+#P8_BANDING
+
+
+library(ggplot2)
+library(ggrepel)
+
+england_school_2022_23_not_special <- england_school_2022_23 %>%
+  filter(MINORGROUP != "Special school")
+
+# Base plot with england_school_2022_23
+plot <- ggplot(england_school_2022_23_not_special, aes(y = P8MEA, x = PPERSABS10, colour = OFSTEDRATING)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +  # Add linear model line for england_school_2022_23
+  labs(title = "Progress 8 vs Persistent Absence %, 2022-23",
+       x = "% Enrollments who are persistently absent",
+       y = "Progress 8 measure after adjustment for extreme scores") +
+  theme_minimal()
+
+# Add another layer with btn_sub points and labels with sticks
+plot + 
+  geom_point(data = btn_sub, aes(y = P8MEA, x = PPERSABS10), color = "black") +
+  geom_smooth(data = btn_sub, aes(y = P8MEA, x = PPERSABS10), method = "lm", se = FALSE, color = "black") +  # Add linear model line for btn_sub
+  geom_text_repel(data = btn_sub, aes(y = P8MEA, x = PPERSABS10, label = SCHNAME.x), color = "black", size = 3, nudge_y = c(-1.5, 1.5), force = 10, box.padding = 0.5, max.overlaps = 10, direction = "both")
+
+ggsave(here("images","progress8_vs_persabs.png"), width = 10, height = 6, dpi = 300)
+
+```
+
+```{r}
+library(ggplot2)
+
+#colour = "#b3cde3"
+
+plot <- ggplot(england_school_2022_23_not_special, aes(y = P8MEA, x = PERCTOT, colour = OFSTEDRATING)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +  # Add linear model line for england_school_2022_23
+  labs(title = "Progress 8 vs Overall Absence %, 2022-23",
+       x = "% Percentage of overall absence (authorised and unauthorised)",
+       y = "Progress 8 measure after adjustment for extreme scores") +
+  theme_minimal()
+
+# Add another layer with btn_sub points and labels with sticks
+plot + 
+  geom_point(data = btn_sub, aes(y = P8MEA, x = PERCTOT), color = "black") +
+  geom_smooth(data = btn_sub, aes(y = P8MEA, x = PERCTOT), method = "lm", se = FALSE, color = "black") +  # Add linear model line for btn_sub
+  geom_text_repel(data = btn_sub, aes(y = P8MEA, x = PERCTOT, label = SCHNAME.x), color = "black", size = 3, nudge_y = c(-1.5, 1.5), force = 10, box.padding = 0.5, max.overlaps = 10, direction = "both")
+
+```
+
