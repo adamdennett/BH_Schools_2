@@ -562,13 +562,16 @@ ggplot(england_school_2022_23_not_special, aes(x = P8MEA)) +
 
 
 ```{r}
-ggplot(england_school_2022_23_not_special, aes(x = PPERSABS10
-)) +
+ggplot(england_school_2022_23_not_special, aes(x = PPERSABS10)) +
   geom_histogram(binwidth = 3, fill = "#b3cde3", color = "black") +  # Pastel color for the bars
-  labs(title = "Percentage of enrolments who are persistent absentees - missing 10% or more of possible sessions across the full 2022/23 academic year.",
-       x = "Percentage of enrolments who are persistent absentees",
+  labs(title = "Percentage of Enrolments Who Are Persistent Absentees - Missing 10% or More of Possible Sessions Across the Full 2022/23 Academic Year",
+       x = "Percentage of Enrolments Who Are Persistent Absentees",
        y = "Count") +
-  theme_minimal()
+  theme_minimal() +
+  geom_vline(data = btn_sub, aes(xintercept = PPERSABS10), color = "red", linetype = "dashed", linewidth = 1) +  # Vertical lines
+  geom_text_repel(data = btn_sub, aes(x = PPERSABS10, y = 0, label = SCHNAME.x), 
+                  color = "red", angle = 90, vjust = -0.5, size = 3, nudge_y = 1)
+
 
 ```
 

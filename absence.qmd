@@ -1,0 +1,404 @@
+---
+title: "Let's Talk About Absence"
+author: "Professor Adam Dennett FRGS FAcSS, Professor of Urban Analytics, Bartlett Centre for Advanced Spatial Analysis, University College London - a.dennett@ucl.ac.uk - @adam_dennett"
+published-title: 12/12/24
+format: html
+editor: visual
+---
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, include=FALSE, results='hide'}
+library(tidyr)
+library(dplyr)
+library(writexl)
+library(tidyverse)
+library(here)
+library(janitor)
+library(sf)
+library(usethis)
+library(tmap)
+library(readxl)
+library(r5r)
+library(RColorBrewer)
+library(accessibility)
+library(data.table)
+library(ggplot2)
+library(interp)
+library(h3jsr)
+library(h3r)
+library(osmextract)
+library(stplanr)
+library(od)
+library(tidytransit)
+
+```
+
+```{r}
+#References
+
+https://educationhub.blog.gov.uk/2023/05/18/school-attendance-important-risks-missing-day/
+
+https://www.nga.org.uk/knowledge-centre/improving-school-attendance/
+
+https://www.nga.org.uk/knowledge-centre/disadvantage-in-education/
+
+https://www.nfer.ac.uk/publications/being-present-the-power-of-attendance-and-stability-for-disadvantaged-pupils/ 
+  
+https://www.gov.uk/government/publications/against-the-odds
+
+##this one has the gold
+https://www.gov.uk/government/publications/against-the-odds/against-the-odds-achieving-greater-progress-for-secondary-students-facing-socio-economic-disadvantage
+
+"Our statistical models indicate that the strongest predictive factor of the progress made by pupil premium students is the school’s absence rate:[footnote 31]"
+
+"schools with lower absence rates have smaller progress gaps
+pupil premium students progress more at schools with lower absence rates
+This correlation is regardless of whether they begin with low, medium or high rates of absence."
+
+"These findings concur with previous research and we share their interpretation too, that this correlation is most likely to be causal. This is because there is an intuitive underlying causal mechanism: students not in school are less likely to learn the school curriculum.[footnote 32]"
+
+https://assets.publishing.service.gov.uk/media/66bf300da44f1c4c23e5bd1b/Working_together_to_improve_school_attendance_-_August_2024.pdf 
+
+```
+
+
+```{r}
+#unauthorised absence
+
+#https://explore-education-statistics.service.gov.uk/data-catalogue/data-set/be024b4d-4f91-40e4-8a58-50dc53dcc93f
+
+##school performance
+#https://www.compare-school-performance.service.gov.uk/
+
+absence <- read_csv("https://explore-education-statistics.service.gov.uk/data-catalogue/data-set/be024b4d-4f91-40e4-8a58-50dc53dcc93f/csv")
+
+absence_meta <- as.data.frame(names(absence))
+
+absence <- absence %>% 
+  mutate(year = as.numeric(substr(time_period, 1, 4)))
+
+
+# Filter the dataframe
+absence_2022 <- absence %>%
+  filter(year == "2022" & !is.na(la_name) & education_phase == "State-funded secondary")
+
+brighton_rate <- absence_2022 %>%
+  filter(la_name == "Brighton and Hove") %>%
+  pull(sess_unauth_totalreasons_rate)
+
+
+# Find the value for Brighton and Hove
+brighton_rate <- absence_2022 %>%
+  filter(la_name == "Brighton and Hove") %>%
+  pull(sess_unauth_totalreasons_rate)
+
+# Create the histogram
+ggplot(absence_2022, aes(x = sess_unauth_totalreasons_rate)) +
+  geom_histogram(binwidth = 0.3, fill = "#b3cde3", color = "black") +  # Pastel blue
+  geom_vline(xintercept = brighton_rate, color = "red", linetype = "dashed", linewidth = 1) +
+  annotate("text", x = brighton_rate, y = Inf, label = "Brighton and Hove", vjust = 1.5, color = "red", angle = 90, hjust = 2) +
+  labs(title = "Distribution of Unauthorised Absence Rates in 2022",
+       x = "Unauthorised Absence Rate",
+       y = "Count") +
+  theme_minimal()
+
+```
+
+
+
+```{r}
+# Histogram with vertical lines and labels
+
+# Line plot for sess_unauth_totalreasons_rate for Brighton and Hove over all values of year 
+absence_btn <- absence %>%
+  filter(la_name == "Brighton and Hove" & education_phase == "State-funded secondary")
+
+ggplot(absence_btn, aes(x = year, y = sess_unauth_totalreasons_rate)) + 
+  geom_line(color = "blue") + 
+  labs(title = "Unauthorised Absence Rates Over Time for Brighton and Hove", x = "Year", y = "Unauthorised Absence Rate") + 
+  theme_minimal()
+
+
+
+```
+
+```{r}
+
+# Line plot for sess_unauth_totalreasons_rate for Brighton and Hove over all values of year 
+absence_btn <- absence %>%
+  filter(la_name == "Brighton and Hove" & education_phase == "State-funded secondary")
+
+filtered_data <- absence %>%
+  filter(education_phase == "State-funded secondary" & is.na(la_name))
+
+
+ggplot() +
+  geom_line(data = filtered_data, aes(x = year, y = sess_overall_percent, color = region_name, group = region_name)) +
+  geom_point(data = filtered_data, aes(x = year, y = sess_overall_percent, color = region_name, group = region_name)) +
+  geom_line(data = absence_btn, aes(x = year, y = sess_overall_percent), color = "black") +
+  geom_point(data = absence_btn, aes(x = year, y = sess_overall_percent), color = "black") +
+  labs(title = "Unauthorised Absence Rates Over Time \nfor State-funded Secondary Schools by Region",
+       x = "Year",
+       y = "Unauthorised Absence Rate") +
+  theme_minimal()
+
+
+
+```
+
+
+```{r}
+##Absence 2022-23 regression analysis
+
+##All Data downloaded from here
+##https://www.compare-school-performance.service.gov.uk/
+
+#read in data for every school in the country
+
+england_abs <- read_csv(here("data", "Performancetables_Eng_2022_23", "2022-2023", "england_abs.csv"), na = c("", "NA", "SUPP", "NP", "NE"))
+england_census <- read_csv(here("data", "Performancetables_Eng_2022_23", "2022-2023", "england_census.csv"), na = c("", "NA", "SUPP", "NP", "NE"))
+england_ks4final <- read_csv(here("data", "Performancetables_Eng_2022_23", "2022-2023", "england_ks4final.csv"), na = c("", "NA", "SUPP", "NP", "NE"))
+england_school_information <- read_csv(here("data", "Performancetables_Eng_2022_23", "2022-2023", "england_school_information.csv"), na = c("", "NA", "SUPP", "NP", "NE"))
+
+england_ks4final <- england_ks4final %>%
+  mutate(URN = as.character(URN)) %>%
+  mutate(across(TOTPUPS:PTOTENT_E_COVID_IMPACTED_PTQ_EE, ~ parse_number(as.character(.))))
+
+england_ks4final <- england_ks4final %>%
+  filter(!is.na(URN))
+
+england_abs <- england_abs %>%
+  mutate(URN = as.character(URN))
+
+england_census <- england_census %>%
+  mutate(URN = as.character(URN))
+
+england_school_information <- england_school_information %>%
+  mutate(URN = as.character(URN))
+
+# Left join england_ks4final with england_abs
+england_school_2022_23 <- england_ks4final %>%
+  left_join(england_abs, by = "URN") %>%
+  left_join(england_census, by = "URN") %>%
+  left_join(england_school_information, by = "URN")
+
+data_types <- sapply(england_school_2022_23, class)
+england_school_2022_23_meta <- data.frame(Field = names(data_types), DataType = data_types)
+
+```
+
+
+
+
+```{r}
+#read in Brighton Secondary Schools Data
+brighton_sec_schools <- read_csv("https://www.dropbox.com/scl/fi/fhzafgt27v30lmmuo084y/edubasealldata20241003.csv?rlkey=uorw43s44hnw5k9js3z0ksuuq&raw=1") %>% 
+  clean_names() %>% 
+  filter(la_name == "Brighton and Hove") %>% 
+  filter(phase_of_education_name == "Secondary") %>% 
+  filter(establishment_status_name == "Open") %>%
+  st_as_sf(., coords = c("easting", "northing")) %>% 
+  st_set_crs(27700)
+
+btn_urn_list <- brighton_sec_schools %>% 
+  select(urn) 
+
+```
+
+
+
+
+```{r}
+library(ggplot2)
+library(ggrepel)
+
+
+btn_sub <- england_school_2022_23 %>%
+  filter(URN %in% btn_urn_list$urn)
+
+#P8_BANDING
+
+
+library(ggplot2)
+library(ggrepel)
+
+england_school_2022_23_not_special <- england_school_2022_23 %>%
+  filter(MINORGROUP != "Special school")
+
+
+```
+
+```{r}
+ggplot(england_school_2022_23_not_special, aes(x = P8MEA)) +
+  geom_histogram(binwidth = 0.1, fill = "#b3cde3", color = "black") +  # Pastel color for the bars
+  labs(title = "Distribution of P8MEA",
+       x = "P8MEA",
+       y = "Count") +
+  theme_minimal()
+```
+
+
+
+```{r}
+ggplot(england_school_2022_23_not_special, aes(x = PPERSABS10)) +
+  geom_histogram(binwidth = 3, fill = "#b3cde3", color = "black") +  # Pastel color for the bars
+  labs(title = "Percentage of Enrolments Who Are Persistent Absentees \n- Missing 10% or More of Possible Sessions Across the \nFull 2022/23 Academic Year",
+       x = "Percentage of Enrolments Who Are Persistent Absentees",
+       y = "Count") +
+  theme_minimal() +
+  geom_vline(data = btn_sub, aes(xintercept = PPERSABS10), color = "red", linetype = "dashed", linewidth = 1) +  # Vertical lines
+  geom_text_repel(data = btn_sub, aes(x = PPERSABS10, y = 0, label = SCHNAME.x), 
+                  color = "red", angle = 90, vjust = -0.5, size = 3, nudge_y = 1)
+
+
+```
+
+```{r}
+library(ggplot2)
+library(ggrepel)
+library(RColorBrewer)
+
+england_median <- median(england_school_2022_23_not_special$PERCTOT, na.rm = TRUE)
+
+# Order factor levels of SCHNAME.x by PERCTOT
+btn_sub <- btn_sub %>%
+  mutate(SCHNAME.x = factor(SCHNAME.x, levels = SCHNAME.x[order(PERCTOT)]))
+
+
+# Create the histogram with vertical lines using the Set3 palette
+ggplot(england_school_2022_23_not_special, aes(x = PERCTOT)) +
+  geom_histogram(binwidth = 1, fill = "#66c2a5", color = "black", alpha = 0.4) +  # New color for the bars with added transparency
+  labs(title = "Percentage of Overall Absence (Authorised and Unauthorised) \nfor the Full 2022/23 Academic Year (All Schools England, Brighton overlaid)",
+       x = "Percentage of Overall Absence",
+       y = "Count",
+       color = "School (ordered lowest absence)") +  # Change legend title to "School"
+  theme_minimal() +
+  geom_vline(data = btn_sub, aes(xintercept = PERCTOT, color = SCHNAME.x), linetype = "solid", linewidth = 1) +  # Solid vertical lines colored by SCHNAME.x
+  scale_color_manual(values = brewer.pal(10, "Set3")) +  # Use Set3 palette for high contrast with 10 colors
+  theme(legend.position = c(0.8, 0.5),  # Position legend inside the plot
+        legend.background = element_rect(fill = "white", size = 0.5, linetype = "solid", color = "black")) 
+
+
+```
+
+
+```{r}
+
+##FSM - % disadvantaged at the end of KS4
+ggplot(england_school_2022_23_not_special, aes(x = PTFSM6CLA1A
+
+)) +
+  geom_histogram(fill = "#b3cde3", color = "black") +  # Pastel color for the bars
+  labs(title = "% disadvantaged at the end of KS4",
+       x = "% disadvantaged at the end of KS4",
+       y = "Count") +
+  theme_minimal()
+
+```
+
+
+```{r}
+# Base plot with england_school_2022_23
+plot <- ggplot(england_school_2022_23_not_special, aes(y = P8MEA, x = PPERSABS10, colour = OFSTEDRATING)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +  # Add linear model line for england_school_2022_23
+  labs(title = "Progress 8 vs Persistent Absence %, 2022-23",
+       x = "% Enrollments who are persistently absent",
+       y = "Progress 8 measure after adjustment for extreme scores") +
+  theme_minimal()
+
+# Add another layer with btn_sub points and labels with sticks
+plot + 
+  geom_point(data = btn_sub, aes(y = P8MEA, x = PPERSABS10), color = "black") +
+  geom_smooth(data = btn_sub, aes(y = P8MEA, x = PPERSABS10), method = "lm", se = FALSE, color = "black") +  # Add linear model line for btn_sub
+  geom_text_repel(data = btn_sub, aes(y = P8MEA, x = PPERSABS10, label = SCHNAME.x), color = "black", size = 3, nudge_y = c(-1.5, 1.5), force = 10, box.padding = 0.5, max.overlaps = 10, direction = "both")
+
+ggsave(here("images","progress8_vs_persabs.png"), width = 10, height = 6, dpi = 300)
+
+```
+
+
+
+```{r}
+library(ggplot2)
+
+#colour = "#b3cde3"
+
+plot <- ggplot(england_school_2022_23_not_special, aes(y = P8MEA, x = PTFSM6CLA1A, colour = OFSTEDRATING)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +  # Add linear model line for england_school_2022_23
+  labs(title = "Progress 8 vs Disadvantaged Student %, 2022-23",
+       x = "% Percentage of Disadvantaged Students",
+       y = "Progress 8 measure after adjustment for extreme scores") +
+  theme_minimal()
+
+# Add another layer with btn_sub points and labels with sticks
+plot + 
+  geom_point(data = btn_sub, aes(y = P8MEA, x = PTFSM6CLA1A), color = "black") +
+  geom_smooth(data = btn_sub, aes(y = P8MEA, x = PTFSM6CLA1A), method = "lm", se = FALSE, color = "black") +  # Add linear model line for btn_sub
+  geom_text_repel(data = btn_sub, aes(y = P8MEA, x = PTFSM6CLA1A, label = SCHNAME.x), color = "black", size = 3, nudge_y = c(-1.5, 1.5), force = 10, box.padding = 0.5, max.overlaps = 10, direction = "both")
+
+ggsave(here("images","progress8_vs_disadvantage.png"), width = 10, height = 6, dpi = 300)
+
+```
+
+```{r}
+#colour = "#b3cde3"
+
+plot <- ggplot(england_school_2022_23_not_special, aes(y = P8MEA, x = PERCTOT, colour = OFSTEDRATING)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +  # Add linear model line for england_school_2022_23
+  labs(title = "Progress 8 vs Overall Absence %, 2022-23",
+       x = "% Percentage of overall absence (authorised and unauthorised)",
+       y = "Progress 8 measure after adjustment for extreme scores") +
+  theme_minimal()
+
+# Add another layer with btn_sub points and labels with sticks
+plot + 
+  geom_point(data = btn_sub, aes(y = P8MEA, x = PERCTOT), color = "black") +
+  geom_smooth(data = btn_sub, aes(y = P8MEA, x = PERCTOT), method = "lm", se = FALSE, color = "black") +  # Add linear model line for btn_sub
+  geom_text_repel(data = btn_sub, aes(y = P8MEA, x = PERCTOT, label = SCHNAME.x), color = "black", size = 3, nudge_y = c(-1.5, 1.5), force = 10, box.padding = 0.5, max.overlaps = 10, direction = "both")
+```
+
+
+```{r}
+plot <- ggplot(england_school_2022_23_not_special, aes(y = PTFSM6CLA1A, x = PERCTOT, colour = OFSTEDRATING)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +  # Add linear model line for england_school_2022_23
+  labs(title = "FSM % vs Overall Absence %, 2022-23",
+       x = "% FSM/Disadvantaged",
+       y = "% Percentage of overall absence (authorised and unauthorised)") +
+  theme_minimal()
+
+plot
+```
+
+
+```{r}
+cor <- cor(england_school_2022_23_not_special$PTFSM6CLA1A, england_school_2022_23_not_special$PERCTOT, use = "complete.obs")
+
+cor
+```
+
+
+
+```{r}
+## regression model
+
+library(gglm)
+library(car)
+
+# Create a linear model
+
+model <- lm(P8MEA ~ PPERSABS10 + PTFSM6CLA1A + OFSTEDRATING, data = england_school_2022_23_not_special)
+
+vif_values <- car::vif(model)
+vif_values
+summary(model)
+
+gglm(model)
+
+```
+
+
+
+
