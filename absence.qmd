@@ -4,6 +4,7 @@ author: "Professor Adam Dennett FRGS FAcSS, Professor of Urban Analytics, Bartle
 published-title: 12/12/24
 format: html
 editor: visual
+bibliography: references.bib
 ---
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, include=FALSE, results='hide'}
@@ -32,34 +33,84 @@ library(tidytransit)
 
 ```
 
+## Absence/Attendance and Attainment?
+
+In this piece I am going to change the focus of the conversation and look at something which has thus far been absent from any of the conversations about the school system in Brighton. The issue of absence/attendance and its importance for educational outcomes.
+
+### Improving Educational Outcomes
+
+The Council's premise in the very first slide shown in the engagement exercise back in October, was that Brighton and Hove has a large attainment gap and is failing its most disadvantaged pupils. Now, I have since refuted that claim here - <https://adamdennett.github.io/BH_Schools_2/stain_removal.html> - and shown that Brighton is not performing badly as a city and indeed is above the national median.
+
+However, attainment and disadvantage is still an important topic for the council and is one of the main drivers behind the new consultation, so let's stick with it for the moment. The new proposals in the consultation zoom in on disadvantage as one of the motivating factors, citing in 3.7 that they want a system that "delivers childrens' outcomes which are good and improving especially for those at risk of disadvantage" and under 3.9 that, "the proposals put forward were designed to include: a) Better equality of outcomes – results not driven by economic advantage. b) Deliver a ‘comprehensive’ offer from our city schools as a more mixed pupil intake creates better outcomes for disadvantaged pupils."
+
+We distill those statements into the following goals:
+
+1.  **Improving Outcomes for Disadvantaged Children**: The council aims to create a system that enhances and improves outcomes, particularly for children at risk of disadvantage.
+
+2.  **Equality of Outcomes**: The proposals emphasize achieving better equality in educational results, ensuring that outcomes are not influenced by economic advantage.
+
+The assumption revealed in the last statement from the Council, is the belief that the main route to achieving these goals is through creating a more mixed intake in schools. We know this is influenced quite heavily by some of the work of Stephen Gorard (<https://theconversation.com/poorer-pupils-do-worse-at-school-heres-how-to-reduce-the-attainment-gap-205535>), but where even Gorard concedes some of practical limitations of forced mixing ("Pupils could be given free transport to schools outside their immediate neighbourhood"), we would be right to also question whether a lack of mixing is the main thing holding back disadvantaged attainment, and if it is not, what is? If we could effectively indentify the most important factor affecting attainment, then there might be even more effective routes to minimising disadvantged educational outcomes that might offer better or faster results, and indeed do so without the levels of disruption currently on the table?
+
+Currently one of the experimental treatments being prescribed by the council is forced mixing in schools through '[busing](https://en.wikipedia.org/wiki/Desegregation_busing)' significant numbers of students from some neighbouroods to schools a long way from their homes. This kind of forced mixing not only has a questionable history and efficacy in other contexts (see [@rossell1990] and others for the US history - a very different context, but same underlying idea), but has huge financial, environmental and social implications (many of which were [raised in the Parent Support Group's latest deputation at the Labour Cabinet meeting in November](https://www.parentsupport.group/deputation-to-brighton-council-cabinet-5th-dec-2024/)) which have thus far been ignored.
+
+### Is there anything more important than social mixing holding back educational attainment, particularly for disadvantaged pupils?
+
+Yes, there is. Well, actually, there are lots of things from income deprivation, requiring SEN support and simply moving schools (see p8 of [@claymore2023] to see the relative effects of some of these). But there is one factor, over an above everything else, that affects attainment. **Absence from School.**
+
+## Absence
+
+Now at this point, you'd be forgiven for shouting "well that's bloody obvious, I could have told you that!" - which makes it all the more surprising that it has barely surfaced in the narrative during this whole Brighton Secondary School Admissions engagement/consultation process.
+
+I genuinely don't know why it hasn't, but again the rush to consultation and the lack of due care and attention and gathering of relevant evidence throughout are probably in the blame line-up.
+
+### The Evidence
+
+I could get all academic and cite a bunch of papers and government reports, at this juncture, which detail the important role that absence/attendance plays in educational outcomes. For example, in a [report for the Government's Social Mobility Commission](https://www.gov.uk/government/publications/against-the-odds/against-the-odds-achieving-greater-progress-for-secondary-students-facing-socio-economic-disadvantage), [@riordan2021] state:
+
+"Our statistical models indicate that the strongest predictive factor of the progress made by pupil premium students is the school’s absence rate"
+
+"schools with lower absence rates have smaller progress gaps pupil premium students progress more at schools with lower absence rates This correlation is regardless of whether they begin with low, medium or high rates of absence."
+
+"These findings concur with previous research and we share their interpretation too, that this correlation is most likely to be causal. This is because there is an intuitive underlying causal mechanism: students not in school are less likely to learn the school curriculum."
+
+[@claymore2023a] (already citied above) in a paper titled: "[Being Present: the Power of Attendance and Stability for Stability for Disadvantaged Pupils](https://www.nfer.ac.uk/publications/being-present-the-power-of-attendance-and-stability-for-disadvantaged-pupils/)" states:
+
+"On average, the association between being absent from school and KS4 outcomes is worse for disadvantaged pupils than their more affluent peers"
+
+"Supporting secondary schools to reduce absence, improve behaviour and support within-secondary phase transfers are all key areas of policy focus to boost outcomes of disadvantaged pupils and reduce group gaps in progress and attainment."
+
+"over half of the gap in outcomes between disadvantaged pupils and their more affluent peers is associated with the underlying group differences in absence, exclusion and pupil transfer rates.  Improving these underlying factors for disadvantaged pupils should therefore substantially boost outcomes for the group"
+
+[@britton2023]
+
 ```{r}
 #References
 
-https://educationhub.blog.gov.uk/2023/05/18/school-attendance-important-risks-missing-day/
+#https://educationhub.blog.gov.uk/2023/05/18/school-attendance-important-risks-missing-day/
 
-https://www.nga.org.uk/knowledge-centre/improving-school-attendance/
+#https://www.nga.org.uk/knowledge-centre/improving-school-attendance/
 
-https://www.nga.org.uk/knowledge-centre/disadvantage-in-education/
-
-https://www.nfer.ac.uk/publications/being-present-the-power-of-attendance-and-stability-for-disadvantaged-pupils/ 
+#https://www.nga.org.uk/knowledge-centre/disadvantage-in-education/
+#
+#https://www.nfer.ac.uk/publications/being-present-the-power-of-attendance-and-stability-for-disadvantaged-pupils/ 
   
-https://www.gov.uk/government/publications/against-the-odds
+#https://www.gov.uk/government/publications/against-the-odds
 
 ##this one has the gold
-https://www.gov.uk/government/publications/against-the-odds/against-the-odds-achieving-greater-progress-for-secondary-students-facing-socio-economic-disadvantage
+#https://www.gov.uk/government/publications/against-the-odds/against-the-odds-achieving-greater-progress-for-secondary-students-facing-socio-economic-disadvantage
+# 
+# "Our statistical models indicate that the strongest predictive factor of the progress made by pupil premium students is the school’s absence rate:[footnote 31]"
+# 
+# "schools with lower absence rates have smaller progress gaps
+# pupil premium students progress more at schools with lower absence rates
+# This correlation is regardless of whether they begin with low, medium or high rates of absence."
+# 
+# "These findings concur with previous research and we share their interpretation too, that this correlation is most likely to be causal. This is because there is an intuitive underlying causal mechanism: students not in school are less likely to learn the school curriculum.[footnote 32]"
 
-"Our statistical models indicate that the strongest predictive factor of the progress made by pupil premium students is the school’s absence rate:[footnote 31]"
+#https://assets.publishing.service.gov.uk/media/66bf300da44f1c4c23e5bd1b/Working_together_to_improve_school_attendance_-_August_2024.pdf 
 
-"schools with lower absence rates have smaller progress gaps
-pupil premium students progress more at schools with lower absence rates
-This correlation is regardless of whether they begin with low, medium or high rates of absence."
-
-"These findings concur with previous research and we share their interpretation too, that this correlation is most likely to be causal. This is because there is an intuitive underlying causal mechanism: students not in school are less likely to learn the school curriculum.[footnote 32]"
-
-https://assets.publishing.service.gov.uk/media/66bf300da44f1c4c23e5bd1b/Working_together_to_improve_school_attendance_-_August_2024.pdf 
 
 ```
-
 
 ```{r}
 #unauthorised absence
@@ -93,7 +144,7 @@ brighton_rate <- absence_2022 %>%
 
 # Create the histogram
 ggplot(absence_2022, aes(x = sess_unauth_totalreasons_rate)) +
-  geom_histogram(binwidth = 0.3, fill = "#b3cde3", color = "black") +  # Pastel blue
+  geom_histogram(binwidth = 0.2, fill = "grey", color = "black") +  # Pastel blue
   geom_vline(xintercept = brighton_rate, color = "red", linetype = "dashed", linewidth = 1) +
   annotate("text", x = brighton_rate, y = Inf, label = "Brighton and Hove", vjust = 1.5, color = "red", angle = 90, hjust = 2) +
   labs(title = "Distribution of Unauthorised Absence Rates in 2022",
@@ -102,8 +153,6 @@ ggplot(absence_2022, aes(x = sess_unauth_totalreasons_rate)) +
   theme_minimal()
 
 ```
-
-
 
 ```{r}
 # Histogram with vertical lines and labels
@@ -145,7 +194,6 @@ ggplot() +
 
 ```
 
-
 ```{r}
 ##Absence 2022-23 regression analysis
 
@@ -186,9 +234,6 @@ england_school_2022_23_meta <- data.frame(Field = names(data_types), DataType = 
 
 ```
 
-
-
-
 ```{r}
 #read in Brighton Secondary Schools Data
 brighton_sec_schools <- read_csv("https://www.dropbox.com/scl/fi/fhzafgt27v30lmmuo084y/edubasealldata20241003.csv?rlkey=uorw43s44hnw5k9js3z0ksuuq&raw=1") %>% 
@@ -203,9 +248,6 @@ btn_urn_list <- brighton_sec_schools %>%
   select(urn) 
 
 ```
-
-
-
 
 ```{r}
 library(ggplot2)
@@ -236,18 +278,27 @@ ggplot(england_school_2022_23_not_special, aes(x = P8MEA)) +
   theme_minimal()
 ```
 
-
-
 ```{r}
+
+# Order factor levels of SCHNAME.x by PERCTOT
+btn_sub <- btn_sub %>%
+  mutate(SCHNAME.x = factor(SCHNAME.x, levels = SCHNAME.x[order(PERCTOT)]))
+
+
+# Create the histogram with vertical lines using the Set3 palette
 ggplot(england_school_2022_23_not_special, aes(x = PPERSABS10)) +
-  geom_histogram(binwidth = 3, fill = "#b3cde3", color = "black") +  # Pastel color for the bars
-  labs(title = "Percentage of Enrolments Who Are Persistent Absentees \n- Missing 10% or More of Possible Sessions Across the \nFull 2022/23 Academic Year",
+  geom_histogram(binwidth = 1, fill = "grey", color = "black", alpha = 0.4) +  # New color for the bars with added transparency
+  labs(title = "Percentage of Enrolments Who Are Persistent Absentees - Missing 10% \nor More of Possible Sessions Across the Full 2022/23 Academic Year - \n(All Secondary Schools England, Brighton overlaid)",
        x = "Percentage of Enrolments Who Are Persistent Absentees",
-       y = "Count") +
+       y = "Count",
+       color = "School (ordered lowest absence)") +  # Change legend title to "School"
   theme_minimal() +
-  geom_vline(data = btn_sub, aes(xintercept = PPERSABS10), color = "red", linetype = "dashed", linewidth = 1) +  # Vertical lines
-  geom_text_repel(data = btn_sub, aes(x = PPERSABS10, y = 0, label = SCHNAME.x), 
-                  color = "red", angle = 90, vjust = -0.5, size = 3, nudge_y = 1)
+  geom_vline(data = btn_sub, aes(xintercept = PPERSABS10, color = SCHNAME.x), linetype = "solid", linewidth = 1) +  # Solid vertical lines colored by SCHNAME.x
+  scale_color_manual(values = brewer.pal(10, "Set3")) +  # Use Set3 palette for high contrast with 10 colors
+  theme(legend.position = c(0.8, 0.5),  # Position legend inside the plot
+        legend.background = element_rect(fill = "white", size = 0.5, linetype = "solid", color = "black")) 
+
+
 
 
 ```
@@ -263,23 +314,21 @@ england_median <- median(england_school_2022_23_not_special$PERCTOT, na.rm = TRU
 btn_sub <- btn_sub %>%
   mutate(SCHNAME.x = factor(SCHNAME.x, levels = SCHNAME.x[order(PERCTOT)]))
 
-
 # Create the histogram with vertical lines using the Set3 palette
 ggplot(england_school_2022_23_not_special, aes(x = PERCTOT)) +
-  geom_histogram(binwidth = 1, fill = "#66c2a5", color = "black", alpha = 0.4) +  # New color for the bars with added transparency
-  labs(title = "Percentage of Overall Absence (Authorised and Unauthorised) \nfor the Full 2022/23 Academic Year (All Schools England, Brighton overlaid)",
+  geom_histogram(binwidth = 0.5, fill = "grey", color = "black", alpha = 0.4) +  # New color for the bars with added transparency
+  labs(title = "Percentage of Overall Absence (Authorised and Unauthorised) \nfor the Full 2022/23 Academic Year (All Secondary Schools England, Brighton overlaid)",
        x = "Percentage of Overall Absence",
        y = "Count",
        color = "School (ordered lowest absence)") +  # Change legend title to "School"
   theme_minimal() +
   geom_vline(data = btn_sub, aes(xintercept = PERCTOT, color = SCHNAME.x), linetype = "solid", linewidth = 1) +  # Solid vertical lines colored by SCHNAME.x
   scale_color_manual(values = brewer.pal(10, "Set3")) +  # Use Set3 palette for high contrast with 10 colors
+  scale_x_continuous(breaks = seq(0, max(england_school_2022_23_not_special$PERCTOT, na.rm = TRUE), by = 2)) +  # Add more numbers on the x-axis
   theme(legend.position = c(0.8, 0.5),  # Position legend inside the plot
-        legend.background = element_rect(fill = "white", size = 0.5, linetype = "solid", color = "black")) 
-
+        legend.background = element_rect(fill = "white", size = 0.5, linetype = "solid", color = "black"))
 
 ```
-
 
 ```{r}
 
@@ -294,7 +343,6 @@ ggplot(england_school_2022_23_not_special, aes(x = PTFSM6CLA1A
   theme_minimal()
 
 ```
-
 
 ```{r}
 # Base plot with england_school_2022_23
@@ -315,6 +363,21 @@ plot +
 ggsave(here("images","progress8_vs_persabs.png"), width = 10, height = 6, dpi = 300)
 
 ```
+
+```{r}
+
+ggplot(england_school_2022_23_not_special, aes(y = P8MEA, x = PPERSABS10, colour = OFSTEDRATING)) +
+geom_point(data = btn_sub, aes(y = P8MEA, x = PPERSABS10, colour = OFSTEDRATING)) +
+  geom_smooth(data = btn_sub, aes(y = P8MEA, x = PPERSABS10), method = "lm", se = TRUE, color = "black") +  # Add linear model line for btn_sub
+  geom_text_repel(data = btn_sub, aes(y = P8MEA, x = PPERSABS10, label = SCHNAME.x), color = "black", size = 3, nudge_y = c(-1.5, 1.5), force = 10, box.padding = 0.5, max.overlaps = 10, direction = "both") +  # Add linear model line for england_school_2022_23
+  labs(title = "Progress 8 vs Persistent Absence %, 2022-23",
+       x = "% Enrollments who are persistently absent",
+       y = "Progress 8 measure after adjustment for extreme scores") +
+  theme_minimal()
+
+```
+
+
 
 
 
@@ -359,7 +422,6 @@ plot +
   geom_text_repel(data = btn_sub, aes(y = P8MEA, x = PERCTOT, label = SCHNAME.x), color = "black", size = 3, nudge_y = c(-1.5, 1.5), force = 10, box.padding = 0.5, max.overlaps = 10, direction = "both")
 ```
 
-
 ```{r}
 plot <- ggplot(england_school_2022_23_not_special, aes(y = PTFSM6CLA1A, x = PERCTOT, colour = OFSTEDRATING)) +
   geom_point() +
@@ -372,14 +434,11 @@ plot <- ggplot(england_school_2022_23_not_special, aes(y = PTFSM6CLA1A, x = PERC
 plot
 ```
 
-
 ```{r}
 cor <- cor(england_school_2022_23_not_special$PTFSM6CLA1A, england_school_2022_23_not_special$PERCTOT, use = "complete.obs")
 
 cor
 ```
-
-
 
 ```{r}
 ## regression model
@@ -398,7 +457,3 @@ summary(model)
 gglm(model)
 
 ```
-
-
-
-
