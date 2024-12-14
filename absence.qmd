@@ -122,7 +122,7 @@ Fortunately, as has been the case throughout this whole engagement/consultation 
 
 ### The Evidence - the data
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 #unauthorised absence
 
 #https://explore-education-statistics.service.gov.uk/data-catalogue/data-set/be024b4d-4f91-40e4-8a58-50dc53dcc93f
@@ -196,7 +196,7 @@ ggplot(absence_secondary, aes(x = sess_unauthorised_percent, fill = factor(year)
 
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 medians <- absence_secondary %>%
   group_by(year) %>%
@@ -220,7 +220,7 @@ ggplot(absence_secondary, aes(x = sess_overall_percent, fill = factor(year))) +
                                                    size = c(1, 1))))
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 medians <- absence_secondary %>%
   group_by(year) %>%
   summarize(median_enrolments_pa_10_exact_percent = median(enrolments_pa_10_exact_percent, na.rm = TRUE))
@@ -245,7 +245,7 @@ ggplot(absence_secondary, aes(x = enrolments_pa_10_exact_percent, fill = factor(
 
 
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 # Histogram with vertical lines and labels
 
 # Line plot for sess_unauth_totalreasons_rate for Brighton and Hove over all values of year 
@@ -265,7 +265,7 @@ ggplot(absence_btn, aes(x = year, y = sess_unauthorised_percent, group = 1)) +
 
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 # Line plot for sess_unauth_totalreasons_rate for Brighton and Hove over all values of year 
 absence_btn <- absence %>%
@@ -290,7 +290,7 @@ ggplot() +
 
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 # Line plot for sess_unauth_totalreasons_rate for Brighton and Hove over all values of year 
 absence_btn <- absence %>%
   filter(la_name == "Brighton and Hove" & education_phase == "State-funded secondary") %>%
@@ -318,7 +318,7 @@ ggplot() +
 
 
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 ##Absence 2022-23 regression analysis
 
 ##All Data downloaded from here
@@ -358,7 +358,7 @@ england_school_2022_23_meta <- data.frame(Field = names(data_types), DataType = 
 
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 #read in Brighton Secondary Schools Data
 brighton_sec_schools <- read_csv("https://www.dropbox.com/scl/fi/fhzafgt27v30lmmuo084y/edubasealldata20241003.csv?rlkey=uorw43s44hnw5k9js3z0ksuuq&raw=1") %>% 
   clean_names() %>% 
@@ -373,7 +373,7 @@ btn_urn_list <- brighton_sec_schools %>%
 
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(ggplot2)
 library(ggrepel)
 
@@ -393,7 +393,7 @@ england_school_2022_23_not_special <- england_school_2022_23 %>%
 
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(england_school_2022_23_not_special, aes(x = P8MEA)) +
   geom_histogram(binwidth = 0.1, fill = "#b3cde3", color = "black") +  # Pastel color for the bars
   labs(title = "Distribution of P8MEA",
@@ -402,7 +402,7 @@ ggplot(england_school_2022_23_not_special, aes(x = P8MEA)) +
   theme_minimal()
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 # Order factor levels of SCHNAME.x by PERCTOT
 btn_sub <- btn_sub %>%
@@ -427,7 +427,7 @@ ggplot(england_school_2022_23_not_special, aes(x = PPERSABS10)) +
 
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(ggplot2)
 library(ggrepel)
 library(RColorBrewer)
@@ -454,7 +454,7 @@ ggplot(england_school_2022_23_not_special, aes(x = PERCTOT)) +
 
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 ##FSM - % disadvantaged at the end of KS4
 ggplot(england_school_2022_23_not_special, aes(x = PTFSM6CLA1A
@@ -468,7 +468,7 @@ ggplot(england_school_2022_23_not_special, aes(x = PTFSM6CLA1A
 
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 # Base plot with england_school_2022_23
 plot <- ggplot(england_school_2022_23_not_special, aes(y = P8MEA, x = PPERSABS10, colour = OFSTEDRATING)) +
   geom_point() +
@@ -488,7 +488,7 @@ ggsave(here("images","progress8_vs_persabs.png"), width = 10, height = 6, dpi = 
 
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 ggplot(england_school_2022_23_not_special, aes(y = P8MEA, x = PPERSABS10, colour = OFSTEDRATING)) +
 geom_point(data = btn_sub, aes(y = P8MEA, x = PPERSABS10, colour = OFSTEDRATING)) +
@@ -501,7 +501,7 @@ geom_point(data = btn_sub, aes(y = P8MEA, x = PPERSABS10, colour = OFSTEDRATING)
 
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(ggplot2)
 
 #colour = "#b3cde3"
@@ -524,7 +524,7 @@ ggsave(here("images","progress8_vs_disadvantage.png"), width = 10, height = 6, d
 
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 #colour = "#b3cde3"
 
 plot <- ggplot(england_school_2022_23_not_special, aes(y = P8MEA, x = PERCTOT, colour = OFSTEDRATING)) +
@@ -542,7 +542,7 @@ plot +
   geom_text_repel(data = btn_sub, aes(y = P8MEA, x = PERCTOT, label = SCHNAME.x), color = "black", size = 3, nudge_y = c(-1.5, 1.5), force = 10, box.padding = 0.5, max.overlaps = 10, direction = "both")
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 plot <- ggplot(england_school_2022_23_not_special, aes(y = PTFSM6CLA1A, x = PERCTOT, colour = OFSTEDRATING)) +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE) +  # Add linear model line for england_school_2022_23
@@ -554,17 +554,19 @@ plot <- ggplot(england_school_2022_23_not_special, aes(y = PTFSM6CLA1A, x = PERC
 plot
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 cor <- cor(england_school_2022_23_not_special$PTFSM6CLA1A, england_school_2022_23_not_special$PERCTOT, use = "complete.obs")
 
 cor
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 ## regression model
 
 library(gglm)
 library(car)
+library(jtools)
+library(kableExtra)
 
 # Create a linear model
 
@@ -572,8 +574,13 @@ model <- lm(P8MEA ~ PPERSABS10 + PTFSM6CLA1A + OFSTEDRATING, data = england_scho
 
 vif_values <- car::vif(model)
 vif_values
-summary(model)
 
-gglm(model)
+summ(model, scale = TRUE)
+
+#gglm(model)
 
 ```
+```{r}
+plot_summs(model, inner_ci_level = .9, scale = TRUE)
+```
+
