@@ -170,23 +170,80 @@ btn_absence_secondary <- absence_secondary %>%
 eng_absence_secondary <- absence_secondary %>%
   filter(geographic_level == "National")
 
+medians <- absence_secondary %>%
+  group_by(year) %>%
+  summarize(median_sess_unauthorised_percent = median(sess_unauthorised_percent, na.rm = TRUE))
+
 
 ggplot(absence_secondary, aes(x = sess_unauthorised_percent, fill = factor(year))) +
   geom_histogram(binwidth = 0.2, color = "black", alpha = 0.4, position = "identity") +
-  theme_minimal() +
-  geom_vline(data = btn_absence_secondary, aes(xintercept = sess_unauthorised_percent), color = "black", linetype = "solid", linewidth = 1) +
-  geom_vline(data = eng_absence_secondary, aes(xintercept = sess_unauthorised_percent), color = "red", linetype = "solid", linewidth = 1) +
+  geom_vline(data = medians, aes(xintercept = median_sess_unauthorised_percent, color = "England Median"), linetype = "solid", size = 1) +
+  geom_vline(data = btn_absence_secondary, aes(xintercept = sess_unauthorised_percent, color = "Brighton and Hove"), linetype = "dashed", linewidth = 1) +
   facet_wrap(~ year) +  # Facet by year
-  labs(title = "Unauthorised Absence Rates for State-funded Secondary \nSchools by Year",
+  labs(title = "Unauthorised Absence Rates (% sessions missed) \nfor State-funded Secondary Schools by Year",
        x = "Unauthorised Absence Rate",
        y = "Count",
-       fill = "Year") +  # Change legend title
+       fill = "Year",
+       color = "") +  # Change legend title
   theme_minimal() +
-  scale_fill_manual(values = brewer.pal(10, "Set3"))  # Use Set3 palette for fill colors
+  scale_fill_manual(values = brewer.pal(10, "Set3")) +  # Use Set3 palette for fill colors
+  scale_color_manual(values = c("England Median" = "black", "Brighton and Hove" = "blue")) +  # Correct manual scale
+  guides(color = guide_legend(override.aes = list(linetype = c("dashed", "solid"), 
+                                                   shape = c(NA, NA), 
+                                                   size = c(1, 1))))
 
 
 
 ```
+
+```{r}
+
+medians <- absence_secondary %>%
+  group_by(year) %>%
+  summarize(median_sess_overall_percent = median(sess_overall_percent, na.rm = TRUE))
+
+ggplot(absence_secondary, aes(x = sess_overall_percent, fill = factor(year))) +
+  geom_histogram(binwidth = 0.2, color = "black", alpha = 0.4, position = "identity") +
+  geom_vline(data = medians, aes(xintercept = median_sess_overall_percent, color = "England Median"), linetype = "solid", size = 1) +
+  geom_vline(data = btn_absence_secondary, aes(xintercept = sess_overall_percent, color = "Brighton and Hove"), linetype = "dashed", linewidth = 1) +
+  facet_wrap(~ year) +  # Facet by year
+  labs(title = "Overall Absence Rates (% sessions missed) \nfor State-funded Secondary Schools by Year",
+       x = "Overall Absence Rate",
+       y = "Count",
+       fill = "Year",
+       color = "") +  # Change legend title
+  theme_minimal() +
+  scale_fill_manual(values = brewer.pal(10, "Set3")) +  # Use Set3 palette for fill colors
+  scale_color_manual(values = c("England Median" = "black", "Brighton and Hove" = "blue")) +  # Correct manual scale
+  guides(color = guide_legend(override.aes = list(linetype = c("dashed", "solid"), 
+                                                   shape = c(NA, NA), 
+                                                   size = c(1, 1))))
+```
+
+```{r}
+medians <- absence_secondary %>%
+  group_by(year) %>%
+  summarize(median_enrolments_pa_10_exact_percent = median(enrolments_pa_10_exact_percent, na.rm = TRUE))
+
+ggplot(absence_secondary, aes(x = enrolments_pa_10_exact_percent, fill = factor(year))) +
+  geom_histogram(binwidth = 0.5, alpha = 1, position = "identity") +
+  geom_vline(data = medians, aes(xintercept = median_enrolments_pa_10_exact_percent, color = "England Median"), linetype = "solid", size = 1) +
+  geom_vline(data = btn_absence_secondary, aes(xintercept = enrolments_pa_10_exact_percent, color = "Brighton and Hove"), linetype = "dashed", linewidth = 1) +
+  facet_wrap(~ year) +  # Facet by year
+  labs(title = "Persistent Absence Rates (% sessions missed) \nfor State-funded Secondary Schools by Year",
+       x = "Persistent Absence Rate",
+       y = "Count",
+       fill = "Year",
+       color = "") +  # Change legend title
+  theme_minimal() +
+  scale_fill_manual(values = brewer.pal(10, "Set3")) +  # Use Set3 palette for fill colors
+  scale_color_manual(values = c("England Median" = "black", "Brighton and Hove" = "blue")) +  # Correct manual scale
+  guides(color = guide_legend(override.aes = list(linetype = c("dashed", "solid"), 
+                                                   shape = c(NA, NA), 
+                                                   size = c(1, 1))))
+```
+
+
 
 ```{r}
 # Histogram with vertical lines and labels
@@ -204,8 +261,6 @@ ggplot(absence_btn, aes(x = year, y = sess_unauthorised_percent, group = 1)) +
        x = "Year", 
        y = "Unauthorised Absence Rate") + 
   theme_minimal()
-
-
 
 
 ```
@@ -234,6 +289,34 @@ ggplot() +
 
 
 ```
+
+```{r}
+# Line plot for sess_unauth_totalreasons_rate for Brighton and Hove over all values of year 
+absence_btn <- absence %>%
+  filter(la_name == "Brighton and Hove" & education_phase == "State-funded secondary") %>%
+  mutate(year = as.factor(substr(time_period, 1, 4)))  # Extract year and convert to factor
+
+filtered_data <- absence %>%
+  filter(education_phase == "State-funded secondary" & is.na(la_name))
+
+
+ggplot() +
+  geom_line(data = filtered_data, aes(x = year, y = enrolments_pa_10_exact_percent, color = region_name, group = region_name)) +
+  geom_point(data = filtered_data, aes(x = year, y = enrolments_pa_10_exact_percent, color = region_name, group = region_name)) +
+  geom_line(data = absence_btn, aes(x = year, y = enrolments_pa_10_exact_percent, color = "Brighton and Hove"), group = 1, size = 1) +
+  geom_point(data = absence_btn, aes(x = year, y = enrolments_pa_10_exact_percent, color = "Brighton and Hove")) +
+  labs(title = "Persistent Absence (10% or more sessions missed) Rates Over Time \nfor State-funded Secondary Schools by Region",
+       x = "Year",
+       y = "Persistent Absence Rate",
+       color = "Region") +  # Change legend title
+  theme_minimal() +
+  scale_color_manual(values = c("black", brewer.pal(9, "Set1")))  # Add black for Brighton and Hove and Set1 for regions
+
+
+
+```
+
+
 
 ```{r}
 ##Absence 2022-23 regression analysis
