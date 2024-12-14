@@ -360,22 +360,22 @@ OFSTEDRATING 1.289714  4        1.032314</code></pre>
 <tbody>
   <tr>
    <td style="text-align:left;font-weight: bold;"> (Intercept) </td>
-   <td style="text-align:right;"> 0.81 </td>
-   <td style="text-align:right;"> 0.02 </td>
-   <td style="text-align:right;"> 36.32 </td>
+   <td style="text-align:right;"> -0.03 </td>
+   <td style="text-align:right;"> 0.01 </td>
+   <td style="text-align:right;"> -4.22 </td>
    <td style="text-align:right;"> 0.00 </td>
   </tr>
   <tr>
    <td style="text-align:left;font-weight: bold;"> PPERSABS10 </td>
-   <td style="text-align:right;"> -0.03 </td>
-   <td style="text-align:right;"> 0.00 </td>
+   <td style="text-align:right;"> -0.25 </td>
+   <td style="text-align:right;"> 0.01 </td>
    <td style="text-align:right;"> -31.66 </td>
    <td style="text-align:right;"> 0.00 </td>
   </tr>
   <tr>
    <td style="text-align:left;font-weight: bold;"> PTFSM6CLA1A </td>
-   <td style="text-align:right;"> -0.00 </td>
-   <td style="text-align:right;"> 0.00 </td>
+   <td style="text-align:right;"> -0.05 </td>
+   <td style="text-align:right;"> 0.01 </td>
    <td style="text-align:right;"> -6.87 </td>
    <td style="text-align:right;"> 0.00 </td>
   </tr>
@@ -409,8 +409,14 @@ OFSTEDRATING 1.289714  4        1.032314</code></pre>
   </tr>
 </tbody>
 <tfoot><tr><td style="padding: 0; " colspan="100%">
-<sup></sup> Standard errors: OLS</td></tr></tfoot>
+<sup></sup> Standard errors: OLS; Continuous predictors are mean-centered and scaled by 1 s.d. The outcome variable remains in its original units.</td></tr></tfoot>
 </table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_summs</span>(model, <span class="at">inner_ci_level =</span> .<span class="dv">9</span>, <span class="at">scale =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="absence_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 
