@@ -712,9 +712,11 @@ Observations
 # Base plot with england_school_2022_23
 
 lm_model <- lm(P8MEA ~ PPERSABS10, data = england_school_2022_23_not_special)
-lm_coefficients <- summary(lm_model)$coefficients
+lm_summary <- summary(lm_model)
+lm_coefficients <- lm_summary$coefficients
 intercept <- round(lm_coefficients[1, 1], 2)
 slope <- round(lm_coefficients[2, 1], 2)
+r_squared <- round(lm_summary$r.squared, 2)
 
 
 ggplot(england_school_2022_23_not_special, aes(y = P8MEA, x = PPERSABS10)) +
@@ -725,8 +727,9 @@ ggplot(england_school_2022_23_not_special, aes(y = P8MEA, x = PPERSABS10)) +
        y = "Progress 8 measure after adjustment for extreme scores",
        color = "Ofsted Rating") +
   theme_minimal() +
-  annotate("text", x = Inf, y = Inf, label = paste("Intercept:", intercept, "\nSlope:", slope), hjust = 1.1, vjust = 2, size = 5, color = "black") +
+  annotate("text", x = 100, y = Inf, label = paste("Intercept:", intercept, "\nSlope:", slope, "\nR²:", r_squared), hjust = 1.1, vjust = 2, size = 5, color = "black") +
   xlim(0, 100)
+
 
 
 #ggsave(here("images","progress8_vs_persabs.png"), width = 10, height = 6, dpi = 300)
@@ -738,20 +741,22 @@ ggplot(england_school_2022_23_not_special, aes(y = P8MEA, x = PPERSABS10)) +
 # Base plot with england_school_2022_23
 
 lm_model <- lm(P8MEA ~ PTFSM6CLA1A, data = england_school_2022_23_not_special)
-lm_coefficients <- summary(lm_model)$coefficients
+lm_summary <- summary(lm_model)
+lm_coefficients <- lm_summary$coefficients
 intercept <- round(lm_coefficients[1, 1], 2)
 slope <- round(lm_coefficients[2, 1], 2)
+r_squared <- round(lm_summary$r.squared, 2)
 
 
 ggplot(england_school_2022_23_not_special, aes(y = P8MEA, x = PTFSM6CLA1A)) +
   geom_point() +
   geom_smooth(method = "lm", se = TRUE) +  # Add linear model line for england_school_2022_23
-  labs(title = "Progress 8 vs % Disadvantaged, 2022-23",
+  labs(title = "Progress 8 vs % Percentage of Disadvantaged Students, 2022-23",
        x = "% Percentage of Disadvantaged Students",
        y = "Progress 8 measure after adjustment for extreme scores",
        color = "Ofsted Rating") +
   theme_minimal() +
-  annotate("text", x = Inf, y = Inf, label = paste("Intercept:", intercept, "\nSlope:", slope), hjust = 1.1, vjust = 2, size = 5, color = "black") +
+  annotate("text", x = 100, y = Inf, label = paste("Intercept:", intercept, "\nSlope:", slope, "\nR²:", r_squared), hjust = 1.1, vjust = 2, size = 5, color = "black") +
   xlim(0, 100)
 
 
