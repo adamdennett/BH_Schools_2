@@ -134,7 +134,7 @@ Fortunately, as has been the case throughout this whole engagement/consultation 
 
 There are lots of different reasons why students miss school, for example to attend medical appointments, illness, religious observance, study leave etc. these are likely to be counted as valid reasons and 'authorised' by schools. Then there are reasons that are 'unauthorised' and these might include things like going on holiday, but also apply to students that might have to stay home to care for family members as well as truancy - i.e. intentionally missing school without permission to be absent.
 
-Reasons for truancy or 'school refusal' can be complex and vary between different children, and I won't go into them here (various sources of information elsewhere if you are interested, [including here](https://notfineinschool.co.uk/research)), but one of the ways in which longer-term absence is measured is if more than 10% of the sessions in a school year are missed. This is often referred to as '**Persistent Absence**' in the data.
+Reasons for truancy or 'school refusal' can be complex and vary between different children, and I won't go into them here (various sources of information elsewhere if you are interested, [including here](https://notfineinschool.co.uk/research)), but one of the ways in which longer-term absence is measured is if more than 10% of the sessions in a school year are missed. This is often referred to as '**Persistent Absence**' in the data and this is what we will zoom in on here (rather than other types of authorised or unauthorised absence).
 
 #### Data Sources
 
@@ -674,7 +674,7 @@ Observations
 
 -   As Progress 8 scores are relative to a national average, the distribution around the mean of 0 is about as normal as you might get and the distribution of Brighton schools around this mean is also pretty normal with as many schools above as below average.
 
--   Longhill has the worst Progress 8 scores in the City in 2022/23, with BACA performing slightly better at that time, although with BACA improving and Longhill declining in 2024, the gap between these schools is increasing.
+-   Longhill has the worst Progress 8 scores in the City in 2022/23, with BACA performing slightly better at that time, although with BACA improving and Longhill declining in 2024, the gap between these schools has increased.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # ggplot(england_school_2022_23_not_special, aes(x = P8MEA)) +
@@ -708,6 +708,16 @@ Observations
 
 ## Absence, Disadvantage and Attainment
 
+In a deputation to Labour Cabinet on 6th December 2024, Dr Carlie Goldsmith from Class Divide aimed an arrow at 'apparently sophisticated analysis' from groups in the city opposed to elements of the council's proposals.
+
+What I hope to offer below is not particularly sophisticated as hopefully you will be able to see with your own eyes the patterns that the data on Absence, Disadvantage and Attainment reveals and arrive at the same interpretations I have.
+
+Being unsophisticated does not mean that I will assume an understanding of some of the more esoteric mathematical dimensions of this analysis, but I will try to keep it as simple as I can and please email me at the address at the top of this piece if you have any questions or queries.
+
+To begin with, I will start with a simple scatter plot. We probably all drew these by hand in science at some point in school. You may have even had a go at drawing a line of best-fit through the points with a ruler (I remember my teachers getting us to do this). The idea is the line is our best attempt at summarising the pattern shown by the dots in the scatter plot, and can be thought of as the average of all the points.
+
+The plot below in Figure 7 is a scatter plot, with each point representing a school in England. The y-axis (vertical) has the average Progress 8 score at the end of KS4 for that school in 2022/23. In this plot, the x-axis (horizontal) represents the % of enrollments at that school that are persistently absent (over 10% of sessions missed) in the same year.
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # Base plot with england_school_2022_23
 
@@ -735,7 +745,23 @@ ggplot(england_school_2022_23_not_special, aes(y = P8MEA, x = PPERSABS10)) +
 #ggsave(here("images","progress8_vs_persabs.png"), width = 10, height = 6, dpi = 300)
 ```
 
+*Figure 7 - Progress 8 vs Persistent Absence across all schools in England, 2022/23*
 
+Observations
+
+-   Looking at the plot and all points together, it should hopefully be clear that on the whole, as the % of enrollments who are persistently absent increases, the value of the Progress 8 score decreases. The more a school has high levels of persistent absence, the lower its Progress 8 score is likely to be. There are, of course, a few weird values (outliers) which don't follow this trend, but most do.
+
+-   The blue line throw the centre of the plot is the line of best-fit. This is drawn by the computer and it does so by trying to minimise the total sum of the squared vertical distances (known as *residuals*) between each black dot in the plot and the line itself. In doing this it ends up with the sum of the positive (dots above the line) and negative residuals (dots below the line) equalling zero.
+
+-   The blue line has two properties that are useful for helping us describe the cloud of points it is representing. - The first is known as the 'intercept'. This is the value on the y-axis of the blue line as it crosses zero. In our example, it can be thought of as the value of Progress 8 we would expect for a school if it had 0% persistent absence. Our average best-case Progress 8, if you like. In our case, this value would be 1.06. - The second is known as the 'slope'. This is the change in the value of y (Progress 8) for a one-unit change (1% persistent absence) on the x-axis. In our example, the slope is -0.04. This means that for every additional 1% of students that are persistently absent, on average, the Progress 8 score for that school will reduce by -0.04.
+
+-   On the plot above, I have calculated one more useful property of the points which statisticians know as [the $R^2$.](https://en.wikipedia.org/wiki/Coefficient_of_determination) In lay terms, this is a number between 0-1 that represents how good a representation of the points the blue line is. The closer the points hug the line, the closer to 1 the value gets. If all of the black points fell exactly on the line, the [$R^2$](https://en.wikipedia.org/wiki/Coefficient_of_determination) = 1. Another way of describing the blue line is it's a model (a representation) of the black points. The closer to 1 our [$R^2$](https://en.wikipedia.org/wiki/Coefficient_of_determination) value is, the better our model is and the more reliable it is at describing the underlying relationship.
+
+-   Our blue line (model) has an [$R^2$](https://en.wikipedia.org/wiki/Coefficient_of_determination) = 0.47. Another way of thinking about this is to say that 47% of the variation in Progress 8 scores between schools can be explained just by the variation in persistent absence. So almost 50%. In statistical terms, this is a very good model. The relationship between Progress 8 and persistent absence is very strong.
+
+-   One note of caution with interpreting relationships like this is often it is easy to confuse correlation (things going up or down together) with causation (x causing y, rather than y causing x). This is something all researchers need to be aware of and careful to identify clear theoretical reasons behind suggested relationships. However, in this particular case, the causal pathways are clear. As [@riordan2021b] (cited earlier) states: "*this correlation \[between absence and attainment\] is most likely to be causal. This is because there is an intuitive underlying causal mechanism: students not in school are less likely to learn the school curriculum."*
+
+-   So this simple plot
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # Base plot with england_school_2022_23
@@ -762,8 +788,6 @@ ggplot(england_school_2022_23_not_special, aes(y = P8MEA, x = PTFSM6CLA1A)) +
 
 #ggsave(here("images","progress8_vs_persabs.png"), width = 10, height = 6, dpi = 300)
 ```
-
-
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # Base plot with england_school_2022_23
