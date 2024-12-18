@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.551">
+<meta name="generator" content="quarto-1.2.280">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -18,12 +18,11 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  margin: 0 0.8em 0.2em -1.6em;
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -48,20 +47,48 @@ pre.numberSource code > span > a:first-child::before
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
     padding: 0 4px; width: 4em;
+    color: #aaaaaa;
   }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
   {   }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-/* CSS for citations */
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
-  margin-bottom: 0em;
 }
-.hanging-indent div.csl-entry {
+.hanging div.csl-entry {
   margin-left:2em;
   text-indent:-2em;
 }
@@ -75,7 +102,8 @@ div.csl-right-inline {
 }
 div.csl-indent {
   margin-left: 2em;
-}</style>
+}
+</style>
 
 
 <script src="absence_files/libs/clipboard/clipboard.min.js"></script>
@@ -89,35 +117,7 @@ div.csl-indent {
 <link href="absence_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="absence_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 </head>
 
@@ -148,32 +148,39 @@ window.Quarto = {
   </div>
   
 
-
 </header>
-
 
 <section id="absenceattendance-and-attainment" class="level2">
 <h2 class="anchored" data-anchor-id="absenceattendance-and-attainment">Absence/Attendance and Attainment?</h2>
 <p>In this piece I am going to change the focus of the conversation and look at something which has thus far been absent (excuse the pun) from any of the conversations about the school system in Brighton. The issue of absence/attendance and its importance for educational outcomes.</p>
 <section id="improving-educational-outcomes" class="level3">
 <h3 class="anchored" data-anchor-id="improving-educational-outcomes">Improving Educational Outcomes</h3>
-<p>The Council’s premise in the very first slide shown in the engagement exercise back in October, was that Brighton and Hove has a large attainment gap and is failing its most disadvantaged pupils. Now, I have since refuted that claim here - <a href="https://adamdennett.github.io/BH_Schools_2/stain_removal.html" class="uri">https://adamdennett.github.io/BH_Schools_2/stain_removal.html</a> - and shown that Brighton is not performing badly as a city and indeed is above the national median in terms of disadvantaged attainment.</p>
+<p>The Council’s premise in the very first slide shown in the engagement exercise back in October, was that Brighton and Hove has a large attainment gap and is failing its most disadvantaged pupils. Now, I have since refuted that claim <a href="https://adamdennett.github.io/BH_Schools_2/stain_removal.html">here</a> and shown that Brighton is not performing badly as a city and indeed is above the national median in terms of disadvantaged attainment.</p>
 <p>However, it is clear that disadvantage and attainment is still an important topic for the council and is one of the main drivers behind the plans in the consultation. The new proposal documentation (<a href="https://democracy.brighton-hove.gov.uk/mgAi.aspx?ID=102291">supporting documents here</a>) states in 3.7 that the council wants a system that:</p>
+<blockquote class="blockquote">
 <p><em>“delivers children’s outcomes which are good and improving especially for those at risk of disadvantage”</em></p>
+</blockquote>
 <p>and under 3.9 that:</p>
+<blockquote class="blockquote">
 <p><em>“the proposals put forward were designed to include: a) Better equality of outcomes – results not driven by economic advantage. b) Deliver a ‘comprehensive’ offer from our city schools as a more mixed pupil intake creates better outcomes for disadvantaged pupils.”</em></p>
+</blockquote>
 <section id="trick-or-treatment" class="level4">
 <h4 class="anchored" data-anchor-id="trick-or-treatment">Trick or Treatment?</h4>
-<p>The underpinning assumptions in those statements above are that economic advantage/disadvantage are the main drivers of results in the city and the main remedy is through some kind of economic mixing in intakes. But in much the same way as when we go to the doctor, we expect an accurate diagnosis and corresponding efficatious treatment, we all know that unfortunately, sometimes, neither diagnosis nor treatment are correct.</p>
-<p>We know the council’s prescribed treatment has been influenced quite heavily by some of the work of Stephen Gorard (<a href="https://theconversation.com/poorer-pupils-do-worse-at-school-heres-how-to-reduce-the-attainment-gap-205535" class="uri">https://theconversation.com/poorer-pupils-do-worse-at-school-heres-how-to-reduce-the-attainment-gap-205535</a>), but is the diagnosis for the city even correct? Before prescribing a treatment, should we have not carried out a thorough examination of the patient in case a more serious underlying ailment is causing the symptoms?</p>
-<p>Without wanting to strain the metaphor further, how do we know for sure that a lack of mixing is indeed the main factor holding back disadvantaged attainment? What if it is not? And if it is not, what is more important? And if there are more important factors, might there be more effective routes to minimising disadvantged educational outcomes that could offer better or faster results, and indeed do so without the levels of disruption currently on the table?</p>
-<p>These are very important questions to ask, not least because under the current proposals, one of the experimental ‘treatments’ being prescribed by the council is forced mixing in schools through artificially reducing places in schools for local students and ‘<a href="https://en.wikipedia.org/wiki/Desegregation_busing">busing</a>’ significant numbers of students from some neighbouroods (some by ‘choice’ and some through ‘displacement’ <a href="https://www.parentsupport.group/wp-content/uploads/2024/12/schools_admissions_2026_explainer_v1.0_2024-12-4-final.pdf">- see the PGS explainer here</a>) to schools a long way from their homes. This kind of forced mixing not only has a questionable history and efficacy in other contexts (see <span class="citation" data-cites="rossell1990">(<a href="#ref-rossell1990" role="doc-biblioref">Rossell 1990</a>)</span> and others for the US history - a very different context, but same underlying idea), but has huge negative financial, environmental and social implications for our city (many of which were <a href="https://www.parentsupport.group/deputation-to-brighton-council-cabinet-5th-dec-2024/">raised in the Parent Support Group’s latest deputation at the Labour Cabinet meeting in November</a>) which have thus-far been ignored by those advocating for the proposals.</p>
-<p>And as I will show below, it is the case that the treatment currently being prescribed by the council, might even make things much worse - again, at risk of stretching the metaphor too far, this could be akin to the approach of doctors in the Crimean war, attempting treatments with the best of intentions, but with a deadly lack of understanding.</p>
+<p>The underpinning assumptions in those statements above and the proposals that follow are that:</p>
+<ul>
+<li><p>economic advantage/disadvantage are the main drivers of results in the city</p></li>
+<li><p>the main remedy is through some kind of economic mixing in intakes</p></li>
+</ul>
+<p>But in much the same way as when we go to the doctor, we expect an accurate diagnosis and corresponding efficacious treatment, we all know that unfortunately, sometimes, neither diagnosis nor treatment are correct.</p>
+<p>We know the council’s prescribed treatment has been influenced quite heavily by some of the work of Stephen Gorard (<a href="https://theconversation.com/poorer-pupils-do-worse-at-school-heres-how-to-reduce-the-attainment-gap-205535" class="uri">https://theconversation.com/poorer-pupils-do-worse-at-school-heres-how-to-reduce-the-attainment-gap-205535</a>), but before rushing to a Gorardian treatment, do we know that the diagnosis for the city even correct? And before prescribing a treatment, should we have not carried out a thorough examination of the patient first in case a more serious underlying ailment is causing the symptoms? This is all before we get anywhere near the negative side effects</p>
+<p>Not wanting to strain the metaphor further, how do we know for sure that a lack of mixing is indeed the main factor holding back disadvantaged attainment? What if it is not? And if it is not, what is more important? And if there are more important factors, might there be more effective routes to minimising disadvantaged educational outcomes that could offer better or faster results, and indeed do so without the levels of disruption currently on the table?</p>
+<p>These are very important questions to ask, not least because under the current proposals, one of the experimental ‘treatments’ being prescribed by the council is forced mixing in schools through artificially reducing places in schools for local students and ‘<a href="https://en.wikipedia.org/wiki/Desegregation_busing">busing</a>’ significant numbers of students from some neighbourhoods (some by ‘choice’ and some through ‘displacement’ <a href="https://www.parentsupport.group/wp-content/uploads/2024/12/schools_admissions_2026_explainer_v1.0_2024-12-4-final.pdf">- see the PGS explainer here</a>) to schools a long way from their homes. This kind of forced mixing not only has a questionable history and efficacy in other contexts (see <span class="citation" data-cites="rossell1990">(<a href="#ref-rossell1990" role="doc-biblioref">Rossell 1990</a>)</span> and others for the US history - a very different context, but same underlying idea), but has huge negative social/community, financial and environmental implications for our city (many of which were <a href="https://www.parentsupport.group/deputation-to-brighton-council-cabinet-5th-dec-2024/">raised in the Parent Support Group’s latest deputation at the Labour Cabinet meeting in November</a>) which have thus-far been ignored by those advocating for the proposals.</p>
+<p>And as I will show below, it is the case that the treatment currently being prescribed by the council, might even make things much worse - again, at risk of stretching the metaphor too far, this could be akin 19th Century doctors prescribing arsenic for psoriasis <span class="citation" data-cites="sarfraz2023">(<a href="#ref-sarfraz2023" role="doc-biblioref">Sarfraz 2023</a>)</span>.</p>
 </section>
 </section>
 <section id="is-there-anything-more-important-than-social-mixing-holding-back-educational-attainment-particularly-for-disadvantaged-pupils" class="level3">
 <h3 class="anchored" data-anchor-id="is-there-anything-more-important-than-social-mixing-holding-back-educational-attainment-particularly-for-disadvantaged-pupils">Is there anything more important than social mixing holding back educational attainment, particularly for disadvantaged pupils?</h3>
-<p>The short answer is: Yes, yes there is. The longer answer is there are lots of things; from raw income deprivation, requiring SEN support to simply moving schools (see p8 of <span class="citation" data-cites="claymore2023">(<a href="#ref-claymore2023" role="doc-biblioref">Claymore 2023a</a>)</span> to see the relative effects of some of these) which can impact attainment. But there is one factor, over an above everything else, that affects attainment the most: <strong>Absence from School.</strong></p>
+<p>The short answer is: Yes, yes there is. The longer answer is there are lots of things; from raw income deprivation, requiring SEN support to simply moving schools (see p8 of <span class="citation" data-cites="claymore2023">(<a href="#ref-claymore2023" role="doc-biblioref">Claymore 2023a</a>)</span> to see the relative effects of some of these) which can have some impact on attainment. But there is one factor, over an above everything else, that affects attainment more than any other: <strong>Absence from School.</strong></p>
 </section>
 </section>
 <section id="absence" class="level2">
@@ -183,18 +190,30 @@ window.Quarto = {
 <section id="the-evidence---the-literature" class="level3">
 <h3 class="anchored" data-anchor-id="the-evidence---the-literature">The Evidence - the literature</h3>
 <p>I could get all academic and cite a bunch of papers and government reports, at this juncture, which detail the important role that absence/attendance plays in educational outcomes over and above everything else, but we’ve “had enough of experts”, right? . No? Oh OK then. First up a recent <a href="https://www.gov.uk/government/publications/against-the-odds/against-the-odds-achieving-greater-progress-for-secondary-students-facing-socio-economic-disadvantage">report for the Government’s Social Mobility Commission</a>, where <span class="citation" data-cites="riordan2021">(<a href="#ref-riordan2021" role="doc-biblioref">Riordan, Jopling, and Starr 2021a</a>)</span> state:</p>
+<blockquote class="blockquote">
 <p><em>“Our statistical models indicate that the strongest predictive factor of the progress made by pupil premium [disadvantaged] students is the school’s absence rate”</em></p>
-<p><em>“schools with lower absence rates have smaller progress gaps; pupil premium students progress more at schools with lower absence rates; This correlation is regardless of whether they begin with low, medium or high rates&nbsp;of&nbsp;absence.”</em></p>
+</blockquote>
+<blockquote class="blockquote">
+<p><em>“schools with lower absence rates have smaller progress gaps; pupil premium students progress more at schools with lower absence rates; This correlation is regardless of whether they begin with low, medium or high rates of absence.”</em></p>
+</blockquote>
+<blockquote class="blockquote">
 <p><em>“These findings concur with previous research and we share their interpretation too, that this correlation is most likely to be causal. This is because there is an intuitive underlying causal mechanism: students not in school are less likely to learn the school curriculum.”</em></p>
+</blockquote>
 <p>Next, <span class="citation" data-cites="claymore2023a">(<a href="#ref-claymore2023a" role="doc-biblioref">Claymore 2023b</a>)</span> (already citied above) in a paper titled: “<a href="https://www.nfer.ac.uk/publications/being-present-the-power-of-attendance-and-stability-for-disadvantaged-pupils/">Being Present: the Power of Attendance and Stability for Stability for Disadvantaged Pupils</a>” states:</p>
+<blockquote class="blockquote">
 <p><em>“On average, the association between being absent from school and KS4 outcomes is worse for disadvantaged pupils than their more affluent peers”</em></p>
+</blockquote>
+<blockquote class="blockquote">
 <p><em>“Supporting secondary schools to reduce absence, improve behaviour and support within-secondary phase transfers are all key areas of policy focus to boost outcomes of disadvantaged pupils and reduce group gaps in progress and attainment.”</em></p>
+</blockquote>
+<blockquote class="blockquote">
 <p><em>“over half of the gap in outcomes between disadvantaged pupils and their more affluent peers is associated with the underlying group differences in absence, exclusion and pupil transfer rates. Improving these underlying factors for disadvantaged pupils should therefore substantially boost outcomes for the group”</em></p>
+</blockquote>
 <p>I could also go on to cite work by the National Governance Association <span class="citation" data-cites="nga2024">(<a href="#ref-nga2024" role="doc-biblioref">NGA 2024</a>)</span> on improving School Attendance, or the Department for Education’s extensive resources on why improving school attendance is important<span class="citation" data-cites="dfe2023">(<a href="#ref-dfe2023" role="doc-biblioref">DfE 2023</a>)</span> <span class="citation" data-cites="dfe2024">(<a href="#ref-dfe2024" role="doc-biblioref">DfE 2024</a>)</span>, but I think you are starting to get the picture. It makes sense, right? If you don’t go to school, it’s harder to learn and achieve.</p>
 <p>So the literature clearly says absence is important but:</p>
 <ul>
-<li><p>Is absence from school important for Brighton and Hove?</p></li>
-<li><p>And if it is, is it more or less important than social mixing or concentrations of disadvantage in the city?</p></li>
+<li><p><strong>Is absence from school important for Brighton and Hove?</strong></p></li>
+<li><p><strong>And if it is, is it more or less important than concentrations of disadvantage in schools in the city?</strong></p></li>
 </ul>
 <p>Fortunately, as has been the case throughout this whole engagement/consultation exercise, data and analysis can shed some light and help us answer these questions.</p>
 </section>
@@ -214,16 +233,25 @@ window.Quarto = {
 <section id="persistent-absence---the-national-picture" class="level3">
 <h3 class="anchored" data-anchor-id="persistent-absence---the-national-picture">Persistent Absence - The National Picture</h3>
 <div class="cell">
+
+</div>
+<div class="cell">
+
+</div>
+<div class="cell">
+
+</div>
+<div class="cell">
 <div class="cell-output-display">
-<div>
+<div id="fig-plot" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="absence_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="absence_files/figure-html/fig-plot-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1: Persistent Absence in State Secondary Schools, 2016/17 to 2023/24; All Local Authorities in England. Brighton and Hove and England Overlaid.</figcaption><p></p>
 </figure>
 </div>
 </div>
 </div>
-<p><strong><em>Figure 1 - Persistent Absence in State Secondary Schools, 2016/17 to 2023/24; All Local Authorities in England. Brighton and Hove and England Overlaid.</em></strong></p>
-<p>There are couple of things worth pointing out in the plot above:</p>
+<p>There are couple of things worth pointing out in <a href="#fig-plot">Figure&nbsp;1</a> above:</p>
 <ul>
 <li><p>The problem of persistent absence has increased massively since 2016/17, with stark change in the years after the COVID-19 pandemic, where the median persistent absence had been declining and has reduced to about 12% by 2020, but shot up to over 25% after COVID and is still at about 24% in the most recent data for 2023/24.</p></li>
 <li><p>At the same time, the variance has increased (meaning the median is less representative of the whole data) - with more Local Authorities having rates of persistent absence well above average, with some having over 1/3 of students missing 10% or more of school.</p></li>
@@ -231,46 +259,61 @@ window.Quarto = {
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<div>
+<div id="fig-plot2" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="absence_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="absence_files/figure-html/fig-plot2-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2: Persistent Absence in State Secondary Schools, All Local Authorities in England 2023/24. Brighton and Hove, Mean, Interquartile Range and Outliers at 90% and 95% added.</figcaption><p></p>
 </figure>
 </div>
 </div>
 </div>
-<p><strong><em>Figure 2 - Persistent Absence in State Secondary Schools, All Local Authorities in England 2023/24. Brighton and Hove, Mean, Interquartile Range and Outliers at 90% and 95% added.</em></strong></p>
 <ul>
-<li><p>If we look at just 2023/24 (Figure 2 above), we can see that Brighton and Hove is not quite an outlier (above the 90% percentile at 1.65 standard deviations from the mean) in terms of persistent absence, but it is well above the national average and outside the interquartile range (where 50% of local authorities would lie) with a rate of 28.2%.</p></li>
+<li><p>If we look at just 2023/24 (<a href="#fig-plot2">Figure&nbsp;2</a> above), we can see that Brighton and Hove is not quite an outlier (above the 90% percentile at 1.65 standard deviations from the mean) in terms of persistent absence, but it is well above the national average and outside the interquartile range (where 50% of local authorities would lie) with a rate of 28.2%.</p></li>
 <li><p>This is a slightly wordy statistical way of saying that the persistent absence situation in Brighton and Hove raises interest and is much worse than most other places in the country.</p></li>
 </ul>
 <div class="cell">
+
+</div>
+<div class="cell">
+
+</div>
+<div class="cell">
 <div class="cell-output-display">
-<div>
+<div id="fig-plot3" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="absence_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="absence_files/figure-html/fig-plot3-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;3: Persistent Absence Over Time, Compared to Regions in England</figcaption><p></p>
 </figure>
 </div>
 </div>
 </div>
-<p><strong><em>Figure 3 - Persistent Absence Over Time, Compared to Regions in England</em></strong></p>
 <ul>
-<li>If we compare Brighton and Hove with other areas in the county - here I have chosen regions simply because there are fewer of them and they can fit on a single graph relatively tidily - we can see that Persistent Absence is worse in the Local Authority than it is in any other region in the country.</li>
+<li>If we compare Brighton and Hove with other areas in the county (<a href="#fig-plot3">Figure&nbsp;3</a>) - here I have chosen regions simply because there are fewer of them and they can fit on a single graph relatively tidily - we can see that Persistent Absence is worse in the Local Authority than it is in any other region in the country.</li>
 </ul>
 </section>
 <section id="persistent-absence---the-local-picture" class="level3">
 <h3 class="anchored" data-anchor-id="persistent-absence---the-local-picture">Persistent Absence - The Local Picture</h3>
-<p><em>All data below are downloaded from - https://www.compare-school-performance.service.gov.uk/</em></p>
-<p>So what does persistent absence look like at the school-level in Brighton? Are all schools contributing to the city performing so badly on persistent absence or are there areas where absence is particularly bad? The histogram in Figure 4 below plots the rates of persistent absence for all state secondary schools in England in 2022/23 and overlays the rates the different schools for Brighton and Hove. The black dotted line is the median for England.</p>
+<p><em>All data below are downloaded from - <a href="https://www.compare-school-performance.service.gov.uk/" class="uri">https://www.compare-school-performance.service.gov.uk/</a></em></p>
+<p>So what does persistent absence look like at the school-level in Brighton? Are all schools contributing to the city performing so badly on persistent absence or are there areas where absence is particularly bad? The histogram in <a href="#fig-plot4">Figure&nbsp;4</a> below plots the rates of persistent absence for all state secondary schools in England in 2022/23 and overlays the rates the different schools for Brighton and Hove. The black dotted line is the median for England.</p>
+<div class="cell">
+
+</div>
+<div class="cell">
+
+</div>
+<div class="cell">
+
+</div>
 <div class="cell">
 <div class="cell-output-display">
-<div>
+<div id="fig-plot4" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="absence_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="absence_files/figure-html/fig-plot4-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;4: Percentage of Enrolments who are persistently absence (over 10% sessions missed), England (Brighton and Hove Schools overlaid).</figcaption><p></p>
 </figure>
 </div>
 </div>
 </div>
-<p>Figure 4 - Percentage of Enrolments who are persistently absence (over 10% sessions missed), England (Brighton and Hove Schools overlaid).</p>
 <section id="observations" class="level4">
 <h4 class="anchored" data-anchor-id="observations">Observations</h4>
 <ul>
@@ -285,24 +328,27 @@ window.Quarto = {
 <section id="disadvantaged-pupils" class="level3">
 <h3 class="anchored" data-anchor-id="disadvantaged-pupils">Disadvantaged Pupils</h3>
 <p>Data from here - <a href="https://explore-education-statistics.service.gov.uk/find-statistics/key-stage-4-performance/2022-23" class="uri">https://explore-education-statistics.service.gov.uk/find-statistics/key-stage-4-performance/2022-23</a></p>
-<p>While we are here, it will be useful to look at the disadvantaged pupil picture in the same way. This is because later on we will compare the effects that both disadvantage and absence have on attainment to see which is more important both nationally and in the city. Figure 5 below plots a similar histogram to that above, but this time for disadvantaged pupils.</p>
+<p>While we are here, it will be useful to look at the disadvantaged pupil picture in the same way. This is because later on we will compare the effects that both disadvantage and absence have on attainment to see which is more important both nationally and in the city. <a href="#fig-plot5">Figure&nbsp;5</a> below plots a similar histogram to that above, but this time for disadvantaged pupils.</p>
 <p>Taking the description from the DfE “Pupils are defined as disadvantaged if they are known to have been eligible for free school meals at any point in the past six years (from year 6 to year 11), if they are recorded as having been looked after for at least one day or if they are recorded as having been adopted from care.”</p>
 <div class="cell">
 <div class="cell-output-display">
-<div>
+<div id="fig-plot5" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="absence_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="absence_files/figure-html/fig-plot5-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;5: Percentage of Pupils Disadvantaged at the end of KS4, England (Brighton and Hove Schools overlaid).</figcaption><p></p>
 </figure>
 </div>
 </div>
 </div>
-<p><em>Figure 5 - Percentage of Pupils Disadvantaged at the end of KS4, England (Brighton and Hove Schools overlaid).</em></p>
-<p>Observations</p>
+<p>Observations - <a href="#fig-plot5">Figure&nbsp;5</a></p>
 <ul>
 <li>The national median for disadvantaged pupils at the end of KS4 is around 24%. Most schools in Brighton have below the national average rates of disadvantage.</li>
 <li>PACA (26%) and Longhill (29%) have slightly above the national average rate of disadvantage, but not significantly so.</li>
 <li>BACA, on the other hand, has a very high rate of disadvantage, with 45% of pupils being disadvantaged.</li>
 </ul>
+<div class="cell">
+
+</div>
 </section>
 </section>
 <section id="attainment" class="level2">
@@ -314,269 +360,703 @@ window.Quarto = {
 <p>So we will continue with Progress 8 for now.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div>
+<div id="fig-plot6" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="absence_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="absence_files/figure-html/fig-plot6-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6: Progress 8 across all schools in England, 2022/23 with Brighton and Hove schools overlaid.</figcaption><p></p>
 </figure>
 </div>
 </div>
 </div>
-<p><em>Figure 6 - Progress 8 across all schools in England, 2022/23 with Brighton and Hove schools overlaid.</em></p>
-<p>Observations</p>
+<p>Observations - <a href="#fig-plot6">Figure&nbsp;6</a></p>
 <ul>
 <li><p>Note, these are not the latest Progress 8 scores from 2023/24 - these have just been publilshed, but not with useful comparative data for the same year yet, so I’m sticking to 2022/23 for now. However, if you want to look at the latest Progress 8 Scores for Brighton Schools, you can see them <a href="https://www.compare-school-performance.service.gov.uk/schools-by-type?step=default&amp;table=schools&amp;region=846&amp;geographic=la&amp;for=secondary&amp;schooltype=2,1&amp;schoollevel=IsSecondary">here</a>. Of note in 2023/24, however, is the fact that of the schools performing below average, BACA has made a notable improvement from -0.5 to -0.4 in the latest P8 stats. Longhill has declined further from -0.62 to -0.7 and Patcham has declined from -0.21 to -0.45. At the other end of the scale, of those above average, Blatchington Mill has improved from 0.03 to 0.3.</p></li>
 <li><p>As Progress 8 scores are relative to a national average, the distribution around the mean of 0 is about as normal as you might get and the distribution of Brighton schools around this mean is also pretty normal with as many schools above as below average.</p></li>
 <li><p>Longhill has the worst Progress 8 scores in the City in 2022/23, with BACA performing slightly better at that time, although with BACA improving and Longhill declining in 2024, the gap between these schools has increased.</p></li>
 </ul>
+<div class="cell">
+
+</div>
 </section>
 <section id="absence-disadvantage-and-attainment" class="level2">
 <h2 class="anchored" data-anchor-id="absence-disadvantage-and-attainment">Absence, Disadvantage and Attainment</h2>
 <p>In a deputation to Labour Cabinet on 6th December 2024, Dr Carlie Goldsmith from Class Divide aimed an arrow at ‘apparently sophisticated analysis’ from groups in the city opposed to elements of the council’s proposals.</p>
 <p>What I hope to offer below is not particularly sophisticated as hopefully you will be able to see with your own eyes the patterns that the data on Absence, Disadvantage and Attainment reveals and arrive at the same interpretations I have.</p>
 <p>Being unsophisticated does not mean that I will assume an understanding of some of the more esoteric mathematical dimensions of this analysis, but I will try to keep it as simple as I can and please email me at the address at the top of this piece if you have any questions or queries.</p>
+<section id="absence-and-attainment" class="level4">
+<h4 class="anchored" data-anchor-id="absence-and-attainment">Absence and Attainment</h4>
 <p>To begin with, I will start with a simple scatter plot. We probably all drew these by hand in science at some point in school. You may have even had a go at drawing a line of best-fit through the points with a ruler (I remember my teachers getting us to do this). The idea is the line is our best attempt at summarising the pattern shown by the dots in the scatter plot, and can be thought of as the average of all the points.</p>
-<p>The plot below in Figure 7 is a scatter plot, with each point representing a school in England. The y-axis (vertical) has the average Progress 8 score at the end of KS4 for that school in 2022/23. In this plot, the x-axis (horizontal) represents the % of enrollments at that school that are persistently absent (over 10% of sessions missed) in the same year.</p>
+<p>The plot below in <a href="#fig-plot7">Figure&nbsp;7</a> is a scatter plot, with each point representing a school in England. The y-axis (vertical) has the average Progress 8 score at the end of KS4 for that school in 2022/23. In this plot, the x-axis (horizontal) represents the % of enrollments at that school that are persistently absent (over 10% of sessions missed) in the same year.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div>
+<div id="fig-plot7" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="absence_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="absence_files/figure-html/fig-plot7-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;7: Progress 8 vs Persistent Absence across all schools in England, 2022/23</figcaption><p></p>
 </figure>
 </div>
 </div>
 </div>
-<p><em>Figure 7 - Progress 8 vs Persistent Absence across all schools in England, 2022/23</em></p>
-<p>Observations</p>
+<p>Observations - <a href="#fig-plot7">Figure&nbsp;7</a></p>
 <ul>
 <li><p>Looking at the plot and all points together, it should hopefully be clear that on the whole, as the % of enrollments who are persistently absent increases, the value of the Progress 8 score decreases. The more a school has high levels of persistent absence, the lower its Progress 8 score is likely to be. There are, of course, a few weird values (outliers) which don’t follow this trend, but most do.</p></li>
-<li><p>The blue line throw the centre of the plot is the line of best-fit. This is drawn by the computer and it does so by trying to minimise the total sum of the squared vertical distances (known as <em>residuals</em>) between each black dot in the plot and the line itself. In doing this it ends up with the sum of the positive (dots above the line) and negative residuals (dots below the line) equalling zero.</p></li>
-<li><p>The blue line has two properties that are useful for helping us describe the cloud of points it is representing. - The first is known as the ‘intercept’. This is the value on the y-axis of the blue line as it crosses zero. In our example, it can be thought of as the value of Progress 8 we would expect for a school if it had 0% persistent absence. Our average best-case Progress 8, if you like. In our case, this value would be 1.06. - The second is known as the ‘slope’. This is the change in the value of y (Progress 8) for a one-unit change (1% persistent absence) on the x-axis. In our example, the slope is -0.04. This means that for every additional 1% of students that are persistently absent, on average, the Progress 8 score for that school will reduce by -0.04.</p></li>
-<li><p>On the plot above, I have calculated one more useful property of the points which statisticians know as <a href="https://en.wikipedia.org/wiki/Coefficient_of_determination">the <span class="math inline">\(R^2\)</span>.</a> In lay terms, this is a number between 0-1 that represents how good a representation of the points the blue line is. The closer the points hug the line, the closer to 1 the value gets. If all of the black points fell exactly on the line, the <a href="https://en.wikipedia.org/wiki/Coefficient_of_determination"><span class="math inline">\(R^2\)</span></a> = 1. Another way of describing the blue line is it’s a model (a representation) of the black points. The closer to 1 our <a href="https://en.wikipedia.org/wiki/Coefficient_of_determination"><span class="math inline">\(R^2\)</span></a> value is, the better our model is and the more reliable it is at describing the underlying relationship.</p></li>
+<li><p>The blue line through the centre of the plot is the line of best-fit. This is drawn by the computer by minimising the total sum of the squared vertical distances (known as <em>residuals</em>) between each black dot in the plot and the blue line itself. In doing this it ends up with the sum of the positive (dots above the line) and negative residuals (dots below the line) equalling zero.</p></li>
+<li><p>The blue line has two properties that are useful for helping us describe the cloud of points it is representing:</p>
+<ul>
+<li><p>The first is known as the ‘intercept’. This is the value on the y-axis of the blue line as it crosses zero. In our example, it can be thought of as the value of Progress 8 we would expect for a school if it had 0% persistent absence. Our average best-case Progress 8, if you like. In our case, this value would be 1.06.</p></li>
+<li><p>The second is known as the ‘slope’. This is the change in the value of y (Progress 8) for a one-unit change (1% persistent absence) on the x-axis. In our example, the slope is -0.04. This means that for every additional 1% of students that are persistently absent, on average, the Progress 8 score for that school will reduce by -0.04.</p></li>
+<li><p>The other way of thinking about the slope is how much effect x (persistent absence) is having on y (Progress 8) - if there is there is a causal relationship (which I will return to below). The higher the value of the slope, the more effect x is having on y, the lower the value, the less effect it is having. It’s worth also noting that the slope value is in units of x.</p></li>
+</ul></li>
+<li><p>On the plot above, I have calculated one more useful property of the points which statisticians know as <a href="https://en.wikipedia.org/wiki/Coefficient_of_determination">the <span class="math inline">\(R^2\)</span>.</a> In lay terms, this is a number between 0-1 that describes how good a representation of the points the blue line is. The closer the points hug the line, the closer to 1 the value gets. If all of the black points fell exactly on the line, the <a href="https://en.wikipedia.org/wiki/Coefficient_of_determination"><span class="math inline">\(R^2\)</span></a> = 1. Another way of describing the blue line is it’s a model (a representation) of the black points. The closer to 1 our <a href="https://en.wikipedia.org/wiki/Coefficient_of_determination"><span class="math inline">\(R^2\)</span></a> value is, the better our model is and the more reliable it is at describing the underlying relationship.</p></li>
 <li><p>Our blue line (model) has an <a href="https://en.wikipedia.org/wiki/Coefficient_of_determination"><span class="math inline">\(R^2\)</span></a> = 0.47. Another way of thinking about this is to say that 47% of the variation in Progress 8 scores between schools can be explained just by the variation in persistent absence. So almost 50%. In statistical terms, this is a very good model. The relationship between Progress 8 and persistent absence is very strong.</p></li>
 <li><p>One note of caution with interpreting relationships like this is often it is easy to confuse correlation (things going up or down together) with causation (x causing y, rather than y causing x). This is something all researchers need to be aware of and careful to identify clear theoretical reasons behind suggested relationships. However, in this particular case, the causal pathways are clear. As <span class="citation" data-cites="riordan2021b">(<a href="#ref-riordan2021b" role="doc-biblioref">Riordan, Jopling, and Starr 2021c</a>)</span> (cited earlier) states: “<em>this correlation [between absence and attainment] is most likely to be causal. This is because there is an intuitive underlying causal mechanism: students not in school are less likely to learn the school curriculum.”</em></p></li>
-<li><p>So this simple plot</p></li>
+<li><p>So this simple plot actually contains a lot of information:</p>
+<ul>
+<li><p>We know that Persistent Absence explains almost 50% of the variance in Progress 8 scores at the school level in England in 2022/23.</p></li>
+<li><p>We know that, <em>on average</em>, reducing persistent absence in a school by 1% will likely increase their Progress 8 score by 0.04. 10% reduction in persistent absence will lead to a Progress 8 increasing by 0.4.</p></li>
+</ul></li>
+</ul>
+</section>
+<section id="disadvantage-and-attainment" class="level4">
+<h4 class="anchored" data-anchor-id="disadvantage-and-attainment">Disadvantage and Attainment</h4>
+<p>OK, now we’re warmed up, here’s a very similar scatter plot, but this time plotting the % of disadvantaged students at a school relative to Progress 8. You might notice some similarities and some differences and I will highlight the ones I think relevant below.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-plot8" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="absence_files/figure-html/fig-plot8-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;8: Progress 8 vs % Disadvantaged across all schools in England, 2022/23</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Observations - <a href="#fig-plot8">Figure&nbsp;8</a></p>
+<ul>
+<li><p>The first thing to note is there is also a negative correlation in this graph. As the proportion of disadvantaged students a school has goes up, on average, the progress 8 score goes down.</p></li>
+<li><p>However, hopefully you will have noticed a few differences between this plot and the first one.</p>
+<ul>
+<li><p>Slope - the slope of the blue line is shallower. This means that (assuming a causal relationship), on average, having a higher concentration of disadvantaged students in a school has a less severe negative impact on Progress 8. A 1% increase in disadvantaged students will only lead to a 0.01 decrease in Progress 8 (compared to a 0.04 decrease for persistent absence).</p></li>
+<li><p>Intercept - the intercept is 0.36, which means that, on average, if a school had 0% disadvantaged students, it might expect a Progress 8 score of 0.36. This is compared to an intercept of 1.06 for Persistent absence, again, suggesting reducing absence rather than disadvantage concentrations is likely to have a greater impact on Progress 8.</p></li>
+<li><p><span class="math inline">\(R^2\)</span> - this is 0.15. So the % of disadvantaged students in a school can only predict 15% of the variation in Progress 8 scores (compared to 47% for Persistent Absence). It is also possible to see this visually - the cloud of points in this plot are far more dispersed than in the earlier plot, showing visually the weaker relationship.</p></li>
+</ul></li>
+</ul>
+</section>
+<section id="interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation">Interpretation</h3>
+<p>At a national level in 2022/23, then, it’s clear that persistent absence is both a better predictor of Progress 8 than disadvantage and stands a better chance of being more influential on progress outcomes if reduced in schools. If I were a policy maker and sitting on top of evidence such as this and I wanted to improve educational outcomes using some high-level lever, the most sensible course of action would be to look at persistent absence before getting anywhere near disadvantage.</p>
+<p>It also points to the premise in the consultation documents I mentioned earlier - that outcomes in the city are being driven by economic advantage - potentially being incorrect. This evidence seems to suggest that while economic advantage/disadvantage might play a part, factors like persistent absence are likely to be playing even more of a part.</p>
+<p>As such, some questions you might well be asking at this point are “<em>why have we heard nothing about persistent absence from the council or organisations campaigning to improve outcomes for disadvantaged students like Class Divide over the last few months?“</em> and <em>“why has the council been zooming in on disadvantage and Free School Meals when a much more important factor and potentially bigger policy win is sitting there being ignored?”</em> I genuinely don’t know the answers - perhaps they can provide them in due course. But in the meantime let’s dig a little deeper into the data to see if even more questions or observations emerge.</p>
+</section>
+</section>
+<section id="absence-disadvantage-ofsted-brighton-and-attainment" class="level2">
+<h2 class="anchored" data-anchor-id="absence-disadvantage-ofsted-brighton-and-attainment">Absence, Disadvantage, Ofsted, Brighton and Attainment</h2>
+<p>The plots above are informative, but we can actually make them work a little harder and reveal even more dimensions to the issue.</p>
+<p><a href="#fig-plot9">Figure&nbsp;9</a> below is exactly the same plot as in <a href="#fig-plot7">Figure&nbsp;7</a>, but this time I have coloured the schools according to their last Ofsted rating and have highlighted each school in Brighton for comparison.</p>
+<section id="the-ofsted-rating-effect---persistent-absence" class="level3">
+<h3 class="anchored" data-anchor-id="the-ofsted-rating-effect---persistent-absence">The Ofsted Rating Effect - Persistent Absence</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-plot9" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="absence_files/figure-html/fig-plot9-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;9: Progress 8 vs Persistent Absence, by OfSted Rating, All Schools in England, 2022/23. Brighton Schools Overlaid.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-plot10" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="absence_files/figure-html/fig-plot10-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;10: Progress 8 vs Persistent Absence, by OfSted Rating, All Schools in England, 2022/23.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="observations---fig-plot9-and-fig-plot10" class="level4">
+<h4 class="anchored" data-anchor-id="observations---fig-plot9-and-fig-plot10">Observations - <a href="#fig-plot9">Figure&nbsp;9</a> and <a href="#fig-plot10">Figure&nbsp;10</a></h4>
+<ul>
+<li><p>By grouping observations according to the Ofsted rating of the school, there is an impact on both the slopes and the intercepts of the relationship between persistent absence and Progress 8 score.</p>
+<ul>
+<li><p>The line intercepts now run in order from outstanding to special measures, with Outstanding schools having the highest intercepts (theoretical value of Progress 8 if 0% persistent absence) and RI / Special measures at the bottom. Which makes intuitive sense - all other things being equal, if no schools had any persistent absence, even though it predicts almost 50% of the variation in P8, the other qualities of Outstanding schools are likely to make their P8 scores better.</p></li>
+<li><p>The slopes also become less steep as you get towards Outstanding. This means that for outstanding schools, even though persistent absence still affects their P8 scores negatively, the effect is less severe than for good, requires improvement or special measures schools, where the effect is sucessively more amplifed.</p></li>
+</ul></li>
+<li><p>For Brighton (see <a href="#fig-plot11">Figure&nbsp;11</a> below for a zoomed in view), most of the schools in the city are rated good in 2022/23 (except for Longhill and BACA which are ‘requires improvement’).</p>
+<ul>
+<li><p>The relationship between persistent absence and attainment, on average, appears no different in Brighton than it does in the rest of the country. It’s slope and intercept are similar to the ‘good schools’ slope for the rest of the country.</p></li>
+<li><p>We already know that BACA and Longhill have serious problems with students who are persistently absent from those schools and it would appear that reducing persistent absence at these schools to anything even near to the city average, would have a big impact on attainment.</p></li>
+<li><p>It’s worth nothing that this is 2022/23 data and in 2023/24, the P8 situation for BACA and Blatchington mill gets better, but worse for Longhill and Patcham.</p>
+<ul>
+<li><p>In some ways, despite BACA having such dire persistent absence, for a school with that many students not attending on a regular basis, it falls above the city regression line. This means in some senses, it is actually doing better for its students, attainment wise, than we would expect.</p></li>
+<li><p>The opposite is true for Longhill and Patcham - relative to their persistent absence rates, these schools are doing worse than we would expect - they are below the black regression line. Both would still certainly improve if they cut their persistent absence rates, but it is clear that there are other things also going on. More so than in other schools.</p></li>
+</ul></li>
+</ul></li>
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<div>
+<div id="fig-plot11" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="absence_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="absence_files/figure-html/fig-plot11-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;11: Progress 8 vs Persistent Absence, by OfSted Rating, Brighton and Hove Schools Only</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="regional-effects---persistent-absence" class="level3">
+<h3 class="anchored" data-anchor-id="regional-effects---persistent-absence">Regional Effects - Persistent Absence</h3>
+<p>For comparison, we can try other data groupings to see if these make reveal anything else within the data. Below in <a href="#fig-plot12">Figure&nbsp;12</a> and <a href="#fig-plot13">Figure&nbsp;13</a> the data are grouped according to region. I have done this as we already know from work in previous weeks, that London is an outlier educationally (generally achieving better attainment scores than the rest of the country and doing better by its most disadvantaged pupils).</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-plot12" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="absence_files/figure-html/fig-plot12-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;12: Progress 8 vs Persistent Absence, by Region, All Schools in England, 2022/23. Brighton Schools Overlaid.</figcaption><p></p>
 </figure>
 </div>
 </div>
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<div>
+<div id="fig-plot13" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="absence_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="absence_files/figure-html/fig-plot13-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;13: Progress 8 vs Persistent Absence, by Region, All Schools in England, 2022/23.</figcaption><p></p>
 </figure>
 </div>
 </div>
 </div>
-<p>Figure 7 - Progress 8 vs Persistent Absence, All Schools in England, 2022/23</p>
+<section id="observations---fig-plot12-and-fig-plot13" class="level4">
+<h4 class="anchored" data-anchor-id="observations---fig-plot12-and-fig-plot13">Observations - <a href="#fig-plot12">Figure&nbsp;12</a> and <a href="#fig-plot13">Figure&nbsp;13</a></h4>
+<ul>
+<li><p>Slightly contrary to what I might have expected, there doesn’t appear to be much of an obvious regional effect, although peering closely, it is possible to see that the intercept for London is a bit higher than for everywhere else, although most of the slopes look to be parallel for most regions, indicating absence has a similar effect wherever you are in the country.</p></li>
+<li><p>Interestingly, overlaying Brighton, we see that the slope is slightly shallower than for regions. Part of this is a function of the small number of schools in the city meaning drawing a reliable regression (bet-fit) line is hard because small changes to just one or two schools can have a big impact on the line.</p>
+<ul>
+<li><p>One possible interpretation of the shallower line could be that it suggests that reducing persistent absence in the city might have slightly less of an impact on Progress 8 scores than it does in other regions. However, I don’t think this is the correct interpretation.</p></li>
+<li><p>Having a look a what schools are impacting the line - <a href="https://www.desmos.com/calculator/oost57whub" class="uri">https://www.desmos.com/calculator/oost57whub</a> - it’s possible to observe that the shallowness of the line relative to English regions is a function of the small number of points and BACA performing better than would be expected given the very high number of persistent absentees in the school. Dropping BACA’s Progress 8 from -0.5 to something like -0.65 would bring the line down to something like the regional slopes.</p></li>
+<li><p>Conversely, BACA’s 2023/24 improvement (although we don’t know the corresponding persistent absence) is likely to make the slope even shallower. So this is not that improving persistent absence in the city would have less impact than it would elsewhere in the country, rather BACA despite a headline ‘below average’ Progress 8 score, is actually doing much better than we would expect given the levels of persistent absence and this is pulling the slope upwards for the city.</p></li>
+</ul></li>
+</ul>
+<p>Ofsted and Disadvantage</p>
 <div class="cell">
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="absence_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
+<p><img src="absence_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="absence_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
+<p><img src="absence_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="absence_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
+<p><img src="absence_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
 </div>
+</div>
+<div class="cell">
+
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="absence_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.4796396</code></pre>
+<pre><code>[1] 0.4780092</code></pre>
 </div>
 </div>
 <div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = P8MEA ~ PPERSABS10 + PTFSM6CLA1A + OFSTEDRATING, 
+    data = filtered_region)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.18783 -0.22372 -0.01046  0.21231  1.92267 
+
+Coefficients:
+                                   Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                       0.8149448  0.0227424  35.834  &lt; 2e-16 ***
+PPERSABS10                       -0.0276923  0.0008966 -30.887  &lt; 2e-16 ***
+PTFSM6CLA1A                      -0.0035733  0.0005114  -6.988 3.45e-12 ***
+OFSTEDRATINGOutstanding           0.3764263  0.0187253  20.103  &lt; 2e-16 ***
+OFSTEDRATINGRequires improvement -0.2436766  0.0199754 -12.199  &lt; 2e-16 ***
+OFSTEDRATINGSerious Weaknesses   -0.2549097  0.0722577  -3.528 0.000426 ***
+OFSTEDRATINGSpecial Measures     -0.3911599  0.0845987  -4.624 3.93e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.3347 on 2900 degrees of freedom
+  (48 observations deleted due to missingness)
+Multiple R-squared:  0.5695,    Adjusted R-squared:  0.5686 
+F-statistic: 639.3 on 6 and 2900 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                 GVIF Df GVIF^(1/(2*Df))
-PPERSABS10   1.658914  1        1.287989
-PTFSM6CLA1A  1.363978  1        1.167895
-OFSTEDRATING 1.289714  4        1.032314</code></pre>
+PPERSABS10   1.644004  1        1.282187
+PTFSM6CLA1A  1.373110  1        1.171798
+OFSTEDRATING 1.268037  4        1.030129</code></pre>
 </div>
 <div class="cell-output-display">
-<div>
-<div class="table-responsive">
-<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
-<tbody>
-<tr class="odd">
-<td style="text-align: left; font-weight: bold;">Observations</td>
-<td style="text-align: right;">3173 (1102 missing obs. deleted)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left; font-weight: bold;">Dependent variable</td>
-<td style="text-align: right;">P8MEA</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; font-weight: bold;">Type</td>
-<td style="text-align: right;">OLS linear regression</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="table-responsive">
-<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
-<tbody>
-<tr class="odd">
-<td style="text-align: left; font-weight: bold;">F(6,3166)</td>
-<td style="text-align: right;">681.30</td>
-</tr>
-<tr class="even">
-<td style="text-align: left; font-weight: bold;">R²</td>
-<td style="text-align: right;">0.56</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; font-weight: bold;">Adj. R²</td>
-<td style="text-align: right;">0.56</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="table-responsive">
-<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
-<thead>
-<tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Est.</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">S.E.</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">t val.</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">p</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left; font-weight: bold;">(Intercept)</td>
-<td style="text-align: right;">-0.03</td>
-<td style="text-align: right;">0.01</td>
-<td style="text-align: right;">-4.22</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-<tr class="even">
-<td style="text-align: left; font-weight: bold;">PPERSABS10</td>
-<td style="text-align: right;">-0.25</td>
-<td style="text-align: right;">0.01</td>
-<td style="text-align: right;">-31.66</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; font-weight: bold;">PTFSM6CLA1A</td>
-<td style="text-align: right;">-0.05</td>
-<td style="text-align: right;">0.01</td>
-<td style="text-align: right;">-6.87</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-<tr class="even">
-<td style="text-align: left; font-weight: bold;">OFSTEDRATINGOutstanding</td>
-<td style="text-align: right;">0.38</td>
-<td style="text-align: right;">0.02</td>
-<td style="text-align: right;">20.18</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; font-weight: bold;">OFSTEDRATINGRequires improvement</td>
-<td style="text-align: right;">-0.25</td>
-<td style="text-align: right;">0.02</td>
-<td style="text-align: right;">-13.14</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-<tr class="even">
-<td style="text-align: left; font-weight: bold;">OFSTEDRATINGSerious Weaknesses</td>
-<td style="text-align: right;">-0.24</td>
-<td style="text-align: right;">0.05</td>
-<td style="text-align: right;">-4.49</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; font-weight: bold;">OFSTEDRATINGSpecial Measures</td>
-<td style="text-align: right;">-0.36</td>
-<td style="text-align: right;">0.07</td>
-<td style="text-align: right;">-5.54</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-</tbody><tfoot>
-<tr class="even">
-<td style="text-align: left; padding: 0;"><sup></sup> Standard errors: OLS; Continuous predictors are mean-centered and scaled by 1 s.d. The outcome variable remains in its original units.</td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-</tr>
-</tfoot>
 
+<table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<tbody>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> Observations </td>
+   <td style="text-align:right;"> 2907 (48 missing obs. deleted) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> Dependent variable </td>
+   <td style="text-align:right;"> P8MEA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> Type </td>
+   <td style="text-align:right;"> OLS linear regression </td>
+  </tr>
+</tbody>
+</table> <table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<tbody>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> F(6,2900) </td>
+   <td style="text-align:right;"> 639.33 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> R² </td>
+   <td style="text-align:right;"> 0.57 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> Adj. R² </td>
+   <td style="text-align:right;"> 0.57 </td>
+  </tr>
+</tbody>
+</table> <table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;border-bottom: 0;">
+ <thead>
+  <tr>
+   <th style="text-align:left;">   </th>
+   <th style="text-align:right;"> Est. </th>
+   <th style="text-align:right;"> S.E. </th>
+   <th style="text-align:right;"> t val. </th>
+   <th style="text-align:right;"> p </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> (Intercept) </td>
+   <td style="text-align:right;"> -0.02 </td>
+   <td style="text-align:right;"> 0.01 </td>
+   <td style="text-align:right;"> -3.14 </td>
+   <td style="text-align:right;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> PPERSABS10 </td>
+   <td style="text-align:right;"> -0.25 </td>
+   <td style="text-align:right;"> 0.01 </td>
+   <td style="text-align:right;"> -30.89 </td>
+   <td style="text-align:right;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> PTFSM6CLA1A </td>
+   <td style="text-align:right;"> -0.05 </td>
+   <td style="text-align:right;"> 0.01 </td>
+   <td style="text-align:right;"> -6.99 </td>
+   <td style="text-align:right;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> OFSTEDRATINGOutstanding </td>
+   <td style="text-align:right;"> 0.38 </td>
+   <td style="text-align:right;"> 0.02 </td>
+   <td style="text-align:right;"> 20.10 </td>
+   <td style="text-align:right;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> OFSTEDRATINGRequires improvement </td>
+   <td style="text-align:right;"> -0.24 </td>
+   <td style="text-align:right;"> 0.02 </td>
+   <td style="text-align:right;"> -12.20 </td>
+   <td style="text-align:right;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> OFSTEDRATINGSerious Weaknesses </td>
+   <td style="text-align:right;"> -0.25 </td>
+   <td style="text-align:right;"> 0.07 </td>
+   <td style="text-align:right;"> -3.53 </td>
+   <td style="text-align:right;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> OFSTEDRATINGSpecial Measures </td>
+   <td style="text-align:right;"> -0.39 </td>
+   <td style="text-align:right;"> 0.08 </td>
+   <td style="text-align:right;"> -4.62 </td>
+   <td style="text-align:right;"> 0.00 </td>
+  </tr>
+</tbody>
+<tfoot><tr><td style="padding: 0; " colspan="100%">
+<sup></sup> Standard errors: OLS; Continuous predictors are mean-centered and scaled by 1 s.d. The outcome variable remains in its original units.</td></tr></tfoot>
 </table>
-</div>
-</div>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_summs</span>(model, <span class="at">inner_ci_level =</span> .<span class="dv">9</span>, <span class="at">scale =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="absence_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
+<p><img src="absence_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid" width="672"></p>
 </div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a linear model</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>model2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(P8MEA <span class="sc">~</span> PPERSABS10 <span class="sc">+</span> PTFSM6CLA1A <span class="sc">+</span> OFSTEDRATING <span class="sc">+</span> gor_name, <span class="at">data =</span> filtered_region)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = P8MEA ~ PPERSABS10 + PTFSM6CLA1A + OFSTEDRATING + 
+    gor_name, data = filtered_region)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.17515 -0.21460 -0.00666  0.19880  1.85868 
+
+Coefficients:
+                                   Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                       0.7680684  0.0286732  26.787  &lt; 2e-16 ***
+PPERSABS10                       -0.0260691  0.0009051 -28.802  &lt; 2e-16 ***
+PTFSM6CLA1A                      -0.0049552  0.0005440  -9.109  &lt; 2e-16 ***
+OFSTEDRATINGOutstanding           0.3509820  0.0183076  19.171  &lt; 2e-16 ***
+OFSTEDRATINGRequires improvement -0.2247360  0.0194329 -11.565  &lt; 2e-16 ***
+OFSTEDRATINGSerious Weaknesses   -0.2317545  0.0700051  -3.311 0.000943 ***
+OFSTEDRATINGSpecial Measures     -0.3446198  0.0820349  -4.201 2.74e-05 ***
+gor_nameEast of England           0.0210959  0.0271729   0.776 0.437602    
+gor_nameLondon                    0.2270736  0.0264643   8.580  &lt; 2e-16 ***
+gor_nameNorth East               -0.0812467  0.0350976  -2.315 0.020689 *  
+gor_nameNorth West               -0.0601626  0.0260170  -2.312 0.020824 *  
+gor_nameSouth East               -0.0086141  0.0258636  -0.333 0.739115    
+gor_nameSouth West                0.0721259  0.0282069   2.557 0.010608 *  
+gor_nameWest Midlands             0.0360556  0.0269216   1.339 0.180585    
+gor_nameYorkshire and the Humber  0.0692462  0.0281267   2.462 0.013877 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.3238 on 2892 degrees of freedom
+  (48 observations deleted due to missingness)
+Multiple R-squared:  0.5981,    Adjusted R-squared:  0.5961 
+F-statistic: 307.4 on 14 and 2892 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>vif_values <span class="ot">&lt;-</span> car<span class="sc">::</span><span class="fu">vif</span>(model)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>vif_values</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 GVIF Df GVIF^(1/(2*Df))
+PPERSABS10   1.644004  1        1.282187
+PTFSM6CLA1A  1.373110  1        1.171798
+OFSTEDRATING 1.268037  4        1.030129</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summ</span>(model2, <span class="at">scale =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<tbody>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> Observations </td>
+   <td style="text-align:right;"> 2907 (48 missing obs. deleted) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> Dependent variable </td>
+   <td style="text-align:right;"> P8MEA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> Type </td>
+   <td style="text-align:right;"> OLS linear regression </td>
+  </tr>
+</tbody>
+</table> <table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<tbody>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> F(14,2892) </td>
+   <td style="text-align:right;"> 307.38 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> R² </td>
+   <td style="text-align:right;"> 0.60 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> Adj. R² </td>
+   <td style="text-align:right;"> 0.60 </td>
+  </tr>
+</tbody>
+</table> <table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;border-bottom: 0;">
+ <thead>
+  <tr>
+   <th style="text-align:left;">   </th>
+   <th style="text-align:right;"> Est. </th>
+   <th style="text-align:right;"> S.E. </th>
+   <th style="text-align:right;"> t val. </th>
+   <th style="text-align:right;"> p </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> (Intercept) </td>
+   <td style="text-align:right;"> -0.06 </td>
+   <td style="text-align:right;"> 0.02 </td>
+   <td style="text-align:right;"> -3.01 </td>
+   <td style="text-align:right;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> PPERSABS10 </td>
+   <td style="text-align:right;"> -0.23 </td>
+   <td style="text-align:right;"> 0.01 </td>
+   <td style="text-align:right;"> -28.80 </td>
+   <td style="text-align:right;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> PTFSM6CLA1A </td>
+   <td style="text-align:right;"> -0.07 </td>
+   <td style="text-align:right;"> 0.01 </td>
+   <td style="text-align:right;"> -9.11 </td>
+   <td style="text-align:right;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> OFSTEDRATINGOutstanding </td>
+   <td style="text-align:right;"> 0.35 </td>
+   <td style="text-align:right;"> 0.02 </td>
+   <td style="text-align:right;"> 19.17 </td>
+   <td style="text-align:right;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> OFSTEDRATINGRequires improvement </td>
+   <td style="text-align:right;"> -0.22 </td>
+   <td style="text-align:right;"> 0.02 </td>
+   <td style="text-align:right;"> -11.56 </td>
+   <td style="text-align:right;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> OFSTEDRATINGSerious Weaknesses </td>
+   <td style="text-align:right;"> -0.23 </td>
+   <td style="text-align:right;"> 0.07 </td>
+   <td style="text-align:right;"> -3.31 </td>
+   <td style="text-align:right;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> OFSTEDRATINGSpecial Measures </td>
+   <td style="text-align:right;"> -0.34 </td>
+   <td style="text-align:right;"> 0.08 </td>
+   <td style="text-align:right;"> -4.20 </td>
+   <td style="text-align:right;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> gor_nameEast of England </td>
+   <td style="text-align:right;"> 0.02 </td>
+   <td style="text-align:right;"> 0.03 </td>
+   <td style="text-align:right;"> 0.78 </td>
+   <td style="text-align:right;"> 0.44 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> gor_nameLondon </td>
+   <td style="text-align:right;"> 0.23 </td>
+   <td style="text-align:right;"> 0.03 </td>
+   <td style="text-align:right;"> 8.58 </td>
+   <td style="text-align:right;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> gor_nameNorth East </td>
+   <td style="text-align:right;"> -0.08 </td>
+   <td style="text-align:right;"> 0.04 </td>
+   <td style="text-align:right;"> -2.31 </td>
+   <td style="text-align:right;"> 0.02 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> gor_nameNorth West </td>
+   <td style="text-align:right;"> -0.06 </td>
+   <td style="text-align:right;"> 0.03 </td>
+   <td style="text-align:right;"> -2.31 </td>
+   <td style="text-align:right;"> 0.02 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> gor_nameSouth East </td>
+   <td style="text-align:right;"> -0.01 </td>
+   <td style="text-align:right;"> 0.03 </td>
+   <td style="text-align:right;"> -0.33 </td>
+   <td style="text-align:right;"> 0.74 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> gor_nameSouth West </td>
+   <td style="text-align:right;"> 0.07 </td>
+   <td style="text-align:right;"> 0.03 </td>
+   <td style="text-align:right;"> 2.56 </td>
+   <td style="text-align:right;"> 0.01 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> gor_nameWest Midlands </td>
+   <td style="text-align:right;"> 0.04 </td>
+   <td style="text-align:right;"> 0.03 </td>
+   <td style="text-align:right;"> 1.34 </td>
+   <td style="text-align:right;"> 0.18 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> gor_nameYorkshire and the Humber </td>
+   <td style="text-align:right;"> 0.07 </td>
+   <td style="text-align:right;"> 0.03 </td>
+   <td style="text-align:right;"> 2.46 </td>
+   <td style="text-align:right;"> 0.01 </td>
+  </tr>
+</tbody>
+<tfoot><tr><td style="padding: 0; " colspan="100%">
+<sup></sup> Standard errors: OLS; Continuous predictors are mean-centered and scaled by 1 s.d. The outcome variable remains in its original units.</td></tr></tfoot>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>model3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(P8MEA <span class="sc">~</span> PPERSABS10 <span class="sc">+</span> PTFSM6CLA1A, <span class="at">data =</span> btn_sub)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = P8MEA ~ PPERSABS10 + PTFSM6CLA1A, data = btn_sub)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.31443 -0.02626  0.02770  0.07533  0.25273 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)   
+(Intercept)  0.89704    0.16771   5.349  0.00107 **
+PPERSABS10  -0.04724    0.01293  -3.654  0.00813 **
+PTFSM6CLA1A  0.02243    0.01569   1.429  0.19600   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.1732 on 7 degrees of freedom
+Multiple R-squared:  0.837, Adjusted R-squared:  0.7904 
+F-statistic: 17.97 on 2 and 7 DF,  p-value: 0.001748</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>vif_values <span class="ot">&lt;-</span> car<span class="sc">::</span><span class="fu">vif</span>(model)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>vif_values</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 GVIF Df GVIF^(1/(2*Df))
+PPERSABS10   1.644004  1        1.282187
+PTFSM6CLA1A  1.373110  1        1.171798
+OFSTEDRATING 1.268037  4        1.030129</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summ</span>(model3, <span class="at">scale =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<tbody>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> Observations </td>
+   <td style="text-align:right;"> 10 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> Dependent variable </td>
+   <td style="text-align:right;"> P8MEA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> Type </td>
+   <td style="text-align:right;"> OLS linear regression </td>
+  </tr>
+</tbody>
+</table> <table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<tbody>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> F(2,7) </td>
+   <td style="text-align:right;"> 17.97 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> R² </td>
+   <td style="text-align:right;"> 0.84 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> Adj. R² </td>
+   <td style="text-align:right;"> 0.79 </td>
+  </tr>
+</tbody>
+</table> <table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;border-bottom: 0;">
+ <thead>
+  <tr>
+   <th style="text-align:left;">   </th>
+   <th style="text-align:right;"> Est. </th>
+   <th style="text-align:right;"> S.E. </th>
+   <th style="text-align:right;"> t val. </th>
+   <th style="text-align:right;"> p </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> (Intercept) </td>
+   <td style="text-align:right;"> 0.90 </td>
+   <td style="text-align:right;"> 0.17 </td>
+   <td style="text-align:right;"> 5.35 </td>
+   <td style="text-align:right;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> PPERSABS10 </td>
+   <td style="text-align:right;"> -0.05 </td>
+   <td style="text-align:right;"> 0.01 </td>
+   <td style="text-align:right;"> -3.65 </td>
+   <td style="text-align:right;"> 0.01 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> PTFSM6CLA1A </td>
+   <td style="text-align:right;"> 0.02 </td>
+   <td style="text-align:right;"> 0.02 </td>
+   <td style="text-align:right;"> 1.43 </td>
+   <td style="text-align:right;"> 0.20 </td>
+  </tr>
+</tbody>
+<tfoot><tr><td style="padding: 0; " colspan="100%">
+<sup></sup> Standard errors: OLS</td></tr></tfoot>
+</table>
 </div>
 </div>
 
 </section>
+</section>
+</section>
 
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
-<div id="ref-beynon2024" class="csl-entry" role="listitem">
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
+<div id="ref-beynon2024" class="csl-entry" role="doc-biblioentry">
 Beynon, Katie. 2024. <span>“Changes in Schools’ Progress 8 Scores over Time.”</span> <a href="https://ffteducationdatalab.org.uk/2024/04/changes-in-schools-progress-8-scores-over-time/">https://ffteducationdatalab.org.uk/2024/04/changes-in-schools-progress-8-scores-over-time/</a>.
 </div>
-<div id="ref-britton2023a" class="csl-entry" role="listitem">
+<div id="ref-britton2023a" class="csl-entry" role="doc-biblioentry">
 Britton, J, D Clark, and I Lee. 2023. <span>“Unveiling School Effectiveness: Progress 8, Parental Choices and Closing the Achievement Gap.”</span> <a href="https://ifs.org.uk/publications/unveiling-school-effectiveness-progress-8-parental-choices-and-closing-achievement-gap">https://ifs.org.uk/publications/unveiling-school-effectiveness-progress-8-parental-choices-and-closing-achievement-gap</a>.
 </div>
-<div id="ref-claymore2023" class="csl-entry" role="listitem">
+<div id="ref-claymore2023" class="csl-entry" role="doc-biblioentry">
 Claymore, Zoe. 2023a. <span>“Being Present: The Power of Attendance and Stability for Disadvantaged Pupils.”</span> <a href="https://www.nfer.ac.uk/publications/being-present-the-power-of-attendance-and-stability-for-disadvantaged-pupils/">https://www.nfer.ac.uk/publications/being-present-the-power-of-attendance-and-stability-for-disadvantaged-pupils/</a>.
 </div>
-<div id="ref-claymore2023a" class="csl-entry" role="listitem">
+<div id="ref-claymore2023a" class="csl-entry" role="doc-biblioentry">
 ———. 2023b. <span>“Being Present: The Power of Attendance and Stability for Disadvantaged Pupils.”</span> <a href="https://www.nfer.ac.uk/publications/being-present-the-power-of-attendance-and-stability-for-disadvantaged-pupils/">https://www.nfer.ac.uk/publications/being-present-the-power-of-attendance-and-stability-for-disadvantaged-pupils/</a>.
 </div>
-<div id="ref-dfe2023" class="csl-entry" role="listitem">
+<div id="ref-dfe2023" class="csl-entry" role="doc-biblioentry">
 DfE. 2023. <span>“Why Is School Attendance so Important and What Are the Risks of Missing a Day? <span></span> The Education Hub.”</span> <a href="https://educationhub.blog.gov.uk/2023/05/18/school-attendance-important-risks-missing-day/">https://educationhub.blog.gov.uk/2023/05/18/school-attendance-important-risks-missing-day/</a>.
 </div>
-<div id="ref-dfe2024" class="csl-entry" role="listitem">
+<div id="ref-dfe2024" class="csl-entry" role="doc-biblioentry">
 ———. 2024. <span>“Working Together to Improve School Attendance.”</span> <a href="https://www.gov.uk/government/publications/working-together-to-improve-school-attendance">https://www.gov.uk/government/publications/working-together-to-improve-school-attendance</a>.
 </div>
-<div id="ref-nga2024" class="csl-entry" role="listitem">
+<div id="ref-nga2024" class="csl-entry" role="doc-biblioentry">
 NGA. 2024. <span>“Improving School Attendance | National Governance Association.”</span> <a href="https://www.nga.org.uk/knowledge-centre/improving-school-attendance/">https://www.nga.org.uk/knowledge-centre/improving-school-attendance/</a>.
 </div>
-<div id="ref-prior" class="csl-entry" role="listitem">
+<div id="ref-prior" class="csl-entry" role="doc-biblioentry">
 Prior, L, J Jerrim, D Thompson, and G Leckie. n.d. <span>“Is It Worth Calculating Progress 8 Anymore? | PolicyBristol | University of Bristol.”</span> <a href="https://www.bristol.ac.uk/policybristol/policy-briefings/calculating-progess-8/">https://www.bristol.ac.uk/policybristol/policy-briefings/calculating-progess-8/</a>.
 </div>
-<div id="ref-riordan2021" class="csl-entry" role="listitem">
+<div id="ref-riordan2021" class="csl-entry" role="doc-biblioentry">
 Riordan, S, M Jopling, and S Starr. 2021a. <span>“Against the Odds: Achieving Greater Progress for Secondary Students Facing Socio-Economic Disadvantage.”</span> <a href="https://www.gov.uk/government/publications/against-the-odds">https://www.gov.uk/government/publications/against-the-odds</a>.
 </div>
-<div id="ref-riordan2021a" class="csl-entry" role="listitem">
+<div id="ref-riordan2021a" class="csl-entry" role="doc-biblioentry">
 ———. 2021b. <span>“Against the Odds: Achieving Greater Progress for Secondary Students Facing Socio-Economic Disadvantage.”</span> <a href="https://www.gov.uk/government/publications/against-the-odds">https://www.gov.uk/government/publications/against-the-odds</a>.
 </div>
-<div id="ref-riordan2021b" class="csl-entry" role="listitem">
+<div id="ref-riordan2021b" class="csl-entry" role="doc-biblioentry">
 ———. 2021c. <span>“Against the Odds: Achieving Greater Progress for Secondary Students Facing Socio-Economic Disadvantage.”</span> <a href="https://www.gov.uk/government/publications/against-the-odds">https://www.gov.uk/government/publications/against-the-odds</a>.
 </div>
-<div id="ref-rossell1990" class="csl-entry" role="listitem">
+<div id="ref-rossell1990" class="csl-entry" role="doc-biblioentry">
 Rossell, Christine H. 1990. <em>The Carrot or the Stick for School Desegregation Policy: Magnet Schools or Forced Busing</em>. Temple University Press. <a href="https://www.jstor.org/stable/j.ctt14bt4t1">https://www.jstor.org/stable/j.ctt14bt4t1</a>.
+</div>
+<div id="ref-sarfraz2023" class="csl-entry" role="doc-biblioentry">
+Sarfraz, Rabia. 2023. <span>“H16 Arsenic to Biologics: Psoriasis Treatment Through the Ages.”</span> <em>British Journal of Dermatology</em> 188 (Supplement<span>_</span>4): ljad113.298. <a href="https://doi.org/10.1093/bjd/ljad113.298">https://doi.org/10.1093/bjd/ljad113.298</a>.
 </div>
 </div></section></div></main>
 <!-- /main column -->
@@ -607,23 +1087,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     icon: icon
   };
   anchorJS.add('.anchored');
-  const isCodeAnnotation = (el) => {
-    for (const clz of el.classList) {
-      if (clz.startsWith('code-annotation-')) {                     
-        return true;
-      }
-    }
-    return false;
-  }
   const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
+    target: function(trigger) {
+      return trigger.previousElementSibling;
     }
   });
   clipboard.on('success', function(e) {
@@ -659,27 +1125,10 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-    var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
-    var isInternal = (href) => {
-        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
-    }
-    // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
-    for (var i=0; i<links.length; i++) {
-      const link = links[i];
-      if (!isInternal(link.href)) {
-        // undo the damage that might have been done by quarto-nav.js in the case of
-        // links that we want to consider external
-        if (link.dataset.originalHref !== undefined) {
-          link.href = link.dataset.originalHref;
-        }
-      }
-    }
-  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+  function tippyHover(el, contentFn) {
     const config = {
       allowHTML: true,
+      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -689,17 +1138,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start',
+      placement: 'bottom-start'
     };
-    if (contentFn) {
-      config.content = contentFn;
-    }
-    if (onTriggerFn) {
-      config.onTrigger = onTriggerFn;
-    }
-    if (onUntriggerFn) {
-      config.onUntrigger = onUntriggerFn;
-    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -711,245 +1151,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      if (note) {
-        return note.innerHTML;
-      } else {
-        return "";
-      }
+      return note.innerHTML;
     });
   }
-  const xrefs = window.document.querySelectorAll('a.quarto-xref');
-  const processXRef = (id, note) => {
-    // Strip column container classes
-    const stripColumnClz = (el) => {
-      el.classList.remove("page-full", "page-columns");
-      if (el.children) {
-        for (const child of el.children) {
-          stripColumnClz(child);
-        }
-      }
-    }
-    stripColumnClz(note)
-    if (id === null || id.startsWith('sec-')) {
-      // Special case sections, only their first couple elements
-      const container = document.createElement("div");
-      if (note.children && note.children.length > 2) {
-        container.appendChild(note.children[0].cloneNode(true));
-        for (let i = 1; i < note.children.length; i++) {
-          const child = note.children[i];
-          if (child.tagName === "P" && child.innerText === "") {
-            continue;
-          } else {
-            container.appendChild(child.cloneNode(true));
-            break;
-          }
-        }
-        if (window.Quarto?.typesetMath) {
-          window.Quarto.typesetMath(container);
-        }
-        return container.innerHTML
-      } else {
-        if (window.Quarto?.typesetMath) {
-          window.Quarto.typesetMath(note);
-        }
-        return note.innerHTML;
-      }
-    } else {
-      // Remove any anchor links if they are present
-      const anchorLink = note.querySelector('a.anchorjs-link');
-      if (anchorLink) {
-        anchorLink.remove();
-      }
-      if (window.Quarto?.typesetMath) {
-        window.Quarto.typesetMath(note);
-      }
-      // TODO in 1.5, we should make sure this works without a callout special case
-      if (note.classList.contains("callout")) {
-        return note.outerHTML;
-      } else {
-        return note.innerHTML;
-      }
-    }
-  }
-  for (var i=0; i<xrefs.length; i++) {
-    const xref = xrefs[i];
-    tippyHover(xref, undefined, function(instance) {
-      instance.disable();
-      let url = xref.getAttribute('href');
-      let hash = undefined; 
-      if (url.startsWith('#')) {
-        hash = url;
-      } else {
-        try { hash = new URL(url).hash; } catch {}
-      }
-      if (hash) {
-        const id = hash.replace(/^#\/?/, "");
-        const note = window.document.getElementById(id);
-        if (note !== null) {
-          try {
-            const html = processXRef(id, note.cloneNode(true));
-            instance.setContent(html);
-          } finally {
-            instance.enable();
-            instance.show();
-          }
-        } else {
-          // See if we can fetch this
-          fetch(url.split('#')[0])
-          .then(res => res.text())
-          .then(html => {
-            const parser = new DOMParser();
-            const htmlDoc = parser.parseFromString(html, "text/html");
-            const note = htmlDoc.getElementById(id);
-            if (note !== null) {
-              const html = processXRef(id, note);
-              instance.setContent(html);
-            } 
-          }).finally(() => {
-            instance.enable();
-            instance.show();
-          });
-        }
-      } else {
-        // See if we can fetch a full url (with no hash to target)
-        // This is a special case and we should probably do some content thinning / targeting
-        fetch(url)
-        .then(res => res.text())
-        .then(html => {
-          const parser = new DOMParser();
-          const htmlDoc = parser.parseFromString(html, "text/html");
-          const note = htmlDoc.querySelector('main.content');
-          if (note !== null) {
-            // This should only happen for chapter cross references
-            // (since there is no id in the URL)
-            // remove the first header
-            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
-              note.children[0].remove();
-            }
-            const html = processXRef(null, note);
-            instance.setContent(html);
-          } 
-        }).finally(() => {
-          instance.enable();
-          instance.show();
-        });
-      }
-    }, function(instance) {
-    });
-  }
-      let selectedAnnoteEl;
-      const selectorForAnnotation = ( cell, annotation) => {
-        let cellAttr = 'data-code-cell="' + cell + '"';
-        let lineAttr = 'data-code-annotation="' +  annotation + '"';
-        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
-        return selector;
-      }
-      const selectCodeLines = (annoteEl) => {
-        const doc = window.document;
-        const targetCell = annoteEl.getAttribute("data-target-cell");
-        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
-        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
-        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
-        const lineIds = lines.map((line) => {
-          return targetCell + "-" + line;
-        })
-        let top = null;
-        let height = null;
-        let parent = null;
-        if (lineIds.length > 0) {
-            //compute the position of the single el (top and bottom and make a div)
-            const el = window.document.getElementById(lineIds[0]);
-            top = el.offsetTop;
-            height = el.offsetHeight;
-            parent = el.parentElement.parentElement;
-          if (lineIds.length > 1) {
-            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-            height = bottom - top;
-          }
-          if (top !== null && height !== null && parent !== null) {
-            // cook up a div (if necessary) and position it 
-            let div = window.document.getElementById("code-annotation-line-highlight");
-            if (div === null) {
-              div = window.document.createElement("div");
-              div.setAttribute("id", "code-annotation-line-highlight");
-              div.style.position = 'absolute';
-              parent.appendChild(div);
-            }
-            div.style.top = top - 2 + "px";
-            div.style.height = height + 4 + "px";
-            div.style.left = 0;
-            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-            if (gutterDiv === null) {
-              gutterDiv = window.document.createElement("div");
-              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-              gutterDiv.style.position = 'absolute';
-              const codeCell = window.document.getElementById(targetCell);
-              const gutter = codeCell.querySelector('.code-annotation-gutter');
-              gutter.appendChild(gutterDiv);
-            }
-            gutterDiv.style.top = top - 2 + "px";
-            gutterDiv.style.height = height + 4 + "px";
-          }
-          selectedAnnoteEl = annoteEl;
-        }
-      };
-      const unselectCodeLines = () => {
-        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
-        elementsIds.forEach((elId) => {
-          const div = window.document.getElementById(elId);
-          if (div) {
-            div.remove();
-          }
-        });
-        selectedAnnoteEl = undefined;
-      };
-        // Handle positioning of the toggle
-    window.addEventListener(
-      "resize",
-      throttle(() => {
-        elRect = undefined;
-        if (selectedAnnoteEl) {
-          selectCodeLines(selectedAnnoteEl);
-        }
-      }, 10)
-    );
-    function throttle(fn, ms) {
-    let throttle = false;
-    let timer;
-      return (...args) => {
-        if(!throttle) { // first call gets through
-            fn.apply(this, args);
-            throttle = true;
-        } else { // all the others get throttled
-            if(timer) clearTimeout(timer); // cancel #2
-            timer = setTimeout(() => {
-              fn.apply(this, args);
-              timer = throttle = false;
-            }, ms);
-        }
-      };
-    }
-      // Attach click handler to the DT
-      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
-      for (const annoteDlNode of annoteDls) {
-        annoteDlNode.addEventListener('click', (event) => {
-          const clickedEl = event.target;
-          if (clickedEl !== selectedAnnoteEl) {
-            unselectCodeLines();
-            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
-            if (activeEl) {
-              activeEl.classList.remove('code-annotation-active');
-            }
-            selectCodeLines(clickedEl);
-            clickedEl.classList.add('code-annotation-active');
-          } else {
-            // Unselect the line
-            unselectCodeLines();
-            clickedEl.classList.remove('code-annotation-active');
-          }
-        });
-      }
   const findCites = (el) => {
     const parentEl = el.parentElement;
     if (parentEl) {
@@ -990,7 +1194,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
-
 
 
 
