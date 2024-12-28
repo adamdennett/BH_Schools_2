@@ -497,7 +497,7 @@ det <- detailed_itineraries(r5r_core = r5r_core,
                             mode = mode,
                             departure_datetime = departure_datetime,
                             max_walk_time = max_walk_time,
-                            shortest_path = FALSE)
+                            shortest_path = T)
 
 head(det)
 
