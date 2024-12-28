@@ -38,7 +38,7 @@ library(tidytransit)
 ```{r}
 
 #https://www.buses.co.uk/open-data
-bh_gtfs <- read_gtfs("data/brightonhove_1730981726.zip")
+bh_gtfs <- read_gtfs("data/gtfs.zip")
 names(bh_gtfs)
 BTN_Bus <- gtfs_as_sf(bh_gtfs, skip_shapes = FALSE, crs = 4326, quiet = TRUE)
 
@@ -69,7 +69,7 @@ tm_shape(route_5B) +
   tm_lines(col = "shape_id", palette = "Oranges", lwd = 1) +
   tm_layout(legend.outside = TRUE)
 
-BTN_shapes <- read_gtfs("data/brightonhove_1730981726.zip", files = c("shapes", "trips", "routes"))
+BTN_shapes <- read_gtfs("data/gtfs.zip", files = c("shapes", "trips", "routes"))
 
 #names(BTN_shapes)
 
@@ -125,10 +125,10 @@ data_path = here("data")
 # Check what files we have
 #list.files(data_path)
 
-# Allow 10 GiB of memory
+# Allow 30 GiB of memory
 rJava::.jinit()
 rJava::.jcall("java.lang.System", "S", "getProperty", "java.version")
-options(java.parameters = "-Xmx10G")
+options(java.parameters = "-Xmx30G")
 
 library(r5r)
 library(accessibility)
@@ -181,6 +181,7 @@ The R5R package - <https://ipeagit.github.io/r5r/> - can be used to calculate th
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 # Create the routable network by indicating the path where OSM, GTFS and possible DEM data are stored
+data_path = here("data")
 r5r_core = setup_r5(data_path = data_path)
 ```
 
@@ -223,28 +224,89 @@ bh_sec_sch$lat <- coords[, 2]
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #visualise the spatial data
 brighton_outline <- st_union(brighton_oa) %>% st_transform(4326)
+brighton_outline_wgs <- st_union(brighton_oa) %>% st_transform(4326)
+brighton_outline_bng <- st_union(brighton_oa)
 #summary(brighton_oa)
 
 # qtm(brighton_outline, fill = "white") +
 #   qtm(brighton_oa_points_r5, size = 0.5, col = "red") +
 #   qtm(bh_sec_sch, size = 0.5, col = "blue")
 
-brighton_h3 <- polygon_to_cells(brighton_oa, res = 11, simple = F)
+brighton_h3 <- polygon_to_cells(brighton_oa, res = 10, simple = F)
 brighton_h3 <- cell_to_polygon(unlist(brighton_h3$h3_addresses), simple = FALSE)
+brighton_h3 <- brighton_h3[brighton_outline,]
 brighton_h3_centroids <- st_centroid(brighton_h3)
 
-qtm(brighton_h3, fill = "red", alpha = 0.5) 
+tmap_options(check.and.fix = TRUE)
+qtm(brighton_h3, alpha = 0.5) 
+
+```
+
+```{r}
+###get Brighton postcodes
+library(sf) 
+library(DBI)
+# Define the connection
+con <- dbConnect(RPostgres::Postgres(), 
+                 dbname = 'gisdb',
+                 host = 'localhost',
+                 port = 5433,
+                 user = 'postgres',
+                 password = 'postgres',
+                 sslmode = 'disable')
+
+# Read data from the specified table
+bn_postcodes <- st_read(con, query = "SELECT * FROM public.bn")
+bn_postcodes <- st_set_crs(bn_postcodes, 27700)
+
+dbDisconnect(con)
+
+# Assuming bn_postcodes and brighton_outline_bng are already loaded as sf objects
+
+# Ensure both datasets have the same CRS
+bn_postcodes <- st_transform(bn_postcodes, 27700)
+brighton_outline_bng <- st_transform(brighton_outline_bng, 27700)
+
+# Filter bn_postcodes where they intersect with brighton_outline_bng
+filtered_postcodes <- bn_postcodes[st_intersects(bn_postcodes, brighton_outline_bng, sparse = FALSE), ]
+# Assuming filtered_postcodes is already created and contains the filtered postcodes
+
+
+bn_postcode_centroids <- st_centroid(filtered_postcodes)
+#or
+bn_postcode_centroids <- read_csv(here("data", "ONSPD_FEB_2024_UK_BN.csv")) %>% 
+  st_as_sf(coords = c("long", "lat")) %>% 
+  st_set_crs(4326) %>% 
+  st_transform(27700)
+
+bn_filtered_postcodes <- bn_postcode_centroids[st_intersects(bn_postcode_centroids, brighton_outline_bng, sparse = FALSE), ]
+
+bn_filtered_postcodes_wgs <- st_transform(bn_filtered_postcodes, 4326)
+
+qtm(bn_filtered_postcodes_wgs)
+
+```
+
+```{r}
+#r5r test
+data_path = here("data")
+r5r_core = setup_r5(data_path = data_path)
+
+#data_path <- system.file("extdata/poa", package = "r5r")
+#r5r_core <- setup_r5(data_path)
 
 ```
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
+##hex grid travel time
+
 #generate a fine-grained spatial hex grid for Brighton
 brighton_h3_centroids <- mutate(brighton_h3_centroids, id = row_number())
 brighton_h3 <- mutate(brighton_h3, id = row_number())
 
 # Set parameters
-mode = c("WALK", "BUS")
-max_walk_time = 360 # minutes
+mode = c("WALK", "TRANSIT")
+max_walk_time = 60 # minutes
 max_trip_duration = 360 # minutes
 departure_datetime = as.POSIXct("23-05-2024 8:30:00", 
                                 format = "%d-%m-%Y %H:%M:%S", 
@@ -288,7 +350,7 @@ Notably, we can see that at present, most children in most catchments can reason
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 tm_shape(geo) + 
-  tm_symbols(col="time", size=0.05, border.lwd=0, style="pretty", n=10, palette="RdYlBu", alpha = 0.3) + 
+  tm_symbols(col="time", size=0.05, border.lwd=0, style="pretty", n=10, palette="RdYlBu", alpha = 0.6) + 
   tm_layout(legend.title.size = 1.5) +
 tm_shape(bh_sec_sch) +
   tm_dots(col = "black", border.lwd=0) + 
@@ -311,8 +373,292 @@ Given that under Option B, there is a high probability that singificant numbers 
 When we look at the Car travel times in the map below that, it becomes clear what options most might be forced into taking.
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
+
+bh_sec_sch1 <- bh_sec_sch %>% 
+  filter(id == "114581")
+
+rJava::.jinit()
+rJava::.jcall("java.lang.System", "S", "getProperty", "java.version")
+options(java.parameters = "-Xmx30G")
+
+#data_path = here("data")
+data_path = here("data", "HenrikkiBrighton", "Brighton")
+r5r_core <- setup_r5(data_path = data_path)
+
+bn_pcds_r5r <- read_csv(here("data", "ONSPD_FEB_2024_UK_BN.csv")) %>% 
+  filter(oslaua == "E06000043") %>%
+  select(c("pcds","lat", "long")) %>% 
+  rename("id" = "pcds", "lon" = "long")
+
+
 # Set parameters
-mode = c("BUS")
+mode = c("WALK", "Transit")
+max_walk_time = 60 # minutes
+max_trip_duration = 360 # minutes
+departure_datetime = as.POSIXct("01-12-2022 7:30:00",
+                                 format = "%d-%m-%Y %H:%M:%S")
+  
+  # as.POSIXct("23-05-2024 8:30:00",
+  #                                format = "%Y-%m-%d %H:%M:%S", 
+  #                                tz = "GMT")
+
+#note the code below already requires the h3 core matrix to be set up
+
+# Calculate the travel time matrix by Transit
+ttm_brighton_pcds_1 = travel_time_matrix(r5r_core = r5r_core,
+                          origins = bh_sec_sch1,
+                          destinations = bn_pcds_r5r,
+                          mode = mode,
+                          departure_datetime = departure_datetime,
+                          max_walk_time = max_walk_time,
+                          max_trip_duration = max_trip_duration)
+
+# Find out the travel time to closest school
+pcds_closest_1 = aggregate(ttm_brighton_pcds_1$travel_time_p50, by=list(ttm_brighton_pcds_1$to_id), FUN=min, na.rm=TRUE)
+
+pcds_closest_1 <- rename(pcds_closest_1, id = Group.1) 
+pcds_closest_1 <- rename(pcds_closest_1, time = x)
+
+#pcds_closest_1["id"] = as.integer(pcds_closest_1$id)
+
+pcds_geo_1 = inner_join(bn_pcds_r5r, pcds_closest_1, by="id") %>% 
+  st_as_sf(coords = c("lon", "lat")) %>% 
+  st_set_crs(4326)
+
+#geo_hex_1 = inner_join(brighton_h3, pcds_closest_1, by="id")
+
+optionZ <- st_read(here("data","optionZa.geojson"))
+
+tm_shape(pcds_geo_1) + 
+  tm_symbols(col="time", size=0.5, border.lwd=0, style="pretty", n=10, palette="-magma", alpha = 0.3) + 
+  tm_layout(legend.title.size = 1.5) +
+tm_shape(bh_sec_sch1) +
+  tm_dots(col = "black", border.lwd=0) + 
+  tm_layout(title = "Bus / Walk Travel Time (incoporating waiting)",legend.position = c("left", "bottom")) +
+tm_shape(optionZ) +
+  tm_polygons(alpha = 0)
+
+
+#r5r::stop_r5(r5r_core)
+#rJava::.jgc(R.gc = TRUE)
+
+
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#THIS WORKS!!!!!!!!!!!!!!!!!!!!!
+
+rJava::.jinit()
+rJava::.jcall("java.lang.System", "S", "getProperty", "java.version")
+options(java.parameters = "-Xmx30G")
+
+library(gtfstools)
+
+# latest_validator <- download_validator(tempdir())
+# latest_validator
+# 
+# d_path <- system.file(here("C:/github/BH_Schools_2/data/gtfs.zip"), package = "gtfstools")
+# 
+# path_output_dir <- tempfile("validation_from_path")
+# validate_gtfs("C:/github/BH_Schools_2/data/gtfs.zip", path_output_dir, latest_validator)
+# list.files(path_output_dir)
+
+#data_path = here("data")
+data_path = here("data", "HenrikkiBrighton", "Brighton")
+r5r_core <- setup_r5(data_path = data_path)
+
+# set inputs
+origins = bh_sec_sch1
+destinations = bn_pcds_r5r %>% filter(id == "BN1 6PG")
+
+#origins <- poi[10,]
+#destinations <- poi[12,]
+mode = c("WALK", "TRANSIT")
+max_walk_time = 30 # minutes
+max_trip_duration = 120 # minutes
+departure_datetime = as.POSIXct("01-12-2022 8:30:00",
+                                 format = "%d-%m-%Y %H:%M:%S")
+
+##calc expanded ttm
+ettm <- expanded_travel_time_matrix(r5r_core = r5r_core,
+                          origins = origins,
+                          destinations = destinations,
+                          mode = mode,
+                          departure_datetime = departure_datetime,
+                          breakdown = TRUE,
+                          max_walk_time = max_walk_time,
+                          max_trip_duration = max_trip_duration)
+
+
+# calculate detailed itineraries
+det <- detailed_itineraries(r5r_core = r5r_core,
+                            origins = origins,
+                            destinations = destinations,
+                            mode = mode,
+                            departure_datetime = departure_datetime,
+                            max_walk_time = max_walk_time,
+                            shortest_path = FALSE)
+
+head(det)
+
+tmap_mode("view")  # Set the mode to interactive viewing
+
+map <- tm_shape(det) +
+  tm_lines(col = "option", palette = "-Set1", lwd = 2, title.col = "Option") +  # Set line color based on "option"
+  tm_shape(det) +
+  tm_lines(col = "segment", palette = "-Greys", lwd = 2, alpha = 0.7, title.col = "Segment")  # Set line shade based on "segment"
+
+map  # Print the map to display it
+
+
+# extract OSM network
+#street_net <- street_network_to_sf(r5r_core)
+
+# extract public transport network
+#transit_net <- r5r::transit_network_to_sf(r5r_core)
+
+# plot
+#ggplot() +
+#  geom_sf(data = street_net$edges, color='gray85') +
+#  geom_sf(data = det, aes(color=mode)) +
+#  facet_wrap(.~option) + 
+#  theme_void()
+
+r5r::stop_r5(r5r_core)
+rJava::.jgc(R.gc = TRUE)
+
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+bh_sec_sch1 <- bh_sec_sch %>% 
+  filter(id == "136164")
+
+rJava::.jinit()
+rJava::.jcall("java.lang.System", "S", "getProperty", "java.version")
+options(java.parameters = "-Xmx30G")
+
+#data_path = here("data")
+data_path = here("data", "HenrikkiBrighton", "Brighton")
+r5r_core <- setup_r5(data_path = data_path)
+
+
+# Set parameters
+mode = c("WALK", "Transit")
+max_walk_time = 60 # minutes
+max_trip_duration = 360 # minutes
+departure_datetime = as.POSIXct("01-12-2022 7:30:00",
+                                 format = "%d-%m-%Y %H:%M:%S")
+  
+  # as.POSIXct("23-05-2024 8:30:00",
+  #                                format = "%Y-%m-%d %H:%M:%S", 
+  #                                tz = "GMT")
+
+#note the code below already requires the h3 core matrix to be set up
+
+# Calculate the travel time matrix by Transit
+ttm_brighton_pcds_2 = travel_time_matrix(r5r_core = r5r_core,
+                          origins = bn_pcds_r5r,
+                          destinations = bh_sec_sch1,
+                          mode = mode,
+                          departure_datetime = departure_datetime,
+                          max_walk_time = max_walk_time,
+                          max_trip_duration = max_trip_duration)
+
+# Find out the travel time to closest school
+pcds_closest_2 = aggregate(ttm_brighton_pcds_2$travel_time_p50, by=list(ttm_brighton_pcds_2$from_id), FUN=min, na.rm=TRUE)
+
+pcds_closest_2 <- rename(pcds_closest_2, id = Group.1) 
+pcds_closest_2 <- rename(pcds_closest_2, time = x)
+
+#pcds_closest_1["id"] = as.integer(pcds_closest_1$id)
+
+pcds_geo_2 = inner_join(bn_pcds_r5r, pcds_closest_2, by="id") %>% 
+  st_as_sf(coords = c("lon", "lat")) %>% 
+  st_set_crs(4326)
+
+#geo_hex_1 = inner_join(brighton_h3, pcds_closest_1, by="id")
+
+tm_shape(pcds_geo_2) + 
+  tm_symbols(col="time", size=0.5, border.lwd=0, style="pretty", n=10, palette="-magma", alpha = 0.3) + 
+  tm_layout(legend.title.size = 1.5) +
+tm_shape(bh_sec_sch1) +
+  tm_dots(col = "black", border.lwd=0) + 
+  tm_layout(title = "Bus / Walk Travel Time (incoporating waiting)",legend.position = c("left", "bottom")) +
+tm_shape(optionZ) +
+  tm_polygons(alpha = 0)
+
+
+#r5r::stop_r5(r5r_core)
+#rJava::.jgc(R.gc = TRUE)
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+bh_sec_sch1 <- bh_sec_sch %>% 
+  filter(id == "114580")
+
+rJava::.jinit()
+rJava::.jcall("java.lang.System", "S", "getProperty", "java.version")
+options(java.parameters = "-Xmx30G")
+
+#data_path = here("data")
+data_path = here("data", "HenrikkiBrighton", "Brighton")
+r5r_core <- setup_r5(data_path = data_path)
+
+
+# Set parameters
+mode = c("WALK", "TRANSIT")
+max_walk_time = 60 # minutes
+max_trip_duration = 360 # minutes
+departure_datetime = as.POSIXct("01-12-2022 7:30:00",
+                                 format = "%d-%m-%Y %H:%M:%S")
+  
+  # as.POSIXct("23-05-2024 8:30:00",
+  #                                format = "%Y-%m-%d %H:%M:%S", 
+  #                                tz = "GMT")
+
+#note the code below already requires the h3 core matrix to be set up
+
+# Calculate the travel time matrix by Transit
+ttm_brighton_pcds_3 = travel_time_matrix(r5r_core = r5r_core,
+                          origins = bn_pcds_r5r,
+                          destinations = bh_sec_sch1,
+                          mode = mode,
+                          departure_datetime = departure_datetime,
+                          max_walk_time = max_walk_time,
+                          max_trip_duration = max_trip_duration)
+
+# Find out the travel time to closest school
+pcds_closest_3 = aggregate(ttm_brighton_pcds_3$travel_time_p50, by=list(ttm_brighton_pcds_3$from_id), FUN=min, na.rm=TRUE)
+
+pcds_closest_3 <- rename(pcds_closest_3, id = Group.1) 
+pcds_closest_3 <- rename(pcds_closest_3, time = x)
+
+#pcds_closest_1["id"] = as.integer(pcds_closest_1$id)
+
+pcds_geo_3 = inner_join(bn_pcds_r5r, pcds_closest_3, by="id") %>% 
+  st_as_sf(coords = c("lon", "lat")) %>% 
+  st_set_crs(4326)
+
+#geo_hex_1 = inner_join(brighton_h3, pcds_closest_1, by="id")
+
+tm_shape(pcds_geo_3) + 
+  tm_symbols(col="time", size=0.5, border.lwd=0, style="pretty", n=10, palette="-magma", alpha = 0.3) + 
+  tm_layout(legend.title.size = 1.5) +
+tm_shape(bh_sec_sch1) +
+  tm_dots(col = "black", border.lwd=0) + 
+  tm_layout(title = "Bus / Walk Travel Time (incoporating waiting)",legend.position = c("left", "bottom")) +
+tm_shape(optionZ) +
+  tm_polygons(alpha = 0)
+
+
+#r5r::stop_r5(r5r_core)
+#rJava::.jgc(R.gc = TRUE)
+
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+# Set parameters
+mode = c("WALK", "TRANSIT")
 max_walk_time = 360 # minutes
 max_trip_duration = 360 # minutes
 departure_datetime = as.POSIXct("23-05-2024 8:30:00",
@@ -465,10 +811,6 @@ ggplot(absence_2022, aes(x = sess_unauth_totalreasons_rate)) +
        y = "Count") +
   theme_minimal()
 
-
-
-
-
 ```
 
 ```{r}
@@ -511,7 +853,6 @@ england_school_2022_23_meta <- data.frame(Field = names(data_types), DataType = 
 
 ```
 
-
 ```{r}
 #read in Brighton Secondary Schools Data
 brighton_sec_schools <- read_csv("https://www.dropbox.com/scl/fi/fhzafgt27v30lmmuo084y/edubasealldata20241003.csv?rlkey=uorw43s44hnw5k9js3z0ksuuq&raw=1") %>% 
@@ -526,9 +867,6 @@ btn_urn_list <- brighton_sec_schools %>%
   select(urn) 
 
 ```
-
-
-
 
 ```{r}
 library(ggplot2)
@@ -559,8 +897,6 @@ ggplot(england_school_2022_23_not_special, aes(x = P8MEA)) +
   theme_minimal()
 ```
 
-
-
 ```{r}
 ggplot(england_school_2022_23_not_special, aes(x = PPERSABS10)) +
   geom_histogram(binwidth = 3, fill = "#b3cde3", color = "black") +  # Pastel color for the bars
@@ -589,7 +925,6 @@ ggplot(england_school_2022_23_not_special, aes(x = PTFSM6CLA1A
 
 ```
 
-
 ```{r}
 # Base plot with england_school_2022_23
 plot <- ggplot(england_school_2022_23_not_special, aes(y = P8MEA, x = PPERSABS10, colour = OFSTEDRATING)) +
@@ -609,8 +944,6 @@ plot +
 ggsave(here("images","progress8_vs_persabs.png"), width = 10, height = 6, dpi = 300)
 
 ```
-
-
 
 ```{r}
 library(ggplot2)
@@ -653,7 +986,6 @@ plot +
   geom_text_repel(data = btn_sub, aes(y = P8MEA, x = PERCTOT, label = SCHNAME.x), color = "black", size = 3, nudge_y = c(-1.5, 1.5), force = 10, box.padding = 0.5, max.overlaps = 10, direction = "both")
 ```
 
-
 ```{r}
 plot <- ggplot(england_school_2022_23_not_special, aes(y = PTFSM6CLA1A, x = PERCTOT, colour = OFSTEDRATING)) +
   geom_point() +
@@ -666,14 +998,11 @@ plot <- ggplot(england_school_2022_23_not_special, aes(y = PTFSM6CLA1A, x = PERC
 plot
 ```
 
-
 ```{r}
 cor <- cor(england_school_2022_23_not_special$PTFSM6CLA1A, england_school_2022_23_not_special$PERCTOT, use = "complete.obs")
 
 cor
 ```
-
-
 
 ```{r}
 ## regression model
@@ -692,4 +1021,3 @@ summary(model)
 gglm(model)
 
 ```
-
