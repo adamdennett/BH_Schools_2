@@ -659,7 +659,7 @@ tm_shape(optionZ) +
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 # Set parameters
 mode = c("WALK", "TRANSIT")
-max_walk_time = 360 # minutes
+max_walk_time = 60 # minutes
 max_trip_duration = 360 # minutes
 departure_datetime = as.POSIXct("23-05-2024 8:30:00",
                                  format = "%d-%m-%Y %H:%M:%S", 
