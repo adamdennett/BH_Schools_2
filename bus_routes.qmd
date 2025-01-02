@@ -503,12 +503,10 @@ head(det)
 
 tmap_mode("view")  # Set the mode to interactive viewing
 
-map <- tm_shape(det) +
-  tm_lines(col = "option", palette = "-Set1", lwd = 2, title.col = "Option") +  # Set line color based on "option"
-  tm_shape(det) +
-  tm_lines(col = "segment", palette = "-Greys", lwd = 2, alpha = 0.7, title.col = "Segment")  # Set line shade based on "segment"
+tm_shape(det) +
+  tm_lines(col = "mode", palette = "-viridis", lwd = 2, alpha = 0.7, title.col = "Segment")  # Set line shade based on "segment"
 
-map  # Print the map to display it
+# Print the map to display it
 
 
 # extract OSM network
@@ -588,8 +586,8 @@ tm_shape(optionZ) +
   tm_polygons(alpha = 0)
 
 
-#r5r::stop_r5(r5r_core)
-#rJava::.jgc(R.gc = TRUE)
+r5r::stop_r5(r5r_core)
+rJava::.jgc(R.gc = TRUE)
 ```
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
