@@ -10,3 +10,5 @@ BrightonLSOASchoolChildren.geojson
 *.zip
 gganim/
 api_key.R
+rjavaenv/
+.Rprofile
