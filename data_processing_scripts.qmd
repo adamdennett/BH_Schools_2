@@ -5,6 +5,52 @@ author: "Adam Dennett"
 
 ## Mining stuff from the Council website
 
+## 2025
+
+```{r}
+# Load necessary libraries
+library(dplyr)
+library(tidyr)
+library(knitr)
+
+# Create the data frame for Year 7 admissions 2025
+yr_7_admissions_2025 <- data.frame(
+  School = c("Blatchington Mill", "Brighton Aldridge Community Academy", "Cardinal Newman", "Dorothy Stringer",
+             "Hove Park", "Kings School", "Longhill High", "Patcham High", "Portslade Aldridge Community Academy", 
+             "Varndean", "Total"),
+  No_1st_pref = c("258 (244)", "83 (83)", "523 (349)", "215 (186)", "130 (130)", "252 (170)", 
+                            "74 (74)", "166 (166)", "175 (175)", "427 (284)", "2303 (1861)"),
+  No_2nd_pref = c("273 (61)", "37 (5)", "239 (11)", "479 (127)", "242 (27)", "280 (10)", 
+                            "39 (17)", "74 (18)", "87 (12)", "390 (13)", "2140 (301)"),
+  No_3rd_pref = c("303 (25)", "33 (1)", "319 (0)", "228 (17)", "274 (14)", "219 (0)", 
+                            "36 (1)", "235 (18)", "70 (3)", "192 (3)", "1911 (87)"),
+  Total = c("834 (330)", "153 (89)", "1081 (360)", "922 (330)", "646 (171)", "751 (180*)", 
+            "151 (97)", "475 (202)", "332 (190)", "1009 (300)", "6354 (2249)")
+)
+
+# Separate numbers and actual values in brackets into their own columns
+yr_7_admissions_2025 <- yr_7_admissions_2025 %>%
+  separate(No_1st_pref, into = c("No_1st_pref", "No_1st_pref_offer"), sep = " \\(", convert = TRUE) %>%
+  separate(No_2nd_pref, into = c("No_2nd_pref", "No_2nd_pref_offer"), sep = " \\(", convert = TRUE) %>%
+  separate(No_3rd_pref, into = c("No_3rd_pref", "No_3rd_pref_offer"), sep = " \\(", convert = TRUE) %>%
+  separate(Total, into = c("Total", "Total_offer"), sep = " \\(", convert = TRUE)
+
+# Remove closing parenthesis from actual values
+yr_7_admissions_2025 <- yr_7_admissions_2025 %>%
+  mutate(
+    No_1st_pref_offer = as.numeric(gsub("\\)", "", No_1st_pref_offer)),
+    No_2nd_pref_offer = as.numeric(gsub("\\)", "", No_2nd_pref_offer)),
+    No_3rd_pref_offer = as.numeric(gsub("\\)", "", No_3rd_pref_offer)),
+    Total_offer = as.numeric(gsub("\\)", "", Total_offer))
+  )
+
+# Create kable table
+kable(yr_7_admissions_2025, caption = "Allocation Factsheet Year 7 Places September 2025")
+
+```
+
+<https://www.brighton-hove.gov.uk/children-and-learning/allocation-factsheet-year-7-places-september-2025>
+
 ## 2024
 
 <https://www.brighton-hove.gov.uk/allocation-factsheet-year-7-places-september-2024>
@@ -573,7 +619,6 @@ kable(yr_7_admissions_2013, caption = "Allocation Factsheet Year 7 Places Septem
 
 2012
 
-
 2011
 
 <https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/downloads/education/3740_school_booklets_secondary_AW_final.pdf>
@@ -583,8 +628,6 @@ kable(yr_7_admissions_2013, caption = "Allocation Factsheet Year 7 Places Septem
 <https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/downloads/education/Secondary_School_Admissions_2011-12.pdf>
 
 2009
-
-
 
 2008
 
