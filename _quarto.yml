@@ -7,7 +7,7 @@ project:
     - stain_removal.qmd
     - factsheet.qmd
     - data_processing_scripts.qmd
-    - geocode_planning.qmd
+#    - geocode_planning.qmd
     - relocation_sim.qmd
 
 website:
