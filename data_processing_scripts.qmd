@@ -3,15 +3,16 @@ title: "Data Processing Scripts"
 author: "Adam Dennett"
 ---
 
-## Mining stuff from the Council website
+## Processed Allocation Factsheets 2014-2025
 
 ## 2025
 
-```{r}
+```{r echo=F, message=F, warning=F}
 # Load necessary libraries
 library(dplyr)
 library(tidyr)
 library(knitr)
+library(DT)
 
 # Create the data frame for Year 7 admissions 2025
 yr_7_admissions_2025 <- data.frame(
@@ -24,7 +25,7 @@ yr_7_admissions_2025 <- data.frame(
                             "39 (17)", "74 (18)", "87 (12)", "390 (13)", "2140 (301)"),
   No_3rd_pref = c("303 (25)", "33 (1)", "319 (0)", "228 (17)", "274 (14)", "219 (0)", 
                             "36 (1)", "235 (18)", "70 (3)", "192 (3)", "1911 (87)"),
-  Total = c("834 (330)", "153 (89)", "1081 (360)", "922 (330)", "646 (171)", "751 (180*)", 
+  Total = c("834 (330)", "153 (89)", "1081 (360)", "922 (330)", "646 (171)", "751 (180)", 
             "151 (97)", "475 (202)", "332 (190)", "1009 (300)", "6354 (2249)")
 )
 
@@ -44,8 +45,13 @@ yr_7_admissions_2025 <- yr_7_admissions_2025 %>%
     Total_offer = as.numeric(gsub("\\)", "", Total_offer))
   )
 
-# Create kable table
-kable(yr_7_admissions_2025, caption = "Allocation Factsheet Year 7 Places September 2025")
+# Create DT table
+datatable(yr_7_admissions_2025, extensions = 'Buttons', options = list(
+    pageLength = 11,
+    dom = 'Bfrtip',
+    buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+  )
+)
 
 ```
 
@@ -91,8 +97,13 @@ yr_7_admissions_2024 <- yr_7_admissions_2024 %>%
     Total_offer = as.numeric(gsub("\\)", "", Total_offer))
   )
 
-# Create kable table
-kable(yr_7_admissions_2024, caption = "Allocation Factsheet Year 7 Places September 2024")
+# Create DT table
+datatable(yr_7_admissions_2024, extensions = 'Buttons', options = list(
+    pageLength = 11,
+    dom = 'Bfrtip',
+    buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+  )
+)
 
 ```
 
@@ -138,8 +149,6 @@ yr_7_admissions_2023 <- yr_7_admissions_2023 %>%
     Total_offer = as.numeric(gsub("\\)", "", Total_offer))
   )
 
-# Create kable table
-kable(yr_7_admissions_2023, caption = "Allocation Factsheet Year 7 Places September 2023")
 
 
 ```
@@ -186,9 +195,14 @@ yr_7_admissions_2022 <- yr_7_admissions_2022 %>%
     Total_offer = as.numeric(gsub("\\)", "", Total_offer))
   )
 
-# Create kable table
-kable(yr_7_admissions_2022, caption = "Allocation Factsheet Year 7 Places September 2022")
 
+# Create DT table
+datatable(yr_7_admissions_2022, extensions = 'Buttons', options = list(
+    pageLength = 11,
+    dom = 'Bfrtip',
+    buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+  )
+)
 ```
 
 There were 29 children in the Dorothy Stringer/Varndean Catchment area who applied for both these schools but could not initially be offered a catchment area school or a higher preference. To accommodate these children in a catchment area school, 19 additional children were allocated to Dorothy Stringer and 10 to Varndean school.
@@ -237,9 +251,14 @@ yr_7_admissions_2021 <- yr_7_admissions_2021 %>%
     Total_offer = as.numeric(gsub("\\)", "", Total_offer))
   )
 
-# Create kable table
-kable(yr_7_admissions_2021, caption = "Allocation Factsheet Year 7 Places September 2021")
 
+# Create DT table
+datatable(yr_7_admissions_2021, extensions = 'Buttons', options = list(
+    pageLength = 11,
+    dom = 'Bfrtip',
+    buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+  )
+)
 ```
 
 There were 62 children in the Dorothy Stringer/Varndean Catchment area who couldn’t be offered a catchment area school or a higher preference. Of these 62 children, 44 expressed preferences for both catchment area schools.
@@ -284,9 +303,14 @@ yr_7_admissions_2020 <- yr_7_admissions_2020 %>%
     Total_offer = as.numeric(gsub("\\)", "", Total_offer))
   )
 
-# Create kable table
-kable(yr_7_admissions_2020, caption = "Allocation Factsheet Year 7 Places September 2020")
 
+# Create DT table
+datatable(yr_7_admissions_2020, extensions = 'Buttons', options = list(
+    pageLength = 11,
+    dom = 'Bfrtip',
+    buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+  )
+)
 
 ```
 
@@ -332,8 +356,14 @@ yr_7_admissions_2019 <- yr_7_admissions_2019 %>%
     Total_offer = as.numeric(gsub("\\)", "", Total_offer))
   )
 
-# Create kable table
-kable(yr_7_admissions_2019, caption = "Allocation Factsheet Year 7 Places September 2019")
+
+# Create DT table
+datatable(yr_7_admissions_2019, extensions = 'Buttons', options = list(
+    pageLength = 11,
+    dom = 'Bfrtip',
+    buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+  )
+)
 
 
 ```
@@ -380,8 +410,14 @@ yr_7_admissions_2018 <- yr_7_admissions_2018 %>%
     Total_offer = as.numeric(gsub("\\)", "", Total_offer))
   )
 
-# Create kable table
-kable(yr_7_admissions_2018, caption = "Allocation Factsheet Year 7 Places September 2018")
+
+# Create DT table
+datatable(yr_7_admissions_2018, extensions = 'Buttons', options = list(
+    pageLength = 11,
+    dom = 'Bfrtip',
+    buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+  )
+)
 
 
 ```
@@ -428,10 +464,14 @@ yr_7_admissions_2017 <- yr_7_admissions_2017 %>%
     Total_offer = as.numeric(gsub("\\)", "", Total_offer))
   )
 
-# Create kable table
-kable(yr_7_admissions_2017, caption = "Allocation Factsheet Year 7 Places September 2017")
 
-
+# Create DT table
+datatable(yr_7_admissions_2017, extensions = 'Buttons', options = list(
+    pageLength = 11,
+    dom = 'Bfrtip',
+    buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+  )
+)
 ```
 
 ## 2016
@@ -474,10 +514,14 @@ yr_7_admissions_2016 <- yr_7_admissions_2016 %>%
     Total_offer = as.numeric(gsub("\\)", "", Total_offer))
   )
 
-# Create kable table
-kable(yr_7_admissions_2016, caption = "Allocation Factsheet Year 7 Places September 2016")
 
-
+# Create DT table
+datatable(yr_7_admissions_2016, extensions = 'Buttons', options = list(
+    pageLength = 11,
+    dom = 'Bfrtip',
+    buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+  )
+)
 ```
 
 ## 2015
@@ -520,10 +564,14 @@ yr_7_admissions_2015 <- yr_7_admissions_2015 %>%
     Total_offer = as.numeric(gsub("\\)", "", Total_offer))
   )
 
-# Create kable table
-kable(yr_7_admissions_2015, caption = "Allocation Factsheet Year 7 Places September 2015")
 
-
+# Create DT table
+datatable(yr_7_admissions_2015, extensions = 'Buttons', options = list(
+    pageLength = 11,
+    dom = 'Bfrtip',
+    buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+  )
+)
 ```
 
 \*\*\* There were 14 children in the Dorothy Stringer/Varndean Catchment area who applied for both these schools but could not initially be offered a catchment area school or a higher preference. In order to accommodate these children in a catchment area school, 7 additional children were allocated each to Dorothy Stringer and Varndean schools.
@@ -564,10 +612,14 @@ yr_7_admissions_2014 <- yr_7_admissions_2014 %>%
     Total_offer = as.numeric(gsub("\\)", "", Total_offer))
   )
 
-# Create kable table
-kable(yr_7_admissions_2014, caption = "Allocation Factsheet Year 7 Places September 2014")
 
-
+# Create DT table
+datatable(yr_7_admissions_2014, extensions = 'Buttons', options = list(
+    pageLength = 11,
+    dom = 'Bfrtip',
+    buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+  )
+)
 ```
 
 There were 23 children In catchment area who couldn’t be offered Varndean School or a higher preference.
@@ -611,10 +663,14 @@ yr_7_admissions_2013 <- yr_7_admissions_2013 %>%
     Total_offer = as.numeric(gsub("\\)", "", Total_offer))
   )
 
-# Create kable table
-kable(yr_7_admissions_2013, caption = "Allocation Factsheet Year 7 Places September 2013")
 
-
+# Create DT table
+datatable(yr_7_admissions_2013, extensions = 'Buttons', options = list(
+    pageLength = 11,
+    dom = 'Bfrtip',
+    buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+  )
+)
 ```
 
 2012
@@ -646,10 +702,10 @@ library(tidyr)
 # List of data frames
 data_frames <- list(yr_7_admissions_2013, yr_7_admissions_2014, yr_7_admissions_2015, yr_7_admissions_2016, yr_7_admissions_2017,
                     yr_7_admissions_2018, yr_7_admissions_2019, yr_7_admissions_2020, yr_7_admissions_2021,
-                    yr_7_admissions_2022, yr_7_admissions_2023, yr_7_admissions_2024)
+                    yr_7_admissions_2022, yr_7_admissions_2023, yr_7_admissions_2024, yr_7_admissions_2025)
 
 # Assign years to each data frame
-years <- 2013:2024
+years <- 2013:2025
 
 # Combine data frames with a year column
 combined_data <- bind_rows(lapply(seq_along(data_frames), function(i) {
