@@ -149,7 +149,13 @@ yr_7_admissions_2023 <- yr_7_admissions_2023 %>%
     Total_offer = as.numeric(gsub("\\)", "", Total_offer))
   )
 
-
+# Create DT table
+datatable(yr_7_admissions_2023, extensions = 'Buttons', options = list(
+    pageLength = 11,
+    dom = 'Bfrtip',
+    buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+  )
+)
 
 ```
 
