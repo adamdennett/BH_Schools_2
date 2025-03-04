@@ -3,7 +3,7 @@ title: "Data Processing Scripts"
 author: "Adam Dennett"
 ---
 
-## Processed Allocation Factsheets 2014-2025
+## Processed Allocation Factsheets 2013-2025
 
 ## 2025
 
@@ -634,7 +634,7 @@ There were 23 children In catchment area who couldn’t be offered Varndean Scho
 
 <https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202013.pdf>
 
-```{r}
+```{r, echo=F, message=F, warning=F}
 library(dplyr)
 library(tidyr)
 library(knitr)
@@ -699,9 +699,9 @@ datatable(yr_7_admissions_2013, extensions = 'Buttons', options = list(
 
 <https://democracy.brighton-hove.gov.uk/documents/s2224/Item%2048-Appendix1.pdf>
 
-Tidy all of these into a single dataframe:
+## Tidy all of these into a single dataframe:
 
-```{r}
+```{r, echo=F, message=F, warning=F}
 library(dplyr)
 library(tidyr)
 
@@ -735,7 +735,14 @@ combined_data_long <- combined_data_long %>%
   mutate(School = ifelse(School == "Longhill", "Longhill High", School))
 
 # Verify the changes
-unique(combined_data_long$School)
+#unique(combined_data_long$School)
+
+datatable(combined_data_long, extensions = 'Buttons', options = list(
+    dom = 'Bfrtip',
+    buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+  )
+)
+
 
 ```
 
@@ -760,6 +767,7 @@ ggplot(combined_data_long_filtered, aes(x = Year, y = Total_offer, color = Schoo
     panel.grid.major.x = element_line(color = "grey", linetype = "dashed"),
     panel.grid.minor.x = element_blank()
   ) 
+
 
 ```
 
@@ -840,6 +848,8 @@ ggplot(selected_schools, aes(x = Year, y = Total, color = School, group = School
 
 ```
 
+## Similar Size Schools
+
 ```{r, echo=F, message=F, warning=F}
 # Filter data for the specified schools
 selected_schools <- combined_data_long %>%
@@ -884,3 +894,145 @@ ggplot(selected_schools, aes(x = Year, y = Total_offer, color = School, group = 
   ) 
 
 ```
+
+## Hove Schools
+
+```{r, echo=F, message=F, warning=F}
+selected_schools <- combined_data_long %>%
+  filter(School %in% c("Kings School", "Cardinal Newman", "Hove Park", "Blatchington Mill"))
+
+# Create the plot
+ggplot(selected_schools, aes(x = Year, y = Total, color = School, group = School)) +
+  geom_line() +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, linetype = "dotted") +
+  xlab("Year") +
+  ylab("Total Applications") +
+  theme_minimal() +
+  ggtitle("Yearly Total Applications") +
+  scale_x_continuous(breaks = seq(min(combined_data_long_filtered$Year), max(combined_data_long_filtered$Year), by = 1)) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_line(color = "grey", linetype = "dashed"),
+    panel.grid.minor.x = element_blank()
+  ) 
+```
+
+```{r, echo=F, message=F, warning=F}
+# Filter data for the specified schools
+selected_schools <- combined_data_long %>%
+  filter(School %in% c("Kings School", "Cardinal Newman", "Hove Park", "Blatchington Mill"))
+
+# Create the plot
+ggplot(selected_schools, aes(x = Year, y = Total_offer, color = School, group = School)) +
+  geom_line() +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, linetype = "dotted") +
+  xlab("Year") +
+  ylab("Total Offers") +
+  theme_minimal() +
+  ggtitle("Yearly Total Offers") +
+  scale_x_continuous(breaks = seq(min(combined_data_long_filtered$Year), max(combined_data_long_filtered$Year), by = 1)) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_line(color = "grey", linetype = "dashed"),
+    panel.grid.minor.x = element_blank()
+  ) 
+
+```
+
+## Preferences Varying y-axis
+
+```{r, echo=F, message=F, warning=F}
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# Assuming your data frame is named combined_data_long_filtered and is already loaded
+# Reshape the data frame for ggplot
+combined_data_long_filtered <- combined_data_long_filtered %>% 
+  pivot_longer(cols = c(No_1st_pref, No_2nd_pref, No_3rd_pref),
+               names_to = "Preference",
+               values_to = "Count")
+
+combined_data_long_filtered <- combined_data_long_filtered %>%
+  mutate(School = case_when(
+    School == "Brighton Aldridge Community Academy" ~ "BACA",
+    School == "Portslade Aldridge Community Academy" ~ "PACA",
+    TRUE ~ School
+  ))
+
+# Create the faceted line plot
+ggplot(combined_data_long_filtered, aes(x = Year, y = Count, color = Preference)) +
+  geom_line() +
+  facet_wrap(~ School, scales = "free_y") +
+  scale_x_continuous(breaks = seq(2013, 2025, 1)) +
+  labs(title = "Preference Count Over Years by School",
+       x = "Year",
+       y = "Count",
+       color = "Preference") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5))
+
+```
+
+## Preferences Fixed y-axis
+
+```{r, echo=F, message=F, warning=F}
+library(wesanderson)
+# Define a color palette
+
+
+#color_palette <- c("No_1st_pref" = "skyblue", "No_2nd_pref" = "dodgerblue", "No_3rd_pref" = "blue")
+color_palette <- wes_palette("BottleRocket2", n = 3)
+
+# Create the faceted line plot with fixed y-axis and custom colors
+ggplot(combined_data_long_filtered, aes(x = Year, y = Count, color = Preference)) +
+  geom_line() +
+  facet_wrap(~ School, scales = "fixed") +
+  scale_color_manual(values = color_palette) +
+  scale_x_continuous(breaks = seq(2013, 2025, 1)) +
+  labs(title = "Preference Count Over Years by School",
+       x = "Year",
+       y = "Count",
+       color = "Preference") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5))
+
+```
+
+```{r}
+library(wesanderson)
+combined_data_long_filtered <- combined_data_long %>%
+  filter(School != "Total")# Define a color palette
+
+combined_data_long_filtered <- combined_data_long_filtered %>% 
+  pivot_longer(cols = c(No_1st_pref_offer, No_2nd_pref_offer, No_3rd_pref_offer),
+               names_to = "Preference",
+               values_to = "Count")
+
+combined_data_long_filtered <- combined_data_long_filtered %>%
+  mutate(School = case_when(
+    School == "Brighton Aldridge Community Academy" ~ "BACA",
+    School == "Portslade Aldridge Community Academy" ~ "PACA",
+    TRUE ~ School
+  ))
+
+#color_palette <- c("No_1st_pref" = "skyblue", "No_2nd_pref" = "dodgerblue", "No_3rd_pref" = "blue")
+color_palette <- wes_palette("Darjeeling1", n = 3)
+
+# Create the faceted line plot with fixed y-axis and custom colors
+ggplot(combined_data_long_filtered, aes(x = Year, y = Count, color = Preference)) +
+  geom_line() +
+  facet_wrap(~ School, scales = "fixed") +
+  scale_color_manual(values = color_palette) +
+  scale_x_continuous(breaks = seq(2013, 2025, 1)) +
+  labs(title = "Offer Count by Preference Over Years by School",
+       x = "Year",
+       y = "Count",
+       color = "Preference") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5))
+```
+

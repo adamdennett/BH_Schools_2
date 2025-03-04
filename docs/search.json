@@ -88,7 +88,7 @@
     "href": "data_processing_scripts.html#section-12",
     "title": "Data Processing Scripts",
     "section": "2013",
-    "text": "2013\nhttps://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202013.pdf\n\n\nCode\nlibrary(dplyr)\nlibrary(tidyr)\nlibrary(knitr)\n\n# Create the original data frame for 2013\nyr_7_admissions_2013 &lt;- data.frame(\n  School = c(\"Blatchington Mill\", \"Brighton Aldridge Community Academy\", \"Cardinal Newman\", \"Dorothy Stringer\",\n             \"Hove Park\", \"Longhill\", \"Patcham High\", \"Portslade Aldridge Community Academy\", \"Varndean\", \"Total\"),\n  No_1st_preferences = c(\"400 (285)\", \"79 (79)\", \"409 (354)\", \"507 (326)\", \"175 (175)\", \"188 (188)\", \n                         \"186 (180)\", \"80 (80)\", \"169 (142)\", \"2193 (1809)\"),\n  No_2nd_preferences = c(\"333 (14)\", \"17 (3)\", \"129 (5)\", \"370 (4)\", \"333 (95)\", \"26 (8)\", \n                         \"65 (17)\", \"30 (9)\", \"485 (110)\", \"1788 (265)\"),\n  No_3rd_preferences = c(\"228 (1)\", \"19 (1)\", \"300 (1)\", \"182 (0)\", \"234 (29)\", \"43 (4)\", \n                         \"198 (13)\", \"62 (2)\", \"253 (18)\", \"1519 (69)\"),\n  Total = c(\"961 (300)\", \"115 (83)\", \"838 (360)\", \"1059 (330)\", \"742 (299)\", \"257 (200)\", \n            \"449 (210)\", \"172 (91)\", \"907 (270)\", \"5500 (2143)\")\n)\n\n# Separate numbers and actual values in brackets into their own columns with new names\nyr_7_admissions_2013 &lt;- yr_7_admissions_2013 %&gt;%\n  separate(No_1st_preferences, into = c(\"No_1st_pref\", \"No_1st_pref_offer\"), sep = \" \\\\(\", convert = TRUE) %&gt;%\n  separate(No_2nd_preferences, into = c(\"No_2nd_pref\", \"No_2nd_pref_offer\"), sep = \" \\\\(\", convert = TRUE) %&gt;%\n  separate(No_3rd_preferences, into = c(\"No_3rd_pref\", \"No_3rd_pref_offer\"), sep = \" \\\\(\", convert = TRUE) %&gt;%\n  separate(Total, into = c(\"Total\", \"Total_offer\"), sep = \" \\\\(\", convert = TRUE)\n\n# Remove closing parenthesis from actual values\nyr_7_admissions_2013 &lt;- yr_7_admissions_2013 %&gt;%\n  mutate(\n    No_1st_pref_offer = as.numeric(gsub(\"\\\\)\", \"\", No_1st_pref_offer)),\n    No_2nd_pref_offer = as.numeric(gsub(\"\\\\)\", \"\", No_2nd_pref_offer)),\n    No_3rd_pref_offer = as.numeric(gsub(\"\\\\)\", \"\", No_3rd_pref_offer)),\n    Total_offer = as.numeric(gsub(\"\\\\)\", \"\", Total_offer))\n  )\n\n\n# Create DT table\ndatatable(yr_7_admissions_2013, extensions = 'Buttons', options = list(\n    pageLength = 11,\n    dom = 'Bfrtip',\n    buttons = c('copy', 'csv', 'excel', 'pdf', 'print')\n  )\n)\n\n\n\n\n\n\n2012\n2011\nhttps://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/downloads/education/3740_school_booklets_secondary_AW_final.pdf\n2010\nhttps://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/downloads/education/Secondary_School_Admissions_2011-12.pdf\n2009\n2008\nhttps://democracy.brighton-hove.gov.uk/documents/s2224/Item%2048-Appendix1.pdf\n2007\nhttps://democracy.brighton-hove.gov.uk/documents/s2224/Item%2048-Appendix1.pdf\nTidy all of these into a single dataframe:\n\n\nCode\nlibrary(dplyr)\nlibrary(tidyr)\n\n# List of data frames\ndata_frames &lt;- list(yr_7_admissions_2013, yr_7_admissions_2014, yr_7_admissions_2015, yr_7_admissions_2016, yr_7_admissions_2017,\n                    yr_7_admissions_2018, yr_7_admissions_2019, yr_7_admissions_2020, yr_7_admissions_2021,\n                    yr_7_admissions_2022, yr_7_admissions_2023, yr_7_admissions_2024, yr_7_admissions_2025)\n\n# Assign years to each data frame\nyears &lt;- 2013:2025\n\n# Combine data frames with a year column\ncombined_data &lt;- bind_rows(lapply(seq_along(data_frames), function(i) {\n  mutate(data_frames[[i]], Year = years[i])\n}))\n\n# Reshape to long format\ncombined_data_long &lt;- combined_data %&gt;%\n  select(School, Year, No_1st_pref, No_1st_pref_offer, No_2nd_pref, No_2nd_pref_offer,\n         No_3rd_pref, No_3rd_pref_offer, Total, Total_offer)\n\n# Arrange the data\ncombined_data_long &lt;- combined_data_long %&gt;%\n  arrange(Year, School)\n\n# View the combined long format data\n#print(combined_data_long)\n\n# Update school names to ensure consistency\ncombined_data_long &lt;- combined_data_long %&gt;%\n  mutate(School = ifelse(School == \"Longhill\", \"Longhill High\", School))\n\n# Verify the changes\nunique(combined_data_long$School)\n\n\n [1] \"Blatchington Mill\"                   \n [2] \"Brighton Aldridge Community Academy\" \n [3] \"Cardinal Newman\"                     \n [4] \"Dorothy Stringer\"                    \n [5] \"Hove Park\"                           \n [6] \"Longhill High\"                       \n [7] \"Patcham High\"                        \n [8] \"Portslade Aldridge Community Academy\"\n [9] \"Total\"                               \n[10] \"Varndean\"                            \n[11] \"Kings School\""
+    "text": "2013\nhttps://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202013.pdf\n\n\n\n\n\n\n2012\n2011\nhttps://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/downloads/education/3740_school_booklets_secondary_AW_final.pdf\n2010\nhttps://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/downloads/education/Secondary_School_Admissions_2011-12.pdf\n2009\n2008\nhttps://democracy.brighton-hove.gov.uk/documents/s2224/Item%2048-Appendix1.pdf\n2007\nhttps://democracy.brighton-hove.gov.uk/documents/s2224/Item%2048-Appendix1.pdf"
   },
   {
     "objectID": "schools_wk3.html",
@@ -320,5 +320,54 @@
     "title": "Brighton and Hove Secondary School Admissions - Fact-sheet",
     "section": "Fact 7 - Statistical Smoothing is not ‘improvement’",
     "text": "Fact 7 - Statistical Smoothing is not ‘improvement’\nRedrawing boundaries and enlarging catchments may give the illusion of ‘improvement’ in the distribution of things like Free School Meals, when really everything is just moving closer to the city average.\n\n\nhttps://adamdennett.github.io/BH_Schools_2/schools_wk3.html#statistical-smoothing"
+  },
+  {
+    "objectID": "data_processing_scripts.html#varying-y-axis",
+    "href": "data_processing_scripts.html#varying-y-axis",
+    "title": "Data Processing Scripts",
+    "section": "Varying y-axis",
+    "text": "Varying y-axis"
+  },
+  {
+    "objectID": "data_processing_scripts.html#fixed-y-axis",
+    "href": "data_processing_scripts.html#fixed-y-axis",
+    "title": "Data Processing Scripts",
+    "section": "Fixed y-axis",
+    "text": "Fixed y-axis"
+  },
+  {
+    "objectID": "data_processing_scripts.html#preferences-varying-y-axis",
+    "href": "data_processing_scripts.html#preferences-varying-y-axis",
+    "title": "Data Processing Scripts",
+    "section": "Preferences Varying y-axis",
+    "text": "Preferences Varying y-axis"
+  },
+  {
+    "objectID": "data_processing_scripts.html#preferences-fixed-y-axis",
+    "href": "data_processing_scripts.html#preferences-fixed-y-axis",
+    "title": "Data Processing Scripts",
+    "section": "Preferences Fixed y-axis",
+    "text": "Preferences Fixed y-axis\n\n\n\n\n\n\n\n\n\n\n\nCode\nlibrary(wesanderson)\ncombined_data_long_filtered &lt;- combined_data_long %&gt;%\n  filter(School != \"Total\")# Define a color palette\n\ncombined_data_long_filtered &lt;- combined_data_long_filtered %&gt;% \n  pivot_longer(cols = c(No_1st_pref_offer, No_2nd_pref_offer, No_3rd_pref_offer),\n               names_to = \"Preference\",\n               values_to = \"Count\")\n\ncombined_data_long_filtered &lt;- combined_data_long_filtered %&gt;%\n  mutate(School = case_when(\n    School == \"Brighton Aldridge Community Academy\" ~ \"BACA\",\n    School == \"Portslade Aldridge Community Academy\" ~ \"PACA\",\n    TRUE ~ School\n  ))\n\n#color_palette &lt;- c(\"No_1st_pref\" = \"skyblue\", \"No_2nd_pref\" = \"dodgerblue\", \"No_3rd_pref\" = \"blue\")\ncolor_palette &lt;- wes_palette(\"Darjeeling1\", n = 3)\n\n# Create the faceted line plot with fixed y-axis and custom colors\nggplot(combined_data_long_filtered, aes(x = Year, y = Count, color = Preference)) +\n  geom_line() +\n  facet_wrap(~ School, scales = \"fixed\") +\n  scale_color_manual(values = color_palette) +\n  scale_x_continuous(breaks = seq(2013, 2025, 1)) +\n  labs(title = \"Offer Count by Preference Over Years by School\",\n       x = \"Year\",\n       y = \"Count\",\n       color = \"Preference\") +\n  theme_minimal() +\n  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5))"
+  },
+  {
+    "objectID": "data_processing_scripts.html#tidy-all-of-these-into-a-single-dataframe",
+    "href": "data_processing_scripts.html#tidy-all-of-these-into-a-single-dataframe",
+    "title": "Data Processing Scripts",
+    "section": "Tidy all of these into a single dataframe:",
+    "text": "Tidy all of these into a single dataframe:"
+  },
+  {
+    "objectID": "data_processing_scripts.html#similar-size-schools",
+    "href": "data_processing_scripts.html#similar-size-schools",
+    "title": "Data Processing Scripts",
+    "section": "Similar Size Schools",
+    "text": "Similar Size Schools"
+  },
+  {
+    "objectID": "data_processing_scripts.html#hove-schools",
+    "href": "data_processing_scripts.html#hove-schools",
+    "title": "Data Processing Scripts",
+    "section": "Hove Schools",
+    "text": "Hove Schools"
   }
 ]
