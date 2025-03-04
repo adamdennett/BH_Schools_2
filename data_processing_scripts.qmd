@@ -679,6 +679,10 @@ datatable(yr_7_admissions_2013, extensions = 'Buttons', options = list(
 )
 ```
 
+## Data Prior to 2013
+
+Prior to 2013, data availability is patchy - nothing for 2012, 2009 or 2007, sadly. Links to data I could find, below, but I've not digitised it yet. 
+
 2012
 
 2011
@@ -699,7 +703,7 @@ datatable(yr_7_admissions_2013, extensions = 'Buttons', options = list(
 
 <https://democracy.brighton-hove.gov.uk/documents/s2224/Item%2048-Appendix1.pdf>
 
-## Tidy all of these into a single dataframe:
+## Combined Data for All Years
 
 ```{r, echo=F, message=F, warning=F}
 library(dplyr)
@@ -746,6 +750,37 @@ datatable(combined_data_long, extensions = 'Buttons', options = list(
 
 ```
 
+
+## Time Series Applications and Offers - All Schools
+
+### Applications
+
+```{r, echo=F, message=F, warning=F}
+library(ggplot2)
+
+# Filter out the "Total" from the combined data
+combined_data_long_filtered <- combined_data_long %>%
+  filter(School != "Total")
+
+# Create the plot
+ggplot(combined_data_long_filtered, aes(x = Year, y = Total, color = School, group = School)) +
+  geom_line() +
+  geom_point() +
+  xlab("Year") +
+  ylab("Total Applications") +
+  theme_minimal() +
+  ggtitle("Yearly Total Applications by School") +
+  scale_x_continuous(breaks = seq(min(combined_data_long_filtered$Year), max(combined_data_long_filtered$Year), by = 1)) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_line(color = "grey", linetype = "dashed"),
+    panel.grid.minor.x = element_blank()
+  ) 
+
+```
+
+### Offers
+
 ```{r, echo=F, message=F, warning=F}
 library(ggplot2)
 
@@ -771,29 +806,9 @@ ggplot(combined_data_long_filtered, aes(x = Year, y = Total_offer, color = Schoo
 
 ```
 
-```{r, echo=F, message=F, warning=F}
-library(ggplot2)
 
-# Filter out the "Total" from the combined data
-combined_data_long_filtered <- combined_data_long %>%
-  filter(School != "Total")
 
-# Create the plot
-ggplot(combined_data_long_filtered, aes(x = Year, y = Total, color = School, group = School)) +
-  geom_line() +
-  geom_point() +
-  xlab("Year") +
-  ylab("Total Applications") +
-  theme_minimal() +
-  ggtitle("Yearly Total Applications by School") +
-  scale_x_continuous(breaks = seq(min(combined_data_long_filtered$Year), max(combined_data_long_filtered$Year), by = 1)) +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    panel.grid.major.x = element_line(color = "grey", linetype = "dashed"),
-    panel.grid.minor.x = element_blank()
-  ) 
-
-```
+## Small Schools
 
 ```{r, echo=F, message=F, warning=F}
 # Filter data for the specified schools
@@ -848,7 +863,7 @@ ggplot(selected_schools, aes(x = Year, y = Total, color = School, group = School
 
 ```
 
-## Similar Size Schools
+## Similar Sized Schools
 
 ```{r, echo=F, message=F, warning=F}
 # Filter data for the specified schools
@@ -895,11 +910,11 @@ ggplot(selected_schools, aes(x = Year, y = Total_offer, color = School, group = 
 
 ```
 
-## Hove Schools
+## Hove Schools Preferences and Offers
 
 ```{r, echo=F, message=F, warning=F}
 selected_schools <- combined_data_long %>%
-  filter(School %in% c("Kings School", "Cardinal Newman", "Hove Park", "Blatchington Mill"))
+  filter(School %in% c("Kings School", "Cardinal Newman", "Hove Park", "Blatchington Mill", "Portslade Aldridge Community Academy"))
 
 # Create the plot
 ggplot(selected_schools, aes(x = Year, y = Total, color = School, group = School)) +
@@ -921,7 +936,7 @@ ggplot(selected_schools, aes(x = Year, y = Total, color = School, group = School
 ```{r, echo=F, message=F, warning=F}
 # Filter data for the specified schools
 selected_schools <- combined_data_long %>%
-  filter(School %in% c("Kings School", "Cardinal Newman", "Hove Park", "Blatchington Mill"))
+  filter(School %in% c("Kings School", "Cardinal Newman", "Hove Park", "Blatchington Mill", "Portslade Aldridge Community Academy"))
 
 # Create the plot
 ggplot(selected_schools, aes(x = Year, y = Total_offer, color = School, group = School)) +
@@ -941,7 +956,7 @@ ggplot(selected_schools, aes(x = Year, y = Total_offer, color = School, group = 
 
 ```
 
-## Preferences Varying y-axis
+## Preferences Varying y-Axis
 
 ```{r, echo=F, message=F, warning=F}
 # Load necessary libraries
@@ -977,7 +992,7 @@ ggplot(combined_data_long_filtered, aes(x = Year, y = Count, color = Preference)
 
 ```
 
-## Preferences Fixed y-axis
+## Preferences Fixed y-Axis
 
 ```{r, echo=F, message=F, warning=F}
 library(wesanderson)
@@ -1001,6 +1016,8 @@ ggplot(combined_data_long_filtered, aes(x = Year, y = Count, color = Preference)
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5))
 
 ```
+
+## Offers Fixed y-Axis
 
 ```{r}
 library(wesanderson)

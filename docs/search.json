@@ -88,7 +88,7 @@
     "href": "data_processing_scripts.html#section-12",
     "title": "Data Processing Scripts",
     "section": "2013",
-    "text": "2013\nhttps://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202013.pdf\n\n\n\n\n\n\n2012\n2011\nhttps://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/downloads/education/3740_school_booklets_secondary_AW_final.pdf\n2010\nhttps://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/downloads/education/Secondary_School_Admissions_2011-12.pdf\n2009\n2008\nhttps://democracy.brighton-hove.gov.uk/documents/s2224/Item%2048-Appendix1.pdf\n2007\nhttps://democracy.brighton-hove.gov.uk/documents/s2224/Item%2048-Appendix1.pdf"
+    "text": "2013\nhttps://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202013.pdf"
   },
   {
     "objectID": "schools_wk3.html",
@@ -339,15 +339,15 @@
     "objectID": "data_processing_scripts.html#preferences-varying-y-axis",
     "href": "data_processing_scripts.html#preferences-varying-y-axis",
     "title": "Data Processing Scripts",
-    "section": "Preferences Varying y-axis",
-    "text": "Preferences Varying y-axis"
+    "section": "Preferences Varying y-Axis",
+    "text": "Preferences Varying y-Axis"
   },
   {
     "objectID": "data_processing_scripts.html#preferences-fixed-y-axis",
     "href": "data_processing_scripts.html#preferences-fixed-y-axis",
     "title": "Data Processing Scripts",
-    "section": "Preferences Fixed y-axis",
-    "text": "Preferences Fixed y-axis\n\n\n\n\n\n\n\n\n\n\n\nCode\nlibrary(wesanderson)\ncombined_data_long_filtered &lt;- combined_data_long %&gt;%\n  filter(School != \"Total\")# Define a color palette\n\ncombined_data_long_filtered &lt;- combined_data_long_filtered %&gt;% \n  pivot_longer(cols = c(No_1st_pref_offer, No_2nd_pref_offer, No_3rd_pref_offer),\n               names_to = \"Preference\",\n               values_to = \"Count\")\n\ncombined_data_long_filtered &lt;- combined_data_long_filtered %&gt;%\n  mutate(School = case_when(\n    School == \"Brighton Aldridge Community Academy\" ~ \"BACA\",\n    School == \"Portslade Aldridge Community Academy\" ~ \"PACA\",\n    TRUE ~ School\n  ))\n\n#color_palette &lt;- c(\"No_1st_pref\" = \"skyblue\", \"No_2nd_pref\" = \"dodgerblue\", \"No_3rd_pref\" = \"blue\")\ncolor_palette &lt;- wes_palette(\"Darjeeling1\", n = 3)\n\n# Create the faceted line plot with fixed y-axis and custom colors\nggplot(combined_data_long_filtered, aes(x = Year, y = Count, color = Preference)) +\n  geom_line() +\n  facet_wrap(~ School, scales = \"fixed\") +\n  scale_color_manual(values = color_palette) +\n  scale_x_continuous(breaks = seq(2013, 2025, 1)) +\n  labs(title = \"Offer Count by Preference Over Years by School\",\n       x = \"Year\",\n       y = \"Count\",\n       color = \"Preference\") +\n  theme_minimal() +\n  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5))"
+    "section": "Preferences Fixed y-Axis",
+    "text": "Preferences Fixed y-Axis"
   },
   {
     "objectID": "data_processing_scripts.html#tidy-all-of-these-into-a-single-dataframe",
@@ -369,5 +369,54 @@
     "title": "Data Processing Scripts",
     "section": "Hove Schools",
     "text": "Hove Schools"
+  },
+  {
+    "objectID": "data_processing_scripts.html#combined-data-for-all-years",
+    "href": "data_processing_scripts.html#combined-data-for-all-years",
+    "title": "Data Processing Scripts",
+    "section": "Combined Data for All Years",
+    "text": "Combined Data for All Years"
+  },
+  {
+    "objectID": "data_processing_scripts.html#time-series-applications-and-offers---all-schools",
+    "href": "data_processing_scripts.html#time-series-applications-and-offers---all-schools",
+    "title": "Data Processing Scripts",
+    "section": "Time Series Applications and Offers - All Schools",
+    "text": "Time Series Applications and Offers - All Schools\n\nApplications\n\n\n\n\n\n\n\n\n\n\n\nOffers"
+  },
+  {
+    "objectID": "data_processing_scripts.html#small-schools",
+    "href": "data_processing_scripts.html#small-schools",
+    "title": "Data Processing Scripts",
+    "section": "Small Schools",
+    "text": "Small Schools"
+  },
+  {
+    "objectID": "data_processing_scripts.html#similar-sized-schools",
+    "href": "data_processing_scripts.html#similar-sized-schools",
+    "title": "Data Processing Scripts",
+    "section": "Similar Sized Schools",
+    "text": "Similar Sized Schools"
+  },
+  {
+    "objectID": "data_processing_scripts.html#hove-schools-preferences-and-offers",
+    "href": "data_processing_scripts.html#hove-schools-preferences-and-offers",
+    "title": "Data Processing Scripts",
+    "section": "Hove Schools Preferences and Offers",
+    "text": "Hove Schools Preferences and Offers"
+  },
+  {
+    "objectID": "data_processing_scripts.html#offers-fixed-y-axis",
+    "href": "data_processing_scripts.html#offers-fixed-y-axis",
+    "title": "Data Processing Scripts",
+    "section": "Offers Fixed y-Axis",
+    "text": "Offers Fixed y-Axis\n\n\nCode\nlibrary(wesanderson)\ncombined_data_long_filtered &lt;- combined_data_long %&gt;%\n  filter(School != \"Total\")# Define a color palette\n\ncombined_data_long_filtered &lt;- combined_data_long_filtered %&gt;% \n  pivot_longer(cols = c(No_1st_pref_offer, No_2nd_pref_offer, No_3rd_pref_offer),\n               names_to = \"Preference\",\n               values_to = \"Count\")\n\ncombined_data_long_filtered &lt;- combined_data_long_filtered %&gt;%\n  mutate(School = case_when(\n    School == \"Brighton Aldridge Community Academy\" ~ \"BACA\",\n    School == \"Portslade Aldridge Community Academy\" ~ \"PACA\",\n    TRUE ~ School\n  ))\n\n#color_palette &lt;- c(\"No_1st_pref\" = \"skyblue\", \"No_2nd_pref\" = \"dodgerblue\", \"No_3rd_pref\" = \"blue\")\ncolor_palette &lt;- wes_palette(\"Darjeeling1\", n = 3)\n\n# Create the faceted line plot with fixed y-axis and custom colors\nggplot(combined_data_long_filtered, aes(x = Year, y = Count, color = Preference)) +\n  geom_line() +\n  facet_wrap(~ School, scales = \"fixed\") +\n  scale_color_manual(values = color_palette) +\n  scale_x_continuous(breaks = seq(2013, 2025, 1)) +\n  labs(title = \"Offer Count by Preference Over Years by School\",\n       x = \"Year\",\n       y = \"Count\",\n       color = \"Preference\") +\n  theme_minimal() +\n  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5))"
+  },
+  {
+    "objectID": "data_processing_scripts.html#data-prior-to-2013",
+    "href": "data_processing_scripts.html#data-prior-to-2013",
+    "title": "Data Processing Scripts",
+    "section": "Data Prior to 2013",
+    "text": "Data Prior to 2013\nPrior to 2013, data availability is patchy - nothing for 2012, 2009 or 2007, sadly. Links to data I could find, below, but I’ve not digitised it yet.\n2012\n2011\nhttps://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/downloads/education/3740_school_booklets_secondary_AW_final.pdf\n2010\nhttps://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/downloads/education/Secondary_School_Admissions_2011-12.pdf\n2009\n2008\nhttps://democracy.brighton-hove.gov.uk/documents/s2224/Item%2048-Appendix1.pdf\n2007\nhttps://democracy.brighton-hove.gov.uk/documents/s2224/Item%2048-Appendix1.pdf"
   }
 ]
