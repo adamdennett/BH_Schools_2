@@ -1,0 +1,114 @@
+---
+title: "Untitled"
+---
+
+```{r}
+schools_sub <- edubase_sec_schools %>% 
+  filter(phase_of_education_name == "Secondary") %>% 
+  filter(establishment_status_name == "Open") %>%
+  filter(statutory_high_age == 16) %>% 
+  filter(la_code != "000")
+
+
+str(schools_sub)
+```
+
+```{r}
+
+library(dplyr)
+
+# Calculate statistics for each la_name, including total pupils
+summary_stats <- schools_sub %>%
+  group_by(la_name) %>%
+  summarise(
+    # Count of establishments
+    establishment_count = n(),
+    
+    # Total number of pupils
+    total_pupils = sum(number_of_pupils, na.rm = TRUE),
+    
+    # Statistics for number_of_pupils
+    min_pupils = min(number_of_pupils, na.rm = TRUE),
+    max_pupils = max(number_of_pupils, na.rm = TRUE),
+    range_pupils = max_pupils-min_pupils,
+    mean_pupils = mean(number_of_pupils, na.rm = TRUE),
+    median_pupils = median(number_of_pupils, na.rm = TRUE),
+    
+    # Statistics for percentage_fsm
+    min_fsm = min(percentage_fsm, na.rm = TRUE),
+    max_fsm = max(percentage_fsm, na.rm = TRUE),
+    range_fsm = max_fsm - min_fsm,
+    mean_fsm = mean(percentage_fsm, na.rm = TRUE),
+    median_fsm = median(percentage_fsm, na.rm = TRUE)
+  )
+
+# View the new dataset
+print(summary_stats)
+
+
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+
+# Define a function to create top and bottom 10 plots for a statistic
+create_plot <- function(stat_col, stat_label) {
+  # Extract top and bottom 10 for the statistic
+  top_bottom <- summary_stats %>%
+    arrange(desc(!!sym(stat_col))) %>%
+    slice_head(n = 10) %>%
+    bind_rows(summary_stats %>%
+                arrange(!!sym(stat_col)) %>%
+                slice_head(n = 10)) %>%
+    mutate(rank = if_else(row_number() <= 10, "Top 10", "Bottom 10"))
+  
+  # Create plot
+  ggplot(top_bottom, aes(x = reorder(la_name, !!sym(stat_col)), y = !!sym(stat_col), fill = rank)) +
+    geom_bar(stat = "identity") +
+    coord_flip() +
+    labs(
+      title = paste("Top and Bottom 10 la_name by", stat_label),
+      x = "Local Authority Name",
+      y = stat_label
+    ) +
+    theme_minimal() +
+    scale_fill_manual(values = c("Top 10" = "blue", "Bottom 10" = "red"))
+}
+
+# Generate plots
+plot_pupils_mean <- create_plot("mean_pupils", "Mean Number of Pupils")
+plot_pupils_median <- create_plot("median_pupils", "Median Number of Pupils")
+plot_fsm_mean <- create_plot("mean_fsm", "Mean Percentage FSM")
+plot_fsm_median <- create_plot("median_fsm", "Median Percentage FSM")
+
+# Display plots
+print(plot_pupils_mean)
+print(plot_pupils_median)
+print(plot_fsm_mean)
+print(plot_fsm_median)
+
+```
+
+```{r}
+library(ggplot2)
+
+# Create the scatter plot
+scatter_plot <- ggplot(summary_stats, aes(x = median_pupils, y = range_pupils)) +
+  geom_point(color = "blue", size = 3) + # Add points to the plot
+  geom_text(
+    aes(label = ifelse(rank(-range_pupils) <= 10 | rank(range_pupils) <= 10, la_name, "")), 
+    hjust = 0, vjust = -0.5, size = 3, color = "darkred"
+  ) + # Add labels for top and bottom 10 in range_pupils
+  labs(
+    title = "Scatter Plot of Range of Pupils vs Median Pupils",
+    x = "Median Number of Pupils",
+    y = "Range of Number of Pupils",
+    caption = "Labels indicate LA names for the top and bottom 10 in range of pupils."
+  ) +
+  theme_minimal()
+
+# View the plot
+print(scatter_plot)
+
+```
