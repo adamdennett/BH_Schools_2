@@ -12,3 +12,4 @@ gganim/
 api_key.R
 rjavaenv/
 .Rprofile
+**/*.quarto_ipynb

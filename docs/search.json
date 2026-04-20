@@ -116,7 +116,7 @@
     "href": "schools_wk3.html#what-does-the-brightopia-model-tell-us",
     "title": "Brighton and Hove Secondary School Admissions Proposal - Week 3 Analysis",
     "section": "What does the Brightopia Model tell us?",
-    "text": "What does the Brightopia Model tell us?\nThe model gives us two useful outputs:\n\nThe first the total expected Yr 7 PAN numbers (relative to current PANs) for each school if the ONLY thing that mattered was distance. This will tell us how well arranged schools are in the city relative to the population.\nEstimates of flows from residential areas to those schools - so we can get a better understanding of where children would be coming from to attend the schools in Brightopia\n\n\n\n\n\n\nSchool\nPAN 2024\nModel Estimate\nSurplus/Deficit\n\n\n\n\nVarndean School\n300\n296\n4\n\n\nDorothy Stringer School\n330\n281\n49\n\n\nLonghill High School\n270\n176\n94\n\n\nBlatchington Mill School\n330\n273\n57\n\n\nHove Park School and Sixth Form Centre\n180\n322\n-142\n\n\nPatcham High School\n225\n234\n-9\n\n\nCardinal Newman Catholic School\n360\n385\n-25\n\n\nBrighton Aldridge Community Academy\n180\n173\n7\n\n\nPortslade Aldridge Community Academy\n220\n199\n21\n\n\nKing's School\n165\n220\n-55\n\n\n\n\n\n\n\nGravity Model Longhill - Modelled Flows to School (current catchments for reference only)\n\n\n\n\n\n\nGravity Model Varndean - Modelled Flows to School (current catchments for reference only)\n\n\n\n\n\n\nHove Park - Modelled Flows to School (current catchments for reference only)\n\n\n\n\n\n\n\nObservations\n\nThe space-only gravity model shows that for a lot of schools in the system, they are pretty well positioned, relative to the populations that they might draw from. Indeed this is not all that surprising given that many people with children will choose residential locations near to schools if that choice is available to them.\nHove Park School, according to the model, could attract 142 more students than it currently is, due to where it is located. Although from the map of the flow breakdown, it is an artefact of the model that it is drawing these from a wide area due to the comparative accessibility of this part of town (the model has to send all students somewhere and accessible places hoover up a larger share).\nIf distance were the only thing that mattered, Dorothy Stringer would attract 49 fewer pupils than its current PAN. Blatchington Mill, 57 fewer, and Longhill would attract 94 fewer than it currently does. The maps show that Longhill’s location and lack of accessibility means it is only drawing students from a primarily, local area.\nWhat this shows, uneqivocally, is that that many of the observations about Longhill’s declining application and admission numbers in my last piece are not simply down to its performance as many suggest, but a large factor in its problems is its location relative to where children live.\n\nAs it is so far out on its own to the East and as so few pupils live in the vicinity, any pupils it would be getting in excess of this number would be due to non-spatial influences.\n\nLonghill is not in a good location for pupils from Whitehawk. Students in this part of the city are not near any school and the fact they have been forced to attend Longhill rather than a closer school has been terrible for them. Given the number of students in the vicinity of the current Longhill, relative to the number of students in Whitehawk, a utilitarian approach that would reduce travel for the most number of students in the city would be to re-locate the school to the near-East of the city.\nWhat this gravity modelling suggests quite strongly is Longhill would stand a better chance of demographic sustainability if it were re-located, perhaps somewhere to the East of the City, near the General Hospital or the Race Course at the top of Elm Grove. If it were re-located here, it would also stand a much better change of naturally achieving the demographic mix (students from Whitehawk, the ’deans and Hannover would be in the natural geographic catchment for a school here.\n\n\n\nFurther Work\nThis is only a very basic gravity model and it can be extended to develop and even more nuanced picture of school supply and demand in the city. I have not got that far yes as this takes time to do properly - and I have not had time. But I would be more than willing to work with the Council to develop some more nuanced spatial interaction models, calibrated against their data, to help derive a decision support tool which would enable a fully evidenced decision to be made on location and capacity of schools. This work could include, for example:\n\nAn extended gravity model where the Longhill is re-located to other parts of the city. What would demand look like if it were moved to:\n\nThe old COMART site?\nA new site at the top of Elm Grove near the General Hospital or Dobbies?\nDisused farm/warehouse site at the top of Bear Road?\nOr any other potentially viable location.\n\nHow might the demographic mix of a re-located Longhill look? From where would it most likely draw it’s students (in the absence of catchments?)\nA more complex model to explore what happens when we change the attractiveness of schools according to the kinds of factors that parents and students rank highly? Educational outcomes? SEND provision? Green Space?\nA better calibrated model using actual student locations and flow data from the council to explore different\nHow can spatial interaction be used to better inform an alternative to the current catchments? Do we even need catchments at all or can we come up with a much better solution which incorporates distance and socio-demographic diversity AT THE SAME TIME? What would such a system look like?\nI think in the medium term, the council would do well to instigate a commission - and I will happily volunteer to be part of it if they would have me - to look into real useful alternatives to the current catchment system which strike the right balance between the socio-spatial realities of the city and other motivations to improve opportunities for those with the least. It’s clear that the boundaries as implemented in 2008 are not working as intended, so perhaps boundaries and catchments are not the solution at all, and alternatives such as the marginal ballot as suggested by the Sutton Trust are alternatives worth looking into alongside a full range of alternatives. If a balanced view of their efficacy in the specific context Brighton could be developed, then it is more likely that an appropriate long-term solution could be found."
+    "text": "What does the Brightopia Model tell us?\nThe model gives us two useful outputs:\n\nThe first the total expected Yr 7 PAN numbers (relative to current PANs) for each school if the ONLY thing that mattered was distance. This will tell us how well arranged schools are in the city relative to the population.\nEstimates of flows from residential areas to those schools - so we can get a better understanding of where children would be coming from to attend the schools in Brightopia\n\n\n\n\n\n\nSchool\nPAN 2024\nModel Estimate\nSurplus/Deficit\n\n\n\n\nVarndean School\n300\n296\n4\n\n\nDorothy Stringer School\n330\n281\n49\n\n\nLonghill High School\n270\n176\n94\n\n\nBlatchington Mill School\n330\n273\n57\n\n\nHove Park School and Sixth Form Centre\n180\n322\n-142\n\n\nPatcham High School\n225\n234\n-9\n\n\nCardinal Newman Catholic School\n360\n385\n-25\n\n\nBrighton Aldridge Community Academy\n180\n173\n7\n\n\nPortslade Aldridge Community Academy\n220\n199\n21\n\n\nKing's School\n165\n220\n-55\n\n\n\n\n\nGravity Model Longhill - Modelled Flows to School (current catchments for reference only)\n\n\n\n\n\n\nGravity Model Varndean - Modelled Flows to School (current catchments for reference only)\n\n\n\n\n\n\nHove Park - Modelled Flows to School (current catchments for reference only)\n\n\n\n\n\n\n\nObservations\n\nThe space-only gravity model shows that for a lot of schools in the system, they are pretty well positioned, relative to the populations that they might draw from. Indeed this is not all that surprising given that many people with children will choose residential locations near to schools if that choice is available to them.\nHove Park School, according to the model, could attract 142 more students than it currently is, due to where it is located. Although from the map of the flow breakdown, it is an artefact of the model that it is drawing these from a wide area due to the comparative accessibility of this part of town (the model has to send all students somewhere and accessible places hoover up a larger share).\nIf distance were the only thing that mattered, Dorothy Stringer would attract 49 fewer pupils than its current PAN. Blatchington Mill, 57 fewer, and Longhill would attract 94 fewer than it currently does. The maps show that Longhill’s location and lack of accessibility means it is only drawing students from a primarily, local area.\nWhat this shows, uneqivocally, is that that many of the observations about Longhill’s declining application and admission numbers in my last piece are not simply down to its performance as many suggest, but a large factor in its problems is its location relative to where children live.\n\nAs it is so far out on its own to the East and as so few pupils live in the vicinity, any pupils it would be getting in excess of this number would be due to non-spatial influences.\n\nLonghill is not in a good location for pupils from Whitehawk. Students in this part of the city are not near any school and the fact they have been forced to attend Longhill rather than a closer school has been terrible for them. Given the number of students in the vicinity of the current Longhill, relative to the number of students in Whitehawk, a utilitarian approach that would reduce travel for the most number of students in the city would be to re-locate the school to the near-East of the city.\nWhat this gravity modelling suggests quite strongly is Longhill would stand a better chance of demographic sustainability if it were re-located, perhaps somewhere to the East of the City, near the General Hospital or the Race Course at the top of Elm Grove. If it were re-located here, it would also stand a much better change of naturally achieving the demographic mix (students from Whitehawk, the ’deans and Hannover would be in the natural geographic catchment for a school here.\n\n\n\nFurther Work\nThis is only a very basic gravity model and it can be extended to develop and even more nuanced picture of school supply and demand in the city. I have not got that far yes as this takes time to do properly - and I have not had time. But I would be more than willing to work with the Council to develop some more nuanced spatial interaction models, calibrated against their data, to help derive a decision support tool which would enable a fully evidenced decision to be made on location and capacity of schools. This work could include, for example:\n\nAn extended gravity model where the Longhill is re-located to other parts of the city. What would demand look like if it were moved to:\n\nThe old COMART site?\nA new site at the top of Elm Grove near the General Hospital or Dobbies?\nDisused farm/warehouse site at the top of Bear Road?\nOr any other potentially viable location.\n\nHow might the demographic mix of a re-located Longhill look? From where would it most likely draw it’s students (in the absence of catchments?)\nA more complex model to explore what happens when we change the attractiveness of schools according to the kinds of factors that parents and students rank highly? Educational outcomes? SEND provision? Green Space?\nA better calibrated model using actual student locations and flow data from the council to explore different\nHow can spatial interaction be used to better inform an alternative to the current catchments? Do we even need catchments at all or can we come up with a much better solution which incorporates distance and socio-demographic diversity AT THE SAME TIME? What would such a system look like?\nI think in the medium term, the council would do well to instigate a commission - and I will happily volunteer to be part of it if they would have me - to look into real useful alternatives to the current catchment system which strike the right balance between the socio-spatial realities of the city and other motivations to improve opportunities for those with the least. It’s clear that the boundaries as implemented in 2008 are not working as intended, so perhaps boundaries and catchments are not the solution at all, and alternatives such as the marginal ballot as suggested by the Sutton Trust are alternatives worth looking into alongside a full range of alternatives. If a balanced view of their efficacy in the specific context Brighton could be developed, then it is more likely that an appropriate long-term solution could be found."
   },
   {
     "objectID": "schools_wk3.html#conclusions",
@@ -418,5 +418,278 @@
     "title": "Data Processing Scripts",
     "section": "Data Prior to 2013",
     "text": "Data Prior to 2013\nPrior to 2013, data availability is patchy - nothing for 2012, 2009 or 2007, sadly. Links to data I could find, below, but I’ve not digitised it yet.\n2012\n2011\nhttps://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/downloads/education/3740_school_booklets_secondary_AW_final.pdf\n2010\nhttps://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/downloads/education/Secondary_School_Admissions_2011-12.pdf\n2009\n2008\nhttps://democracy.brighton-hove.gov.uk/documents/s2224/Item%2048-Appendix1.pdf\n2007\nhttps://democracy.brighton-hove.gov.uk/documents/s2224/Item%2048-Appendix1.pdf"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html",
+    "href": "brighton_and_hove_allocations.html",
+    "title": "Brighton and Hove School Allocations",
+    "section": "",
+    "text": "Data transcribed from the annual Brighton & Hove City Council Year 7 Allocation Factsheets. Each cell shows preferences received (offers made). From 2026 onwards the council collects a 4th preference alongside the traditional 1st / 2nd / 3rd.\nClick a year to view that factsheet.\n\n20262025202420232022202120202019201820172016201520142013\n\n\nhttps://www.brighton-hove.gov.uk/schools-and-learning/school-policies-reports-strategies-and-other-documents/allocation-factsheet-year-7-places-september-2026\n\n\n\n\n\n\n2026 is the first year that the council reports 4 preferences rather than 3.\n\n\nhttps://www.brighton-hove.gov.uk/schools-and-learning/school-policies-reports-strategies-and-other-documents/allocation-factsheet-year-7-places-september-2025\n\n\n\n\n\n\n\n\nhttps://www.brighton-hove.gov.uk/schools-and-learning/school-policies-reports-strategies-and-other-documents/allocation-factsheet-year-7-places-september-2024\n\n\n\n\n\n\n\n\nhttps://www.brighton-hove.gov.uk/schools-and-learning/school-policies-reports-strategies-and-other-documents/allocation-factsheet-year-7-places-september-2023\n\n\n\n\n\n\n\n\nhttps://www.brighton-hove.gov.uk/schools-and-learning/school-policies-reports-strategies-and-other-documents/allocation-factsheet-year-7-places-september-2022\n\n\n\n\n\n\n\n\nhttps://web.archive.org/web/2022/https://www.brighton-hove.gov.uk/schools-and-learning/apply-school/allocation-factsheet-year-7-places-september-2021\n\n\n\n\n\n\n\n\nhttps://www.brighton-hove.gov.uk/schools-and-learning/apply-school/allocation-factsheet-year-7-places-september-2020\n\n\n\n\n\n\n\n\nhttps://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202019.pdf\n\n\n\n\n\n\n\n\nhttps://www.brighton-hove.gov.uk/sites/default/files/migrated/subject/inline/Secondary%20Allocation%20factsheet%202018.pdf\n\n\n\n\n\n\n\n\nhttps://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202017.pdf\n\n\n\n\n\n\n\n\nhttps://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20Factsheet%202016.pdf\n\n\n\n\n\n\n\n\nhttps://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202015.pdf\n\n\n\n\n\n\n\n\nhttps://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202014.pdf\n\n\n\n\n\n\n\n\nhttps://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202013.pdf\n\n\n\n\n\n\nKings School did not admit Year 7 until 2014, so it is absent from 2013."
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section",
+    "href": "brighton_and_hove_allocations.html#section",
+    "title": "Brighton and Hove School Allocations",
+    "section": "",
+    "text": "https://www.brighton-hove.gov.uk/schools-and-learning/school-policies-reports-strategies-and-other-documents/allocation-factsheet-year-7-places-september-2026\n\n\n\n\n\n\n2026 is the first year that the council reports 4 preferences rather than 3."
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-1",
+    "href": "brighton_and_hove_allocations.html#section-1",
+    "title": "Brighton and Hove School Allocations",
+    "section": "",
+    "text": "https://www.brighton-hove.gov.uk/schools-and-learning/school-policies-reports-strategies-and-other-documents/allocation-factsheet-year-7-places-september-2025"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-2",
+    "href": "brighton_and_hove_allocations.html#section-2",
+    "title": "Brighton and Hove School Allocations",
+    "section": "",
+    "text": "https://www.brighton-hove.gov.uk/allocation-factsheet-year-7-places-september-2024"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-3",
+    "href": "brighton_and_hove_allocations.html#section-3",
+    "title": "Brighton and Hove School Allocations",
+    "section": "",
+    "text": "https://www.brighton-hove.gov.uk/children-and-learning/allocation-factsheet-year-7-places-september-2023"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-4",
+    "href": "brighton_and_hove_allocations.html#section-4",
+    "title": "Brighton and Hove School Allocations",
+    "section": "",
+    "text": "https://www.brighton-hove.gov.uk/schools-and-learning/apply-school/allocation-factsheet-year-7-places-september-2022"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-5",
+    "href": "brighton_and_hove_allocations.html#section-5",
+    "title": "Brighton and Hove School Allocations",
+    "section": "",
+    "text": "https://www.brighton-hove.gov.uk/schools-and-learning/apply-school/allocation-factsheet-year-7-places-september-2021"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-6",
+    "href": "brighton_and_hove_allocations.html#section-6",
+    "title": "Brighton and Hove School Allocations",
+    "section": "",
+    "text": "https://www.brighton-hove.gov.uk/schools-and-learning/apply-school/allocation-factsheet-year-7-places-september-2020"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-7",
+    "href": "brighton_and_hove_allocations.html#section-7",
+    "title": "Brighton and Hove School Allocations",
+    "section": "",
+    "text": "https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202019.pdf"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-8",
+    "href": "brighton_and_hove_allocations.html#section-8",
+    "title": "Brighton and Hove School Allocations",
+    "section": "",
+    "text": "https://www.brighton-hove.gov.uk/sites/default/files/migrated/subject/inline/Secondary%20Allocation%20factsheet%202018.pdf"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-9",
+    "href": "brighton_and_hove_allocations.html#section-9",
+    "title": "Brighton and Hove School Allocations",
+    "section": "",
+    "text": "https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202017.pdf"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-10",
+    "href": "brighton_and_hove_allocations.html#section-10",
+    "title": "Brighton and Hove School Allocations",
+    "section": "",
+    "text": "https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20Factsheet%202016.pdf"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-11",
+    "href": "brighton_and_hove_allocations.html#section-11",
+    "title": "Brighton and Hove School Allocations",
+    "section": "",
+    "text": "https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202015.pdf"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-12",
+    "href": "brighton_and_hove_allocations.html#section-12",
+    "title": "Brighton and Hove School Allocations",
+    "section": "",
+    "text": "https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202014.pdf"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-13",
+    "href": "brighton_and_hove_allocations.html#section-13",
+    "title": "Brighton and Hove School Allocations",
+    "section": "",
+    "text": "https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202013.pdf\n\n\n\n\n\n\nKings School did not admit Year 7 until 2014, so it is absent from 2013."
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-14",
+    "href": "brighton_and_hove_allocations.html#section-14",
+    "title": "Brighton and Hove School Allocations",
+    "section": "2026",
+    "text": "2026\nhttps://www.brighton-hove.gov.uk/schools-and-learning/school-policies-reports-strategies-and-other-documents/allocation-infantprimary-school-reception-places-september-2026\n\n\n\n\n\n\nNotes: Middle Street Primary proposed for closure August 2026 (decision 21 May 2026). Rudyard Kipling received an extra 15 places for Woodingdean-area residents."
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-15",
+    "href": "brighton_and_hove_allocations.html#section-15",
+    "title": "Brighton and Hove School Allocations",
+    "section": "2025",
+    "text": "2025\nhttps://www.brighton-hove.gov.uk/schools-and-learning/school-policies-reports-strategies-and-other-documents/allocation-infantprimary-school-reception-places-september-2025"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-16",
+    "href": "brighton_and_hove_allocations.html#section-16",
+    "title": "Brighton and Hove School Allocations",
+    "section": "2024",
+    "text": "2024\nhttps://www.brighton-hove.gov.uk/schools-and-learning/allocation-infant-and-primary-school-reception-places-september-2024"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-17",
+    "href": "brighton_and_hove_allocations.html#section-17",
+    "title": "Brighton and Hove School Allocations",
+    "section": "2023",
+    "text": "2023\nhttps://www.brighton-hove.gov.uk/schools-and-learning/school-policies-reports-strategies-and-other-documents/allocation-factsheet-infant-and-primary-school-reception-places-september-2023"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-18",
+    "href": "brighton_and_hove_allocations.html#section-18",
+    "title": "Brighton and Hove School Allocations",
+    "section": "2022",
+    "text": "2022\nhttps://www.brighton-hove.gov.uk/schools-and-learning/school-policies-reports-strategies-and-other-documents/allocation-infantprimary-school-reception-places-september-2022"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-19",
+    "href": "brighton_and_hove_allocations.html#section-19",
+    "title": "Brighton and Hove School Allocations",
+    "section": "2021",
+    "text": "2021\nhttps://web.archive.org/web/2025/https://www.brighton-hove.gov.uk/schools-and-learning/apply-school/allocation-infantprimary-school-reception-places-september-2021"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-20",
+    "href": "brighton_and_hove_allocations.html#section-20",
+    "title": "Brighton and Hove School Allocations",
+    "section": "2020",
+    "text": "2020\nhttps://www.brighton-hove.gov.uk/sites/default/files/2020-04/Primary%20Allocation%20Fact%20Sheet%202020.pdf"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-21",
+    "href": "brighton_and_hove_allocations.html#section-21",
+    "title": "Brighton and Hove School Allocations",
+    "section": "2019",
+    "text": "2019\nhttps://www.brighton-hove.gov.uk/sites/default/files/schools/primary-allocation-fact-sheet-2019.pdf"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-22",
+    "href": "brighton_and_hove_allocations.html#section-22",
+    "title": "Brighton and Hove School Allocations",
+    "section": "2018",
+    "text": "2018\nhttps://web.archive.org/web/2024/https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Primary%20Allocation%20Fact%20Sheet%202018.pdf"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-23",
+    "href": "brighton_and_hove_allocations.html#section-23",
+    "title": "Brighton and Hove School Allocations",
+    "section": "2017",
+    "text": "2017\nhttps://web.archive.org/web/2022/https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Primary%20Allocation%20Fact%20Sheet%202017_0.pdf"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-24",
+    "href": "brighton_and_hove_allocations.html#section-24",
+    "title": "Brighton and Hove School Allocations",
+    "section": "2016",
+    "text": "2016\nhttps://web.archive.org/web/2022/https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Primary%20Allocation%20Fact%20sheet%202016%20-%20final.pdf"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-25",
+    "href": "brighton_and_hove_allocations.html#section-25",
+    "title": "Brighton and Hove School Allocations",
+    "section": "2015",
+    "text": "2015\nhttps://web.archive.org/web/2015/http://www.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Primary%20Factsheet%20-%20allocation%20details%20with%20Woodingdean.pdf"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#section-26",
+    "href": "brighton_and_hove_allocations.html#section-26",
+    "title": "Brighton and Hove School Allocations",
+    "section": "2014",
+    "text": "2014\nhttps://web.archive.org/web/2014/http://www.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Primary%20Allocation%20Fact%20Sheet%202014_0.pdf"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#data-prior-to-2014",
+    "href": "brighton_and_hove_allocations.html#data-prior-to-2014",
+    "title": "Brighton and Hove School Allocations",
+    "section": "Data Prior to 2014",
+    "text": "Data Prior to 2014\nA 2013 Primary allocation factsheet could not be recovered from either the live council site or the Internet Archive. A 2013 Junior factsheet exists, and 2010/2011 primary booklets are archived as Word documents — they may be digitised in future."
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#combined-primary-data-20142026",
+    "href": "brighton_and_hove_allocations.html#combined-primary-data-20142026",
+    "title": "Brighton and Hove School Allocations",
+    "section": "Combined Primary Data 2014–2026",
+    "text": "Combined Primary Data 2014–2026"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#interactive-time-series-primary",
+    "href": "brighton_and_hove_allocations.html#interactive-time-series-primary",
+    "title": "Brighton and Hove School Allocations",
+    "section": "Interactive Time Series — Primary",
+    "text": "Interactive Time Series — Primary\nGiven the number of schools (~46), plots below group them by size band (PAN) or by geographic/admissions area so lines stay legible. Use the legend to toggle schools on and off.\n\nTotal Applications by School (All)\n\n\n\n\n\n\nLegend suppressed due to number of schools — hover to identify a line.\n\n\nOffers vs PAN — How Full Is Each School?\n\n\n\n\n\n\n\n\n1st-Preference Offers — Were Families Getting Their First Choice?\n\n\n\n\n\n\n\n\nCity-wide Aggregate\n\n\n\n\n\n\n\n\nOversubscribed vs Undersubscribed Schools, 2026"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#secondary-year-7-applications-and-offers-by-year",
+    "href": "brighton_and_hove_allocations.html#secondary-year-7-applications-and-offers-by-year",
+    "title": "Brighton and Hove School Allocations",
+    "section": "Secondary (Year 7) — Applications and Offers by Year",
+    "text": "Secondary (Year 7) — Applications and Offers by Year"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#primary-reception-applications-and-offers-by-year",
+    "href": "brighton_and_hove_allocations.html#primary-reception-applications-and-offers-by-year",
+    "title": "Brighton and Hove School Allocations",
+    "section": "Primary (Reception) — Applications and Offers by Year",
+    "text": "Primary (Reception) — Applications and Offers by Year\n\n\n\n\n\n\nNotes on the maps:\n\nEach year has two base layers — Applications (all preferences received) and Offers (places allocated) — switch via the radio buttons in the top-right. Only one layer is visible at a time.\nWest Hove Infant has two intake sites (Holland Road and Portland Road) plotted at their respective postcodes (BN3 1JL and BN3 5JA).\nHistoric infant schools that amalgamated into primaries (Hangleton Infant, Hertford Infant) are plotted at their successor primary’s location. Fully closed schools (Davigdor Infant to 2015, St Bartholomew’s, St Peter’s Community) are plotted at their original postcodes so pre-closure years render correctly."
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#secondary-year-7",
+    "href": "brighton_and_hove_allocations.html#secondary-year-7",
+    "title": "Brighton and Hove School Allocations",
+    "section": "Secondary (Year 7)",
+    "text": "Secondary (Year 7)\n\n\n\n\nYear"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#primary-reception",
+    "href": "brighton_and_hove_allocations.html#primary-reception",
+    "title": "Brighton and Hove School Allocations",
+    "section": "Primary (Reception)",
+    "text": "Primary (Reception)\n\n\n\n\nYear\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNotes on the maps:\n\nEach phase has one year slider that controls both maps simultaneously — the left map shows Applications (all preferences received), the right map shows Offers (places allocated). Slide or press play to step through years.\nWest Hove Infant has two intake sites (Holland Road and Portland Road) plotted at their respective postcodes (BN3 1JL and BN3 5JA).\nHistoric infant schools that amalgamated into primaries (Hangleton Infant, Hertford Infant) are plotted at their successor primary’s location. Fully closed schools (Davigdor Infant to 2015, St Bartholomew’s, St Peter’s Community) are plotted at their original postcodes so pre-closure years render correctly."
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#secondary-year-7-applications",
+    "href": "brighton_and_hove_allocations.html#secondary-year-7-applications",
+    "title": "Brighton and Hove School Allocations",
+    "section": "Secondary (Year 7) — Applications",
+    "text": "Secondary (Year 7) — Applications"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#secondary-year-7-offers",
+    "href": "brighton_and_hove_allocations.html#secondary-year-7-offers",
+    "title": "Brighton and Hove School Allocations",
+    "section": "Secondary (Year 7) — Offers",
+    "text": "Secondary (Year 7) — Offers"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#primary-reception-applications",
+    "href": "brighton_and_hove_allocations.html#primary-reception-applications",
+    "title": "Brighton and Hove School Allocations",
+    "section": "Primary (Reception) — Applications",
+    "text": "Primary (Reception) — Applications"
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#primary-reception-offers",
+    "href": "brighton_and_hove_allocations.html#primary-reception-offers",
+    "title": "Brighton and Hove School Allocations",
+    "section": "Primary (Reception) — Offers",
+    "text": "Primary (Reception) — Offers\n\n\n\n\n\n\n\nNotes on the maps:\n\nEach map has its own year slider. Dragging the slider redraws the circles on that map only — school positions stay fixed, but radii change because the circles are re-drawn from scratch at the selected year’s counts (radius = √count × k).\nSecondary maps show the 2025/26 catchment polygons as a reference. Primary maps are plotted on a neutral basemap (no national primary catchments exist — primary admission uses home-to-school distance).\nWest Hove Infant has two intake sites (Holland Road and Portland Road) plotted at their respective postcodes (BN3 1JL and BN3 5JA).\nHistoric infant schools that amalgamated into primaries (Hangleton Infant, Hertford Infant) are plotted at their successor primary’s location. Fully closed schools (Davigdor Infant to 2015, St Bartholomew’s, St Peter’s Community) are plotted at their original postcodes so pre-closure years render correctly."
   }
 ]

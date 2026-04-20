@@ -7,6 +7,7 @@ project:
     - stain_removal.qmd
     - factsheet.qmd
     - data_processing_scripts.qmd
+    - brighton_and_hove_allocations.qmd
 #    - geocode_planning.qmd
     - relocation_sim.qmd
 
@@ -18,6 +19,8 @@ website:
     left:
       - text: "Data Processing"
         href: data_processing_scripts.qmd
+      - text: "Allocations (2013–2026)"
+        href: brighton_and_hove_allocations.qmd
       - about.qmd
       - text: "Week 2 Analysis"
         href: schools_wk2.qmd

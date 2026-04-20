@@ -1,0 +1,1945 @@
+---
+title: "Brighton and Hove School Allocations"
+author: "Adam Dennett"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+library(dplyr)
+library(tidyr)
+library(knitr)
+library(DT)
+library(ggplot2)
+library(plotly)
+library(wesanderson)
+
+# Helper to split "N (M)" cells into two numeric columns.
+split_nm <- function(df, col) {
+  new_offer <- paste0(col, "_offer")
+  df[[col]] <- as.character(df[[col]])
+  df %>%
+    separate(!!col, into = c(col, new_offer), sep = " \\(", convert = FALSE) %>%
+    mutate(
+      !!col := suppressWarnings(as.numeric(gsub(",", "", trimws(.data[[col]])))),
+      !!new_offer := suppressWarnings(as.numeric(gsub("[)*]", "", .data[[new_offer]])))
+    )
+}
+
+# Apply split_nm across the standard preference + total columns.
+parse_prefs <- function(df, cols) {
+  for (col in cols) df <- split_nm(df, col)
+  df
+}
+
+dt_opts <- list(
+  pageLength = 15,
+  dom = 'Bfrtip',
+  buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+  scrollX = TRUE
+)
+```
+
+# Secondary Schools — Year 7 Allocations
+
+Data transcribed from the annual Brighton & Hove City Council Year 7 Allocation Factsheets. Each cell shows `preferences received (offers made)`. From 2026 onwards the council collects a 4th preference alongside the traditional 1st / 2nd / 3rd.
+
+Click a year to view that factsheet.
+
+::: panel-tabset
+## 2026
+
+<https://www.brighton-hove.gov.uk/schools-and-learning/school-policies-reports-strategies-and-other-documents/allocation-factsheet-year-7-places-september-2026>
+
+```{r}
+yr_7_admissions_2026 <- data.frame(
+  School = c("Blatchington Mill", "Brighton Aldridge Community Academy", "Cardinal Newman",
+             "Dorothy Stringer", "Hove Park", "Kings School", "Longhill High", "Patcham High",
+             "Portslade Aldridge Community Academy", "Varndean", "Total"),
+  No_1st_pref = c("259 (244)", "128 (128)", "498 (352)", "301 (264)", "103 (103)", "218 (163)",
+                  "72 (72)", "158 (158)", "163 (163)", "370 (274)", "2270 (1921)"),
+  No_2nd_pref = c("267 (61)", "48 (9)", "221 (8)", "412 (59)", "171 (19)", "262 (16)",
+                  "31 (8)", "77 (23)", "79 (19)", "464 (23)", "2032 (245)"),
+  No_3rd_pref = c("232 (23)", "68 (6)", "305 (0)", "238 (4)", "206 (8)", "216 (1)",
+                  "30 (0)", "224 (17)", "59 (1)", "214 (3)", "1792 (63)"),
+  No_4th_pref = c("151 (2)", "106 (3)", "197 (0)", "144 (3)", "249 (6)", "158 (0)",
+                  "18 (1)", "164 (6)", "59 (0)", "72 (0)", "1318 (21)"),
+  Total = c("910 (330)", "350 (146)", "1221 (360)", "1095 (330)", "729 (136)", "855 (180)",
+            "151 (81)", "623 (204)", "360 (183)", "1120 (300)", "7414 (2250)")
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "No_4th_pref", "Total"))
+
+datatable(yr_7_admissions_2026, extensions = 'Buttons', options = dt_opts)
+```
+
+2026 is the first year that the council reports 4 preferences rather than 3.
+
+## 2025
+
+<https://www.brighton-hove.gov.uk/schools-and-learning/school-policies-reports-strategies-and-other-documents/allocation-factsheet-year-7-places-september-2025>
+
+```{r}
+yr_7_admissions_2025 <- data.frame(
+  School = c("Blatchington Mill", "Brighton Aldridge Community Academy", "Cardinal Newman",
+             "Dorothy Stringer", "Hove Park", "Kings School", "Longhill High", "Patcham High",
+             "Portslade Aldridge Community Academy", "Varndean", "Total"),
+  No_1st_pref = c("258 (244)", "83 (83)", "523 (349)", "215 (186)", "130 (130)", "252 (170)",
+                  "74 (74)", "166 (166)", "175 (175)", "427 (284)", "2303 (1861)"),
+  No_2nd_pref = c("273 (61)", "37 (5)", "239 (11)", "479 (127)", "242 (27)", "280 (10)",
+                  "39 (17)", "74 (18)", "87 (12)", "390 (13)", "2140 (301)"),
+  No_3rd_pref = c("303 (25)", "33 (1)", "319 (0)", "228 (17)", "274 (14)", "219 (0)",
+                  "36 (1)", "235 (18)", "70 (3)", "192 (3)", "1911 (87)"),
+  Total = c("834 (330)", "153 (89)", "1081 (360)", "922 (330)", "646 (171)", "751 (180)",
+            "151 (97)", "475 (202)", "332 (190)", "1009 (300)", "6354 (2249)")
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(yr_7_admissions_2025, extensions = 'Buttons', options = dt_opts)
+```
+
+## 2024
+
+<https://www.brighton-hove.gov.uk/schools-and-learning/school-policies-reports-strategies-and-other-documents/allocation-factsheet-year-7-places-september-2024>
+
+```{r}
+yr_7_admissions_2024 <- data.frame(
+  School = c("Blatchington Mill", "Brighton Aldridge Community Academy", "Cardinal Newman",
+             "Dorothy Stringer", "Hove Park", "Kings School", "Longhill High", "Patcham High",
+             "Portslade Aldridge Community Academy", "Varndean", "Total"),
+  No_1st_pref = c("279 (243)", "73 (73)", "466 (347)", "234 (199)", "110 (110)", "242 (159)",
+                  "80 (80)", "210 (182)", "129 (129)", "456 (293)", "2279 (1815)"),
+  No_2nd_pref = c("268 (69)", "27 (6)", "203 (12)", "518 (111)", "252 (41)", "224 (6)",
+                  "30 (9)", "89 (23)", "105 (38)", "394 (7)", "2110 (322)"),
+  No_3rd_pref = c("224 (18)", "39 (5)", "272 (1)", "262 (20)", "244 (19)", "202 (0)",
+                  "39 (5)", "253 (20)", "77 (4)", "209 (0)", "1821 (92)"),
+  Total = c("771 (330)", "139 (84)", "941 (360)", "1014 (330)", "606 (170)", "668 (165)",
+            "149 (94)", "552 (225)", "311 (171)", "1059 (300)", "6210 (2259)")
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(yr_7_admissions_2024, extensions = 'Buttons', options = dt_opts)
+```
+
+## 2023
+
+<https://www.brighton-hove.gov.uk/schools-and-learning/school-policies-reports-strategies-and-other-documents/allocation-factsheet-year-7-places-september-2023>
+
+```{r}
+yr_7_admissions_2023 <- data.frame(
+  School = c("Blatchington Mill", "Brighton Aldridge Community Academy", "Cardinal Newman",
+             "Dorothy Stringer", "Hove Park", "Kings School", "Longhill High", "Patcham High",
+             "Portslade Aldridge Community Academy", "Varndean", "Total"),
+  No_1st_pref = c("300 (260)", "92 (92)", "451 (351)", "260 (242)", "158 (132)", "241 (162)",
+                  "134 (134)", "203 (196)", "154 (154)", "409 (292)", "2402 (2015)"),
+  No_2nd_pref = c("309 (61)", "34 (5)", "189 (9)", "516 (81)", "298 (40)", "229 (3)",
+                  "38 (14)", "87 (17)", "79 (26)", "423 (8)", "2202 (264)"),
+  No_3rd_pref = c("231 (9)", "34 (3)", "297 (0)", "232 (7)", "258 (8)", "198 (0)",
+                  "27 (4)", "292 (12)", "113 (20)", "233 (0)", "1915 (63)"),
+  Total = c("840 (330)", "160 (100)", "937 (360)", "1008 (330)", "714 (180)", "668 (165)",
+            "199 (152)", "582 (225)", "346 (200)", "1065 (300)", "6789 (2407)")
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(yr_7_admissions_2023, extensions = 'Buttons', options = dt_opts)
+```
+
+## 2022
+
+<https://www.brighton-hove.gov.uk/schools-and-learning/school-policies-reports-strategies-and-other-documents/allocation-factsheet-year-7-places-september-2022>
+
+```{r}
+yr_7_admissions_2022 <- data.frame(
+  School = c("Blatchington Mill", "Brighton Aldridge Community Academy", "Cardinal Newman",
+             "Dorothy Stringer", "Hove Park", "Kings School", "Longhill High", "Patcham High",
+             "Portslade Aldridge Community Academy", "Varndean", "Total"),
+  No_1st_pref = c("292 (270)", "121 (121)", "381 (342)", "291 (258)", "115 (115)", "232 (160)",
+                  "104 (104)", "218 (197)", "166 (166)", "444 (303)", "2364 (2034)"),
+  No_2nd_pref = c("299 (50)", "37 (8)", "182 (16)", "537 (87)", "246 (24)", "234 (3)",
+                  "39 (10)", "80 (12)", "106 (26)", "435 (6)", "2195 (245)"),
+  No_3rd_pref = c("235 (10)", "77 (3)", "293 (2)", "226 (4)", "235 (10)", "203 (2)",
+                  "45 (8)", "320 (16)", "84 (2)", "212 (1)", "1930 (57)"),
+  Total = c("826 (330)", "235 (132)", "856 (360)", "1054 (349)", "596 (149)", "669 (165)",
+            "188 (122)", "618 (225)", "356 (194)", "1091 (310)", "6789 (2407)")
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(yr_7_admissions_2022, extensions = 'Buttons', options = dt_opts)
+```
+
+## 2021
+
+<https://web.archive.org/web/2022/https://www.brighton-hove.gov.uk/schools-and-learning/apply-school/allocation-factsheet-year-7-places-september-2021>
+
+```{r}
+yr_7_admissions_2021 <- data.frame(
+  School = c("Blatchington Mill", "Brighton Aldridge Community Academy", "Cardinal Newman",
+             "Dorothy Stringer", "Hove Park", "Kings School", "Longhill High", "Patcham High",
+             "Portslade Aldridge Community Academy", "Varndean", "Total"),
+  No_1st_pref = c("400 (284)", "116 (116)", "414 (340)", "386 (306)", "116 (116)", "235 (150)",
+                  "145 (145)", "211 (193)", "165 (165)", "386 (296)", "2574 (2111)"),
+  No_2nd_pref = c("320 (40)", "46 (9)", "226 (18)", "493 (23)", "310 (101)", "258 (14)",
+                  "35 (12)", "83 (15)", "90 (16)", "492 (4)", "2353 (252)"),
+  No_3rd_pref = c("278 (6)", "49 (16)", "321 (2)", "227 (1)", "249 (30)", "280 (1)",
+                  "46 (10)", "252 (17)", "102 (5)", "208 (0)", "2012 (88)"),
+  Total = c("998 (330)", "211 (141)", "961 (360)", "1106 (330)", "675 (247)", "773 (165)",
+            "226 (167)", "546 (225)", "357 (186)", "1086 (300)", "6939 (2501)")
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(yr_7_admissions_2021, extensions = 'Buttons', options = dt_opts)
+```
+
+## 2020
+
+<https://www.brighton-hove.gov.uk/schools-and-learning/apply-school/allocation-factsheet-year-7-places-september-2020>
+
+```{r}
+yr_7_admissions_2020 <- data.frame(
+  School = c("Blatchington Mill", "Brighton Aldridge Community Academy", "Cardinal Newman",
+             "Dorothy Stringer", "Hove Park", "Kings School", "Longhill High", "Patcham High",
+             "Portslade Aldridge Community Academy", "Varndean", "Total"),
+  No_1st_pref = c("350 (279)", "89 (89)", "349 (311)", "438 (357)", "80 (80)", "253 (145)",
+                  "159 (159)", "219 (206)", "174 (174)", "307 (268)", "2418 (2068)"),
+  No_2nd_pref = c("281 (45)", "50 (7)", "221 (39)", "489 (7)", "227 (33)", "282 (5)",
+                  "38 (11)", "65 (11)", "95 (21)", "530 (36)", "2278 (215)"),
+  No_3rd_pref = c("237 (6)", "62 (10)", "326 (10)", "203 (0)", "281 (24)", "257 (0)",
+                  "38 (7)", "304 (8)", "77 (8)", "231 (0)", "2016 (73)"),
+  Total = c("868 (330)", "201 (106)", "896 (360)", "1130 (364)", "588 (137)", "792 (150)",
+            "235 (177)", "588 (225)", "346 (203)", "1068 (304)", NA_character_)
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(yr_7_admissions_2020, extensions = 'Buttons', options = dt_opts)
+```
+
+## 2019
+
+<https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202019.pdf>
+
+```{r}
+yr_7_admissions_2019 <- data.frame(
+  School = c("Blatchington Mill", "Brighton Aldridge Community Academy", "Cardinal Newman",
+             "Dorothy Stringer", "Hove Park", "Kings School", "Longhill High", "Patcham High",
+             "Portslade Aldridge Community Academy", "Varndean", "Total"),
+  No_1st_pref = c("373 (282)", "92 (92)", "465 (340)", "447 (355)", "119 (119)", "188 (157)",
+                  "153 (152)", "217 (190)", "168 (164)", "304 (251)", "2526 (2102)"),
+  No_2nd_pref = c("344 (37)", "40 (11)", "219 (14)", "470 (9)", "289 (62)", "209 (17)",
+                  "33 (16)", "83 (19)", "106 (49)", "537 (47)", "2330 (281)"),
+  No_3rd_pref = c("256 (11)", "49 (7)", "344 (6)", "233 (0)", "271 (34)", "204 (4)",
+                  "62 (15)", "299 (16)", "136 (27)", "257 (6)", "2111 (126)"),
+  Total = c("973 (330)", "181 (110)", "1028 (360)", "1150 (364)", "679 (215)", "601 (178)",
+            "248 (183)", "599 (225)", "410 (240)", "1098 (304)", "6967 (2509)")
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(yr_7_admissions_2019, extensions = 'Buttons', options = dt_opts)
+```
+
+## 2018
+
+<https://www.brighton-hove.gov.uk/sites/default/files/migrated/subject/inline/Secondary%20Allocation%20factsheet%202018.pdf>
+
+```{r}
+yr_7_admissions_2018 <- data.frame(
+  School = c("Blatchington Mill", "Brighton Aldridge Community Academy", "Cardinal Newman",
+             "Dorothy Stringer", "Hove Park", "Kings School", "Longhill High", "Patcham High",
+             "Portslade Aldridge Community Academy", "Varndean", "Total"),
+  No_1st_pref = c("401 (303)", "110 (109)", "381 (342)", "413 (325)", "151 (151)", "143 (117)",
+                  "156 (156)", "226 (191)", "168 (168)", "355 (280)", "2504 (2142)"),
+  No_2nd_pref = c("288 (22)", "42 (15)", "162 (15)", "488 (6)", "345 (71)", "133 (7)",
+                  "28 (8)", "64 (13)", "108 (13)", "486 (20)", "2143 (190)"),
+  No_3rd_pref = c("257 (5)", "50 (6)", "274 (3)", "208 (0)", "226 (17)", "159 (1)",
+                  "47 (11)", "368 (21)", "133 (7)", "253 (0)", "1975 (71)"),
+  Total = c("946 (330)", "202 (130)", "816 (360)", "1109 (331)", "722 (239)", "435 (125)",
+            "231 (175)", "658 (225)", "409 (188)", "1094 (300)", "6622 (2403)")
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(yr_7_admissions_2018, extensions = 'Buttons', options = dt_opts)
+```
+
+## 2017
+
+<https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202017.pdf>
+
+```{r}
+yr_7_admissions_2017 <- data.frame(
+  School = c("Blatchington Mill", "Brighton Aldridge Community Academy", "Cardinal Newman",
+             "Dorothy Stringer", "Hove Park", "Kings School", "Longhill High", "Patcham High",
+             "Portslade Aldridge Community Academy", "Varndean", "Total"),
+  No_1st_pref = c("336 (282)", "90 (90)", "362 (330)", "459 (327)", "198 (198)", "124 (94)",
+                  "131 (131)", "211 (185)", "158 (158)", "304 (228)", "2373 (2023)"),
+  No_2nd_pref = c("323 (14)", "22 (9)", "154 (20)", "455 (3)", "299 (45)", "123 (4)",
+                  "33 (8)", "90 (12)", "65 (13)", "482 (35)", "2046 (163)"),
+  No_3rd_pref = c("238 (4)", "31 (9)", "278 (10)", "159 (1)", "229 (12)", "142 (2)",
+                  "39 (11)", "303 (18)", "84 (5)", "244 (7)", "1747 (79)"),
+  Total = c("897 (300)", "143 (108)", "794 (360)", "1073 (331)", "726 (255)", "389 (100)",
+            "203 (150)", "604 (215)", "307 (176)", "1030 (270)", "6167 (2282)")
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(yr_7_admissions_2017, extensions = 'Buttons', options = dt_opts)
+```
+
+## 2016
+
+<https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20Factsheet%202016.pdf>
+
+```{r}
+yr_7_admissions_2016 <- data.frame(
+  School = c("Blatchington Mill", "Brighton Aldridge Community Academy", "Cardinal Newman",
+             "Dorothy Stringer", "Hove Park", "Kings School", "Longhill High", "Patcham High",
+             "Portslade Aldridge Community Academy", "Varndean", "Total"),
+  No_1st_pref = c("410 (292)", "87 (87)", "375 (338)", "495 (337)", "172 (172)", "98 (90)",
+                  "138 (138)", "217 (185)", "85 (85)", "219 (176)", "2296 (1900)"),
+  No_2nd_pref = c("289 (6)", "24 (7)", "130 (17)", "337 (7)", "335 (82)", "102 (9)",
+                  "31 (14)", "63 (20)", "39 (8)", "521 (100)", "1871 (270)"),
+  No_3rd_pref = c("189 (2)", "27 (5)", "330 (5)", "191 (0)", "224 (19)", "142 (1)",
+                  "33 (11)", "237 (10)", "58 (1)", "217 (8)", "1648 (62)"),
+  Total = c("888 (300)", "138 (99)", "835 (360)", "1023 (344)", "731 (273)", "342 (100)",
+            "202 (163)", "517 (215)", "182 (94)", "957 (284)", "5815 (2232)")
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(yr_7_admissions_2016, extensions = 'Buttons', options = dt_opts)
+```
+
+## 2015
+
+<https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202015.pdf>
+
+```{r}
+yr_7_admissions_2015 <- data.frame(
+  School = c("Blatchington Mill", "Brighton Aldridge Community Academy", "Cardinal Newman",
+             "Dorothy Stringer", "Hove Park", "Kings School", "Longhill High", "Patcham High",
+             "Portslade Aldridge Community Academy", "Varndean", "Total"),
+  No_1st_pref = c("389 (287)", "120 (120)", "385 (345)", "471 (329)", "215 (200)", "90 (90)",
+                  "141 (141)", "208 (184)", "86 (86)", "210 (176)", "2315 (1958)"),
+  No_2nd_pref = c("323 (13)", "17 (4)", "132 (13)", "366 (4)", "387 (77)", "71 (17)",
+                  "34 (9)", "72 (13)", "35 (24)", "480 (94)", "1917 (268)"),
+  No_3rd_pref = c("234 (1)", "39 (6)", "306 (2)", "189 (4)", "220 (22)", "108 (14)",
+                  "33 (6)", "250 (13)", "70 (13)", "233 (7)", "1682 (88)"),
+  Total = c("946 (301)", "176 (130)", "823 (360)", "1026 (337)", "823 (299)", "269 (121)",
+            "208 (156)", "530 (210)", "191 (123)", "923 (277)", "5915 (2214)")
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(yr_7_admissions_2015, extensions = 'Buttons', options = dt_opts)
+```
+
+## 2014
+
+<https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202014.pdf>
+
+```{r}
+yr_7_admissions_2014 <- data.frame(
+  School = c("Blatchington Mill", "Brighton Aldridge Community Academy", "Cardinal Newman",
+             "Dorothy Stringer", "Hove Park", "Kings School", "Longhill High", "Patcham High",
+             "Portslade Aldridge Community Academy", "Varndean", "Total"),
+  No_1st_pref = c("349 (286)", "68 (68)", "393 (355)", "493 (316)", "181 (181)", "105 (105)",
+                  "191 (191)", "209 (179)", "85 (85)", "216 (165)", "2290 (1931)"),
+  No_2nd_pref = c("287 (11)", "18 (5)", "135 (3)", "414 (15)", "343 (58)", "54 (7)",
+                  "38 (12)", "67 (11)", "38 (6)", "495 (95)", "1889 (223)"),
+  No_3rd_pref = c("212 (3)", "27 (9)", "296 (2)", "178 (0)", "195 (21)", "77 (3)",
+                  "32 (6)", "222 (20)", "39 (1)", "254 (10)", "1532 (75)"),
+  Total = c("848 (300)", "113 (82)", "824 (360)", "1085 (331)", "719 (260)", "236 (115)",
+            "261 (209)", "498 (210)", "162 (92)", "965 (270)", "6654 (1975)")
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(yr_7_admissions_2014, extensions = 'Buttons', options = dt_opts)
+```
+
+## 2013
+
+<https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Secondary%20Allocation%20factsheet%202013.pdf>
+
+```{r}
+yr_7_admissions_2013 <- data.frame(
+  School = c("Blatchington Mill", "Brighton Aldridge Community Academy", "Cardinal Newman",
+             "Dorothy Stringer", "Hove Park", "Longhill High", "Patcham High",
+             "Portslade Aldridge Community Academy", "Varndean", "Total"),
+  No_1st_pref = c("400 (285)", "79 (79)", "409 (354)", "507 (326)", "175 (175)", "188 (188)",
+                  "186 (180)", "80 (80)", "169 (142)", "2193 (1809)"),
+  No_2nd_pref = c("333 (14)", "17 (3)", "129 (5)", "370 (4)", "333 (95)", "26 (8)",
+                  "65 (17)", "30 (9)", "485 (110)", "1788 (265)"),
+  No_3rd_pref = c("228 (1)", "19 (1)", "300 (1)", "182 (0)", "234 (29)", "43 (4)",
+                  "198 (13)", "62 (2)", "253 (18)", "1519 (69)"),
+  Total = c("961 (300)", "115 (83)", "838 (360)", "1059 (330)", "742 (299)", "257 (200)",
+            "449 (210)", "172 (91)", "907 (270)", "5500 (2143)")
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(yr_7_admissions_2013, extensions = 'Buttons', options = dt_opts)
+```
+
+Kings School did not admit Year 7 until 2014, so it is absent from 2013.
+:::
+
+## Combined Secondary Data 2013–2026
+
+```{r}
+secondary_frames <- list(
+  `2013` = yr_7_admissions_2013, `2014` = yr_7_admissions_2014,
+  `2015` = yr_7_admissions_2015, `2016` = yr_7_admissions_2016,
+  `2017` = yr_7_admissions_2017, `2018` = yr_7_admissions_2018,
+  `2019` = yr_7_admissions_2019, `2020` = yr_7_admissions_2020,
+  `2021` = yr_7_admissions_2021, `2022` = yr_7_admissions_2022,
+  `2023` = yr_7_admissions_2023, `2024` = yr_7_admissions_2024,
+  `2025` = yr_7_admissions_2025, `2026` = yr_7_admissions_2026
+)
+
+secondary_all <- bind_rows(lapply(names(secondary_frames), function(y) {
+  secondary_frames[[y]] %>% mutate(Year = as.integer(y))
+}))
+
+# Normalise historic naming and drop the Total row from the long dataset.
+secondary_all <- secondary_all %>%
+  mutate(School = case_when(
+    School == "Longhill" ~ "Longhill High",
+    TRUE ~ School
+  ))
+
+datatable(
+  secondary_all %>% select(Year, School, everything()),
+  extensions = 'Buttons',
+  options = dt_opts,
+  filter = "top"
+)
+```
+
+## Interactive Time Series — Secondary Applications and Offers
+
+### Total Applications by School
+
+```{r}
+sec_schools <- secondary_all %>% filter(School != "Total")
+
+p_apps <- ggplot(sec_schools,
+                 aes(x = Year, y = Total, color = School, group = School,
+                     text = paste0(School, "<br>Year: ", Year,
+                                   "<br>Applications: ", Total,
+                                   "<br>Offers: ", Total_offer))) +
+  geom_line() +
+  geom_point() +
+  scale_x_continuous(breaks = seq(2013, 2026, 1)) +
+  labs(title = "Total Applications by Secondary School, 2013–2026",
+       x = "Year", y = "Total Applications (preferences received)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggplotly(p_apps, tooltip = "text")
+```
+
+### Total Offers by School
+
+```{r}
+p_offers <- ggplot(sec_schools,
+                   aes(x = Year, y = Total_offer, color = School, group = School,
+                       text = paste0(School, "<br>Year: ", Year,
+                                     "<br>Offers: ", Total_offer))) +
+  geom_line() +
+  geom_point() +
+  scale_x_continuous(breaks = seq(2013, 2026, 1)) +
+  labs(title = "Total Offers by Secondary School, 2013–2026",
+       x = "Year", y = "Total Offers") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggplotly(p_offers, tooltip = "text")
+```
+
+### Preference Composition (Faceted by School)
+
+```{r}
+sec_prefs_long <- sec_schools %>%
+  select(School, Year, No_1st_pref, No_2nd_pref, No_3rd_pref, No_4th_pref) %>%
+  pivot_longer(cols = starts_with("No_"),
+               names_to = "Preference", values_to = "Count") %>%
+  mutate(
+    Preference = recode(Preference,
+                        No_1st_pref = "1st", No_2nd_pref = "2nd",
+                        No_3rd_pref = "3rd", No_4th_pref = "4th"),
+    SchoolShort = recode(School,
+                         "Brighton Aldridge Community Academy" = "BACA",
+                         "Portslade Aldridge Community Academy" = "PACA")
+  ) %>%
+  filter(!is.na(Count))
+
+p_prefs <- ggplot(sec_prefs_long,
+                  aes(x = Year, y = Count, color = Preference, group = Preference,
+                      text = paste0(School, " (", Preference, ")<br>",
+                                    "Year: ", Year, "<br>Count: ", Count))) +
+  geom_line() +
+  geom_point(size = 0.6) +
+  facet_wrap(~ SchoolShort, scales = "fixed") +
+  scale_color_manual(values = wes_palette("Darjeeling1", n = 4)) +
+  scale_x_continuous(breaks = seq(2013, 2026, 2)) +
+  labs(title = "Preferences Received by School and Year",
+       x = "Year", y = "Preferences Received") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+
+ggplotly(p_prefs, tooltip = "text")
+```
+
+### Offers by Preference (Faceted by School)
+
+```{r}
+sec_offers_long <- sec_schools %>%
+  select(School, Year, No_1st_pref_offer, No_2nd_pref_offer,
+         No_3rd_pref_offer, No_4th_pref_offer) %>%
+  pivot_longer(cols = starts_with("No_"),
+               names_to = "Preference", values_to = "Count") %>%
+  mutate(
+    Preference = recode(Preference,
+                        No_1st_pref_offer = "1st", No_2nd_pref_offer = "2nd",
+                        No_3rd_pref_offer = "3rd", No_4th_pref_offer = "4th"),
+    SchoolShort = recode(School,
+                         "Brighton Aldridge Community Academy" = "BACA",
+                         "Portslade Aldridge Community Academy" = "PACA")
+  ) %>%
+  filter(!is.na(Count))
+
+p_offers_prefs <- ggplot(sec_offers_long,
+                         aes(x = Year, y = Count, color = Preference, group = Preference,
+                             text = paste0(School, " (", Preference, ")<br>",
+                                           "Year: ", Year, "<br>Offers: ", Count))) +
+  geom_line() +
+  geom_point(size = 0.6) +
+  facet_wrap(~ SchoolShort, scales = "fixed") +
+  scale_color_manual(values = wes_palette("BottleRocket2", n = 4)) +
+  scale_x_continuous(breaks = seq(2013, 2026, 2)) +
+  labs(title = "Offers Made by Preference Rank, by School",
+       x = "Year", y = "Offers") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+
+ggplotly(p_offers_prefs, tooltip = "text")
+```
+
+### Smaller Schools Focus
+
+```{r}
+small_schools <- sec_schools %>%
+  filter(School %in% c("Longhill High", "Kings School",
+                       "Brighton Aldridge Community Academy",
+                       "Portslade Aldridge Community Academy"))
+
+p_small <- ggplot(small_schools,
+                  aes(x = Year, y = Total_offer, color = School, group = School,
+                      text = paste0(School, "<br>Year: ", Year,
+                                    "<br>Offers: ", Total_offer))) +
+  geom_line() +
+  geom_point() +
+  scale_x_continuous(breaks = seq(2013, 2026, 1)) +
+  labs(title = "Total Offers — Smaller Schools",
+       x = "Year", y = "Total Offers") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggplotly(p_small, tooltip = "text")
+```
+
+# Primary Schools — Reception Allocations
+
+Data transcribed from Brighton & Hove City Council Infant & Primary School Reception Allocation Factsheets. Most years report three preferences; 2026 adds a 4th. Older factsheets (2014-2018) were recovered from the Internet Archive. Data for 2013 could not be located.
+
+Click a year to view that factsheet.
+
+::: panel-tabset
+## 2026
+
+<https://www.brighton-hove.gov.uk/schools-and-learning/school-policies-reports-strategies-and-other-documents/allocation-infantprimary-school-reception-places-september-2026>
+
+```{r}
+primary_2026 <- data.frame(
+  School = c("Aldrington CE Primary", "Balfour Primary", "Benfield Primary",
+             "Bevendean Primary", "Bilingual Primary", "Brackenbury Primary",
+             "Brunswick Primary", "Carden Primary", "Carlton Hill Primary",
+             "City Academy Whitehawk", "Coldean Primary", "Coombe Road Primary",
+             "Cottesmore St Mary Catholic Primary", "Downs Infant", "Elm Grove Primary",
+             "Fairlight Primary", "Goldstone Primary", "Hangleton Primary",
+             "Hertford Primary", "Middle Street Primary", "Mile Oak Primary",
+             "Moulsecoomb Primary", "Our Lady of Lourdes Catholic Primary",
+             "Patcham Infant", "Peter Gladwin Primary", "Queens Park Primary",
+             "Rudyard Kipling Primary", "Saltdean Primary", "St Andrew's CE Primary",
+             "St Bernadette's Catholic Primary", "St John The Baptist Catholic Primary",
+             "St Luke's Primary", "St Margaret's CE Primary", "St Mark's CE Primary",
+             "St Martin's CE Primary", "St Mary Magdalen Catholic Primary",
+             "St Mary's Catholic Primary", "St Nicolas CE Primary", "St Paul's CE Primary",
+             "Stanford Infant", "West Blatchington Primary",
+             "West Hove Infant, Holland Road", "West Hove Infant, Portland Road",
+             "Westdene Primary", "Woodingdean Primary"),
+  PAN = c(60,90,30,60,90,30,90,60,30,60,60,30,60,90,60,60,90,60,30,30,60,30,30,
+          90,30,60,60,60,90,30,30,90,30,30,30,30,30,60,30,60,30,60,120,60,30),
+  No_1st_pref = c("52 (52)","119 (90)","9 (9)","31 (31)","83 (83)","17 (17)",
+                  "50 (50)","31 (31)","36 (30)","39 (39)","34 (34)","24 (24)",
+                  "74 (60)","80 (80)","63 (58)","41 (41)","72 (72)","29 (29)",
+                  "16 (16)","2 (2)","39 (39)","17 (17)","28 (27)","77 (77)",
+                  "40 (30)","13 (13)","56 (52)","70 (60)","100 (88)","36 (29)",
+                  "14 (14)","94 (86)","26 (26)","13 (13)","27 (27)","8 (8)",
+                  "25 (25)","51 (51)","20 (20)","49 (49)","15 (15)","52 (52)",
+                  "129 (118)","55 (53)","42 (30)"),
+  No_2nd_pref = c("53 (6)","76 (0)","20 (0)","20 (2)","52 (6)","35 (2)",
+                  "44 (3)","38 (1)","35 (0)","7 (1)","14 (2)","21 (0)",
+                  "52 (0)","88 (10)","65 (2)","56 (3)","59 (2)","34 (1)",
+                  "25 (1)","3 (0)","7 (0)","16 (0)","42 (2)","60 (6)",
+                  "46 (0)","29 (2)","22 (7)","14 (0)","107 (2)","32 (1)",
+                  "15 (0)","68 (4)","47 (1)","18 (2)","10 (0)","2 (0)",
+                  "18 (2)","41 (5)","5 (0)","40 (7)","14 (0)","80 (4)",
+                  "89 (2)","67 (4)","47 (0)"),
+  No_3rd_pref = c("29 (0)","66 (0)","17 (0)","21 (0)","78 (0)","33 (0)",
+                  "37 (0)","33 (0)","53 (0)","7 (0)","10 (0)","23 (2)",
+                  "45 (0)","67 (0)","54 (0)","54 (0)","75 (1)","21 (0)",
+                  "21 (1)","14 (0)","7 (0)","9 (0)","34 (1)","19 (1)",
+                  "21 (0)","21 (3)","13 (1)","19 (0)","65 (0)","40 (0)",
+                  "13 (1)","47 (0)","28 (0)","10 (1)","19 (0)","11 (1)",
+                  "18 (1)","31 (0)","6 (0)","59 (2)","24 (0)","49 (0)",
+                  "70 (0)","49 (3)","11 (0)"),
+  No_4th_pref = c("35 (0)","40 (0)","30 (0)","6 (0)","47 (0)","17 (0)",
+                  "24 (0)","19 (0)","26 (0)","1 (0)","7 (0)","20 (0)",
+                  "24 (0)","40 (0)","43 (0)","38 (0)","37 (0)","14 (0)",
+                  "19 (0)","13 (0)","9 (0)","8 (0)","14 (0)","14 (0)",
+                  "13 (0)","24 (0)","15 (0)","4 (0)","36 (0)","33 (0)",
+                  "7 (0)","34 (0)","17 (0)","4 (0)","22 (0)","15 (0)",
+                  "13 (0)","9 (0)","10 (0)","43 (0)","15 (0)","36 (0)",
+                  "34 (0)","23 (0)","10 (0)"),
+  Total = c("169 (58)","301 (90)","76 (9)","78 (33)","260 (89)","102 (19)",
+            "155 (53)","121 (32)","150 (30)","54 (40)","65 (36)","88 (26)",
+            "195 (60)","275 (90)","225 (60)","189 (44)","243 (75)","98 (30)",
+            "81 (18)","32 (2)","63 (39)","50 (17)","118 (30)","170 (84)",
+            "120 (30)","87 (18)","106 (60)","107 (60)","308 (90)","141 (30)",
+            "49 (15)","243 (90)","118 (27)","45 (16)","78 (27)","36 (9)",
+            "74 (28)","132 (56)","41 (20)","191 (58)","69 (15)","218 (56)",
+            "322 (120)","194 (60)","110 (30)"),
+  stringsAsFactors = FALSE
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "No_4th_pref", "Total"))
+
+datatable(primary_2026, extensions = 'Buttons', options = dt_opts)
+```
+
+Notes: Middle Street Primary proposed for closure August 2026 (decision 21 May 2026). Rudyard Kipling received an extra 15 places for Woodingdean-area residents.
+
+## 2025
+
+<https://www.brighton-hove.gov.uk/schools-and-learning/school-policies-reports-strategies-and-other-documents/allocation-infantprimary-school-reception-places-september-2025>
+
+```{r}
+primary_2025 <- data.frame(
+  School = c("Aldrington CE Primary","Balfour Primary","Benfield Primary","Bevendean Primary",
+             "Bilingual Primary","Brackenbury Primary","Brunswick Primary","Carden Primary",
+             "Carlton Hill Primary","City Academy Whitehawk","Coldean Primary","Coombe Road Primary",
+             "Cottesmore St Mary Catholic Primary","Downs Infant","Elm Grove Primary",
+             "Fairlight Primary","Goldstone Primary","Hangleton Primary","Hertford Primary",
+             "Middle Street Primary","Mile Oak Primary","Moulsecoomb Primary",
+             "Our Lady of Lourdes Catholic Primary","Patcham Infant","Peter Gladwin Primary",
+             "Queens Park Primary","Rudyard Kipling Primary","Saltdean Primary",
+             "St Andrew's CE Primary","St Bernadette's Catholic Primary",
+             "St John The Baptist Catholic Primary","St Luke's Primary","St Margaret's CE Primary",
+             "St Mark's CE Primary","St Martin's CE Primary","St Mary Magdalen Catholic Primary",
+             "St Mary's Catholic Primary","St Nicolas CE Primary","St Paul's CE Primary",
+             "Stanford Infant","West Blatchington Primary","West Hove Infant, Holland Road",
+             "West Hove Infant, Portland Road","Westdene Primary","Woodingdean Primary"),
+  PAN = c(60,90,30,60,90,30,90,60,30,60,60,30,60,90,60,60,90,60,30,30,60,30,30,90,30,
+          60,30,60,90,30,30,90,30,30,30,30,30,60,30,60,30,60,120,60,60),
+  No_1st_pref = c("44 (44)","98 (82)","31 (30)","31 (31)","96 (78)","24 (24)","40 (40)",
+                  "36 (36)","42 (29)","34 (34)","22 (22)","32 (30)","85 (60)","105 (84)",
+                  "52 (52)","48 (48)","76 (76)","27 (27)","24 (20)","17 (17)","38 (38)",
+                  "23 (23)","34 (31)","71 (71)","19 (19)","32 (32)","36 (29)","58 (58)",
+                  "114 (90)","36 (29)","25 (25)","95 (86)","25 (25)","15 (15)","25 (25)",
+                  "22 (22)","35 (30)","50 (50)","23 (23)","56 (52)","20 (20)","45 (45)",
+                  "100 (100)","62 (55)","26 (26)"),
+  No_2nd_pref = c("37 (6)","82 (7)","25 (0)","13 (0)","84 (9)","31 (0)","52 (3)","25 (2)",
+                  "44 (1)","10 (1)","10 (0)","22 (0)","56 (0)","103 (5)","89 (4)","52 (5)",
+                  "52 (4)","45 (0)","27 (9)","22 (5)","11 (1)","12 (1)","37 (0)","62 (8)",
+                  "41 (2)","13 (3)","27 (1)","20 (2)","90 (0)","22 (1)","11 (3)","63 (3)",
+                  "32 (1)","24 (0)","20 (0)","20 (3)","22 (0)","45 (2)","14 (1)","46 (5)",
+                  "23 (0)","63 (9)","81 (6)","57 (4)","36 (9)"),
+  No_3rd_pref = c("40 (4)","80 (1)","29 (0)","15 (0)","83 (3)","51 (1)","49 (4)","28 (1)",
+                  "49 (0)","3 (0)","6 (0)","26 (0)","38 (0)","56 (1)","73 (0)","45 (0)",
+                  "73 (3)","22 (1)","30 (1)","24 (1)","9 (0)","8 (0)","22 (0)","22 (2)",
+                  "25 (0)","34 (0)","11 (0)","26 (0)","57 (0)","35 (0)","10 (0)","52 (1)",
+                  "31 (1)","9 (0)","20 (0)","19 (0)","16 (0)","31 (0)","17 (1)","73 (3)",
+                  "21 (0)","44 (1)","59 (1)","37 (1)","17 (0)"),
+  Total = c("121 (54)","260 (90)","85 (30)","59 (31)","263 (90)","106 (25)","141 (47)",
+            "89 (39)","135 (30)","47 (35)","38 (22)","80 (30)","179 (60)","264 (90)",
+            "214 (56)","145 (53)","201 (83)","94 (28)","81 (30)","63 (23)","58 (39)",
+            "43 (24)","93 (31)","155 (81)","85 (21)","79 (35)","74 (30)","104 (60)",
+            "261 (90)","93 (30)","46 (28)","210 (90)","88 (27)","48 (15)","65 (25)",
+            "61 (25)","73 (30)","126 (52)","54 (25)","175 (60)","64 (20)","152 (55)",
+            "240 (107)","156 (60)","79 (35)"),
+  stringsAsFactors = FALSE
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(primary_2025, extensions = 'Buttons', options = dt_opts)
+```
+
+## 2024
+
+<https://www.brighton-hove.gov.uk/schools-and-learning/allocation-infant-and-primary-school-reception-places-september-2024>
+
+```{r}
+primary_2024 <- data.frame(
+  School = c("Aldrington CE Primary","Balfour Primary","Benfield Primary","Bevendean Primary",
+             "Bilingual Primary","Brackenbury Primary","Brunswick Primary","Carden Primary",
+             "Carlton Hill Primary","City Academy Whitehawk","Coldean Primary","Coombe Road Primary",
+             "Cottesmore St Mary Catholic Primary","Downs Infant","Elm Grove Primary",
+             "Fairlight Primary","Goldstone Primary","Hangleton Primary","Hertford Primary",
+             "Middle Street Primary","Mile Oak Primary","Moulsecoomb Primary",
+             "Our Lady of Lourdes Catholic Primary","Patcham Infant","Peter Gladwin Primary",
+             "Queens Park Primary","Rudyard Kipling Primary","Saltdean Primary",
+             "St Andrew's CE Primary","St Bernadette's Catholic Primary",
+             "St John The Baptist Catholic Primary","St Joseph's Catholic Primary",
+             "St Luke's Primary","St Margaret's CE Primary","St Mark's CE Primary",
+             "St Martin's CE Primary","St Mary Magdalen Catholic Primary",
+             "St Mary's Catholic Primary","St Nicolas CE Primary","St Paul's CE Primary",
+             "Stanford Infant","West Blatchington Primary","West Hove Infant, Holland Road",
+             "West Hove Infant, Portland Road","Westdene Primary","Woodingdean Primary"),
+  PAN = c(60,90,30,60,90,30,90,60,30,60,60,30,60,90,60,60,90,60,30,30,60,30,30,90,30,
+          60,60,90,90,30,30,30,90,30,30,30,30,30,60,30,90,30,60,120,60,60),
+  No_1st_pref = c("47 (47)","69 (69)","28 (28)","35 (35)","78 (78)","28 (28)","63 (63)",
+                  "39 (39)","40 (26)","56 (56)","33 (33)","20 (20)","80 (59)","105 (87)",
+                  "65 (56)","46 (46)","87 (83)","30 (30)","28 (25)","18 (18)","46 (46)",
+                  "21 (21)","36 (30)","70 (70)","31 (30)","33 (33)","36 (36)","75 (75)",
+                  "106 (88)","29 (28)","34 (27)","13 (13)","135 (89)","14 (14)","14 (14)",
+                  "21 (21)","23 (23)","21 (21)","51 (51)","17 (17)","60 (60)","36 (30)",
+                  "43 (43)","119 (112)","74 (59)","44 (44)"),
+  No_2nd_pref = c("47 (6)","71 (8)","25 (0)","9 (1)","56 (4)","38 (2)","56 (4)","30 (1)",
+                  "51 (3)","9 (1)","17 (1)","25 (4)","61 (1)","80 (2)","110 (4)","33 (6)",
+                  "62 (7)","51 (2)","27 (5)","21 (4)","12 (1)","19 (2)","30 (0)","76 (7)",
+                  "36 (0)","23 (5)","33 (3)","18 (3)","91 (2)","32 (2)","17 (3)","9 (0)",
+                  "98 (1)","31 (1)","23 (2)","17 (1)","9 (1)","30 (1)","51 (4)","25 (3)",
+                  "47 (1)","21 (0)","74 (5)","89 (8)","51 (1)","33 (0)"),
+  No_3rd_pref = c("43 (1)","63 (2)","36 (0)","17 (0)","72 (5)","40 (0)","59 (1)","31 (1)",
+                  "49 (1)","5 (1)","4 (0)","23 (0)","32 (0)","57 (1)","96 (0)","55 (4)",
+                  "79 (0)","29 (0)","41 (0)","30 (2)","13 (0)","5 (0)","20 (0)","23 (2)",
+                  "23 (0)","36 (6)","9 (1)","14 (0)","58 (0)","29 (0)","20 (0)","7 (0)",
+                  "52 (0)","28 (1)","15 (0)","31 (0)","17 (1)","23 (1)","31 (0)","19 (1)",
+                  "76 (0)","28 (0)","33 (0)","59 (0)","48 (0)","15 (3)"),
+  Total = c("137 (54)","203 (79)","89 (28)","61 (36)","206 (87)","106 (30)","178 (68)",
+            "100 (41)","140 (30)","70 (58)","54 (34)","68 (24)","173 (60)","242 (90)",
+            "271 (60)","134 (56)","228 (90)","110 (32)","96 (30)","69 (24)","71 (47)",
+            "45 (23)","86 (30)","169 (79)","90 (30)","92 (44)","78 (40)","107 (78)",
+            "255 (90)","90 (30)","71 (30)","29 (13)","285 (90)","73 (16)","52 (16)",
+            "69 (22)","49 (25)","74 (23)","133 (55)","61 (21)","183 (61)","85 (30)",
+            "150 (48)","267 (120)","173 (60)","92 (47)"),
+  stringsAsFactors = FALSE
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(primary_2024, extensions = 'Buttons', options = dt_opts)
+```
+
+## 2023
+
+<https://www.brighton-hove.gov.uk/schools-and-learning/school-policies-reports-strategies-and-other-documents/allocation-factsheet-infant-and-primary-school-reception-places-september-2023>
+
+```{r}
+primary_2023 <- data.frame(
+  School = c("Aldrington CE Primary","Balfour Primary","Benfield Primary","Bevendean Primary",
+             "Bilingual Primary","Brackenbury Primary","Brunswick Primary","Carden Primary",
+             "Carlton Hill Primary","City Academy Whitehawk","Coldean Primary","Coombe Road Primary",
+             "Cottesmore St Mary Catholic Primary","Downs Infant","Elm Grove Primary",
+             "Fairlight Primary","Goldstone Primary","Hangleton Primary","Hertford Primary",
+             "Middle Street Primary","Mile Oak Primary","Moulsecoomb Primary",
+             "Our Lady of Lourdes Catholic Primary","Patcham Infant","Peter Gladwin Primary",
+             "Queens Park Primary","Rudyard Kipling Primary","Saltdean Primary",
+             "St Andrew's CE Primary","St Bartholomew's CE Primary",
+             "St Bernadette's Catholic Primary","St John The Baptist Catholic Primary",
+             "St Joseph's Catholic Primary","St Luke's Primary","St Margaret's CE Primary",
+             "St Mark's CE Primary","St Martin's CE Primary","St Mary Magdalen Catholic Primary",
+             "St Mary's Catholic Primary","St Nicolas CE Primary","St Paul's CE Primary",
+             "St Peter's Community Primary","Stanford Infant","West Blatchington Primary",
+             "West Hove Infant, Holland Road","West Hove Infant, Portland Road",
+             "Westdene Primary","Woodingdean Primary"),
+  PAN = c(60,90,30,60,90,30,120,60,30,60,60,30,60,120,60,60,90,60,30,30,60,30,30,90,30,
+          60,60,90,90,30,30,30,30,90,30,30,30,30,30,60,30,30,90,30,60,120,60,60),
+  No_1st_pref = c("36 (36)","75 (75)","20 (20)","30 (30)","109 (87)","28 (27)","77 (77)",
+                  "27 (27)","44 (29)","44 (44)","35 (35)","17 (17)","76 (60)","113 (113)",
+                  "70 (60)","42 (42)","86 (83)","50 (50)","22 (22)","29 (25)","48 (48)",
+                  "10 (10)","36 (30)","77 (77)","47 (30)","30 (30)","40 (40)","71 (71)",
+                  "100 (85)","14 (14)","20 (20)","23 (23)","15 (15)","78 (78)","21 (21)",
+                  "14 (14)","17 (17)","17 (17)","24 (24)","54 (54)","26 (26)","11 (11)",
+                  "59 (59)","30 (29)","39 (39)","102 (102)","52 (52)","43 (43)"),
+  No_2nd_pref = c("40 (4)","64 (0)","25 (0)","10 (1)","65 (2)","32 (3)","55 (2)","16 (0)",
+                  "45 (1)","14 (0)","14 (0)","15 (0)","29 (0)","104 (2)","89 (0)","23 (3)",
+                  "65 (6)","49 (4)","36 (0)","23 (5)","15 (4)","7 (0)","39 (0)","61 (1)",
+                  "50 (0)","34 (5)","21 (0)","8 (1)","89 (5)","7 (0)","16 (1)","13 (0)",
+                  "9 (1)","78 (5)","39 (2)","17 (0)","23 (0)","8 (0)","21 (1)","53 (6)",
+                  "13 (2)","11 (0)","68 (9)","25 (0)","79 (3)","99 (11)","58 (1)","44 (0)"),
+  No_3rd_pref = c("38 (1)","71 (1)","24 (0)","13 (0)","74 (1)","41 (0)","61 (0)","31 (0)",
+                  "54 (0)","10 (0)","4 (0)","17 (0)","29 (0)","58 (1)","56 (0)","52 (0)",
+                  "72 (1)","38 (0)","48 (0)","19 (0)","9 (1)","5 (0)","23 (0)","23 (0)",
+                  "36 (0)","44 (0)","11 (0)","27 (0)","44 (0)","13 (0)","30 (0)","16 (0)",
+                  "10 (0)","65 (4)","19 (0)","6 (0)","25 (0)","14 (0)","20 (0)","47 (0)",
+                  "19 (0)","5 (0)","65 (0)","22 (1)","54 (0)","71 (1)","30 (0)","15 (0)"),
+  Total = c("114 (41)","210 (76)","69 (20)","53 (31)","248 (90)","101 (30)","193 (79)",
+            "74 (27)","143 (30)","68 (44)","53 (35)","49 (17)","134 (60)","275 (116)",
+            "215 (60)","117 (45)","223 (90)","137 (54)","106 (22)","71 (30)","72 (53)",
+            "22 (10)","98 (30)","161 (78)","133 (30)","108 (35)","72 (40)","106 (72)",
+            "233 (90)","34 (14)","66 (21)","52 (23)","34 (16)","221 (87)","79 (23)",
+            "37 (14)","65 (17)","39 (17)","65 (25)","154 (60)","58 (28)","27 (11)",
+            "192 (68)","77 (30)","172 (42)","272 (114)","140 (53)","102 (43)"),
+  stringsAsFactors = FALSE
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(primary_2023, extensions = 'Buttons', options = dt_opts)
+```
+
+## 2022
+
+<https://www.brighton-hove.gov.uk/schools-and-learning/school-policies-reports-strategies-and-other-documents/allocation-infantprimary-school-reception-places-september-2022>
+
+```{r}
+primary_2022 <- data.frame(
+  School = c("Aldrington CE Primary","Balfour Primary","Benfield Primary","Bevendean Primary",
+             "Bilingual Primary","Brackenbury Primary","Brunswick Primary","Carden Primary",
+             "Carlton Hill Primary","City Academy Whitehawk","Coldean Primary","Coombe Road Primary",
+             "Cottesmore St Mary Catholic Primary","Downs Infant","Elm Grove Primary",
+             "Fairlight Primary","Goldstone Primary","Hangleton Primary","Hertford Primary",
+             "Middle Street Primary","Mile Oak Primary","Moulsecoomb Primary",
+             "Our Lady of Lourdes Catholic Primary","Patcham Infant","Peter Gladwin Primary",
+             "Queens Park Primary","Rudyard Kipling Primary","Saltdean Primary",
+             "St Andrew's CE Primary","St Bartholomew's CE Primary",
+             "St Bernadette's Catholic Primary","St John The Baptist Catholic Primary",
+             "St Joseph's Catholic Primary","St Luke's Primary","St Margaret's CE Primary",
+             "St Mark's CE Primary","St Martin's CE Primary","St Mary Magdalen Catholic Primary",
+             "St Mary's Catholic Primary","St Nicolas CE Primary","St Paul's CE Primary",
+             "St Peter's Community Primary","Stanford Infant","West Blatchington Primary",
+             "West Hove Infant, Holland Road","West Hove Infant, Portland Road",
+             "Westdene Primary","Woodingdean Primary"),
+  PAN = c(60,90,30,60,90,30,120,60,30,60,60,30,60,120,60,60,90,60,60,30,60,30,30,90,30,
+          60,60,90,90,30,30,30,30,90,30,30,30,30,30,60,30,30,90,30,60,120,60,60),
+  No_1st_pref = c("57 (57)","86 (85)","31 (29)","34 (34)","93 (89)","16 (16)","85 (85)",
+                  "45 (45)","40 (29)","41 (41)","40 (40)","26 (26)","73 (59)","100 (100)",
+                  "59 (53)","36 (36)","80 (80)","41 (41)","26 (26)","25 (25)","34 (34)",
+                  "12 (12)","20 (20)","87 (87)","39 (30)","31 (31)","49 (49)","72 (72)",
+                  "93 (83)","13 (13)","38 (30)","22 (22)","14 (14)","115 (88)","21 (21)",
+                  "15 (15)","21 (21)","20 (20)","39 (30)","48 (48)","17 (17)","17 (17)",
+                  "84 (83)","29 (29)","27 (27)","134 (119)","62 (59)","48 (48)"),
+  No_2nd_pref = c("39 (1)","61 (4)","36 (1)","13 (0)","86 (0)","34 (6)","85 (3)","29 (0)",
+                  "43 (1)","9 (4)","11 (1)","23 (0)","58 (1)","109 (0)","87 (7)","42 (2)",
+                  "88 (5)","46 (1)","46 (0)","13 (1)","11 (3)","19 (0)","31 (0)","67 (1)",
+                  "41 (0)","45 (12)","27 (0)","10 (1)","89 (7)","15 (2)","29 (0)","16 (0)",
+                  "12 (0)","73 (2)","34 (0)","26 (0)","21 (1)","19 (0)","22 (0)","47 (8)",
+                  "23 (0)","11 (1)","58 (7)","15 (1)","81 (5)","69 (1)","53 (0)","47 (1)"),
+  No_3rd_pref = c("46 (2)","86 (1)","36 (0)","18 (0)","91 (1)","19 (0)","66 (1)","26 (0)",
+                  "45 (0)","7 (1)","10 (0)","25 (0)","41 (0)","70 (0)","88 (0)","46 (2)",
+                  "56 (0)","29 (0)","56 (0)","18 (0)","6 (0)","6 (0)","32 (0)","33 (1)",
+                  "36 (0)","49 (2)","13 (0)","16 (0)","70 (0)","16 (0)","28 (0)","11 (0)",
+                  "11 (0)","55 (0)","21 (0)","10 (0)","31 (1)","15 (0)","11 (0)","46 (4)",
+                  "27 (0)","12 (1)","62 (0)","17 (0)","62 (1)","71 (0)","44 (1)","10 (1)"),
+  Total = c("142 (60)","233 (90)","103 (30)","65 (34)","270 (90)","69 (22)","236 (89)",
+            "100 (45)","128 (30)","57 (46)","61 (41)","74 (26)","172 (60)","279 (100)",
+            "234 (60)","124 (40)","224 (85)","116 (42)","128 (26)","56 (26)","51 (37)",
+            "37 (12)","84 (20)","187 (89)","116 (30)","125 (45)","89 (49)","98 (73)",
+            "252 (90)","44 (15)","95 (30)","49 (22)","38 (14)","243 (90)","76 (21)",
+            "51 (15)","73 (23)","54 (20)","72 (30)","141 (60)","67 (17)","40 (19)",
+            "204 (90)","61 (30)","170 (33)","274 (120)","160 (60)","105 (50)"),
+  stringsAsFactors = FALSE
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(primary_2022, extensions = 'Buttons', options = dt_opts)
+```
+
+## 2021
+
+<https://web.archive.org/web/2025/https://www.brighton-hove.gov.uk/schools-and-learning/apply-school/allocation-infantprimary-school-reception-places-september-2021>
+
+```{r}
+primary_2021 <- data.frame(
+  School = c("Aldrington CE Primary","Balfour Primary","Benfield Primary","Bevendean Primary",
+             "Bilingual Primary","Brackenbury Primary","Brunswick Primary","Carden Primary",
+             "Carlton Hill Primary","City Academy Whitehawk","Coldean Primary","Coombe Road Primary",
+             "Cottesmore St Mary Catholic Primary","Downs Infant","Elm Grove Primary",
+             "Fairlight Primary","Goldstone Primary","Hangleton Primary","Hertford Primary",
+             "Middle Street Primary","Mile Oak Primary","Moulsecoomb Primary",
+             "Our Lady of Lourdes Catholic Primary","Patcham Infant","Peter Gladwin Primary",
+             "Queens Park Primary","Rudyard Kipling Primary","Saltdean Primary",
+             "St Andrew's CE Primary","St Bartholomew's CE Primary",
+             "St Bernadette's Catholic Primary","St John The Baptist Catholic Primary",
+             "St Joseph's Catholic Primary","St Luke's Primary","St Margaret's CE Primary",
+             "St Mark's CE Primary","St Martin's CE Primary","St Mary Magdalen Catholic Primary",
+             "St Mary's Catholic Primary","St Nicolas CE Primary","St Paul's CE Primary",
+             "St Peter's Community Primary","Stanford Infant","West Blatchington Primary",
+             "West Hove Infant, Holland Road","West Hove Infant, Portland Road",
+             "Westdene Primary","Woodingdean Primary"),
+  PAN = c(60,120,60,60,90,30,120,60,30,60,60,30,60,120,60,60,90,60,60,30,60,60,30,90,30,
+          60,60,90,90,30,30,30,30,90,30,30,30,30,30,60,30,30,90,60,60,120,60,60),
+  No_1st_pref = c("55 (54)","67 (67)","22 (22)","34 (34)","103 (83)","17 (17)","105 (105)",
+                  "37 (37)","41 (28)","45 (45)","31 (31)","31 (29)","64 (55)","133 (114)",
+                  "57 (48)","30 (30)","82 (82)","48 (48)","33 (33)","27 (24)","41 (41)",
+                  "18 (18)","28 (28)","84 (84)","50 (30)","36 (36)","35 (35)","73 (73)",
+                  "113 (88)","13 (13)","37 (30)","18 (18)","28 (28)","131 (87)","30 (29)",
+                  "18 (18)","22 (22)","14 (14)","23 (23)","63 (56)","27 (27)","13 (13)",
+                  "72 (72)","24 (24)","35 (35)","118 (113)","78 (60)","69 (59)"),
+  No_2nd_pref = c("44 (5)","69 (10)","38 (5)","22 (2)","85 (6)","25 (1)","70 (11)","24 (1)",
+                  "50 (2)","14 (1)","10 (0)","19 (1)","56 (5)","118 (4)","105 (11)","42 (6)",
+                  "54 (2)","41 (4)","48 (2)","38 (5)","8 (3)","9 (0)","40 (1)","68 (3)",
+                  "39 (0)","36 (14)","52 (8)","11 (0)","87 (2)","15 (1)","19 (0)","14 (2)",
+                  "9 (0)","86 (3)","37 (1)","18 (0)","19 (2)","15 (0)","27 (4)","62 (4)",
+                  "11 (0)","12 (0)","64 (6)","20 (3)","138 (8)","91 (5)","57 (0)","31 (1)"),
+  No_3rd_pref = c("45 (1)","87 (4)","44 (0)","20 (1)","95 (1)","39 (2)","64 (1)","32 (1)",
+                  "68 (0)","5 (0)","14 (0)","17 (0)","43 (0)","75 (2)","62 (1)","62 (3)",
+                  "76 (1)","40 (0)","55 (1)","28 (1)","20 (4)","7 (0)","38 (0)","30 (2)",
+                  "29 (0)","47 (1)","9 (0)","26 (0)","59 (0)","12 (1)","34 (0)","20 (1)",
+                  "10 (0)","48 (0)","26 (0)","6 (0)","32 (3)","13 (0)","18 (0)","33 (0)",
+                  "20 (1)","11 (0)","78 (0)","19 (0)","80 (3)","71 (2)","34 (0)","18 (0)"),
+  Total = c("144 (60)","223 (81)","104 (27)","76 (37)","283 (90)","81 (20)","239 (117)",
+            "93 (39)","159 (30)","64 (46)","55 (31)","67 (30)","163 (60)","326 (120)",
+            "224 (60)","134 (39)","212 (85)","129 (52)","136 (36)","93 (30)","69 (48)",
+            "34 (18)","106 (29)","182 (89)","118 (30)","119 (51)","96 (43)","110 (73)",
+            "259 (90)","40 (15)","90 (30)","52 (21)","47 (28)","265 (90)","93 (30)",
+            "42 (18)","73 (27)","42 (14)","68 (27)","158 (60)","58 (28)","36 (13)",
+            "214 (78)","63 (27)","253 (46)","280 (120)","169 (60)","118 (60)"),
+  stringsAsFactors = FALSE
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(primary_2021, extensions = 'Buttons', options = dt_opts)
+```
+
+## 2020
+
+<https://www.brighton-hove.gov.uk/sites/default/files/2020-04/Primary%20Allocation%20Fact%20Sheet%202020.pdf>
+
+```{r}
+primary_2020 <- data.frame(
+  School = c("Aldrington CE Primary","Balfour Primary","Benfield Primary","Bevendean Primary",
+             "Bilingual Primary","Brackenbury Primary","Brunswick Primary","Carden Primary",
+             "Carlton Hill Primary","City Academy Whitehawk","Coldean Primary","Coombe Road Primary",
+             "Cottesmore St Mary Catholic Primary","Downs Infant","Elm Grove Primary",
+             "Fairlight Primary","Goldstone Primary","Hangleton Primary","Hertford Primary",
+             "Middle Street Primary","Mile Oak Primary","Moulsecoomb Primary",
+             "Our Lady of Lourdes Catholic Primary","Patcham Infant","Peter Gladwin Primary",
+             "Queens Park Primary","Rudyard Kipling Primary","Saltdean Primary",
+             "St Andrew's CE Primary","St Bartholomew's CE Primary",
+             "St Bernadette's Catholic Primary","St John The Baptist Catholic Primary",
+             "St Joseph's Catholic Primary","St Luke's Primary","St Margaret's CE Primary",
+             "St Mark's CE Primary","St Martin's CE Primary","St Mary Magdalen Catholic Primary",
+             "St Mary's Catholic Primary","St Nicolas CE Primary","St Paul's CE Primary",
+             "St Peter's Community Primary","Stanford Infant","West Blatchington Primary",
+             "West Hove Infant, Holland Road","West Hove Infant, Portland Road",
+             "Westdene Primary","Woodingdean Primary"),
+  PAN = c(60,120,60,60,90,30,120,60,30,60,60,30,60,120,60,60,90,90,60,30,90,60,30,90,30,
+          60,60,90,90,30,30,30,30,90,30,30,30,30,30,60,30,30,90,60,90,120,60,60),
+  No_1st_pref = c("59 (53)","89 (89)","28 (28)","39 (39)","111 (80)","8 (8)","117 (113)",
+                  "41 (41)","41 (27)","43 (43)","32 (32)","21 (21)","67 (52)","132 (119)",
+                  "78 (54)","45 (45)","84 (82)","41 (41)","38 (38)","18 (18)","47 (47)",
+                  "22 (22)","45 (30)","101 (85)","47 (30)","29 (29)","44 (44)","69 (69)",
+                  "125 (90)","14 (14)","31 (26)","23 (23)","17 (17)","119 (86)","30 (28)",
+                  "14 (14)","36 (27)","21 (21)","32 (29)","54 (51)","28 (27)","17 (17)",
+                  "58 (58)","34 (34)","30 (30)","114 (108)","78 (60)","49 (49)"),
+  No_2nd_pref = c("53 (6)","73 (8)","28 (1)","16 (1)","107 (9)","22 (6)","77 (6)","31 (5)",
+                  "40 (3)","7 (0)","21 (3)","25 (0)","57 (8)","96 (1)","115 (6)","47 (8)",
+                  "69 (7)","58 (4)","48 (6)","23 (1)","12 (4)","10 (0)","43 (0)","79 (5)",
+                  "43 (0)","38 (11)","24 (1)","19 (5)","87 (0)","10 (3)","21 (3)","23 (5)",
+                  "23 (5)","87 (4)","37 (2)","13 (0)","25 (2)","15 (1)","28 (1)","47 (8)",
+                  "28 (2)","22 (3)","85 (13)","24 (2)","116 (11)","72 (10)","67 (0)","39 (2)"),
+  No_3rd_pref = c("49 (1)","103 (2)","35 (1)","14 (0)","74 (2)","19 (0)","60 (1)","33 (1)",
+                  "53 (0)","9 (0)","10 (1)","35 (0)","38 (0)","75 (0)","81 (0)","54 (7)",
+                  "76 (1)","38 (0)","49 (0)","39 (2)","13 (0)","12 (0)","32 (0)","26 (0)",
+                  "33 (0)","59 (4)","7 (0)","23 (0)","75 (0)","10 (0)","41 (1)","11 (1)",
+                  "14 (0)","60 (0)","25 (0)","10 (0)","31 (1)","12 (0)","24 (0)","45 (1)",
+                  "36 (1)","23 (1)","82 (6)","21 (2)","102 (4)","71 (2)","54 (0)","18 (0)"),
+  Total = c("161 (60)","265 (99)","91 (30)","69 (40)","292 (91)","49 (14)","254 (120)",
+            "105 (47)","134 (30)","59 (43)","63 (36)","81 (21)","162 (60)","303 (120)",
+            "274 (60)","146 (60)","229 (90)","137 (45)","135 (44)","80 (21)","72 (51)",
+            "44 (22)","120 (30)","206 (90)","123 (30)","126 (44)","75 (45)","111 (74)",
+            "287 (90)","34 (17)","93 (30)","57 (29)","54 (22)","266 (90)","92 (30)",
+            "37 (14)","92 (30)","48 (22)","84 (30)","146 (60)","92 (30)","62 (21)",
+            "225 (77)","79 (38)","248 (45)","257 (120)","199 (60)","106 (51)"),
+  stringsAsFactors = FALSE
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(primary_2020, extensions = 'Buttons', options = dt_opts)
+```
+
+## 2019
+
+<https://www.brighton-hove.gov.uk/sites/default/files/schools/primary-allocation-fact-sheet-2019.pdf>
+
+```{r}
+primary_2019 <- data.frame(
+  School = c("Aldrington CE Primary","Balfour Primary","Benfield Primary","Bevendean Primary",
+             "Bilingual Primary","Brackenbury Primary","Brunswick Primary","Carden Primary",
+             "Carlton Hill Primary","City Academy Whitehawk","Coldean Primary","Coombe Road Primary",
+             "Cottesmore St Mary Catholic Primary","Downs Infant","Elm Grove Primary",
+             "Fairlight Primary","Goldstone Primary","Hangleton Primary","Hertford Primary",
+             "Middle Street Primary","Mile Oak Primary","Moulsecoomb Primary",
+             "Our Lady of Lourdes Catholic Primary","Patcham Infant","Peter Gladwin Primary",
+             "Queens Park Primary","Rudyard Kipling Primary","Saltdean Primary",
+             "St Andrew's CE Primary","St Bartholomew's CE Primary",
+             "St Bernadette's Catholic Primary","St John The Baptist Catholic Primary",
+             "St Joseph's Catholic Primary","St Luke's Primary","St Margaret's CE Primary",
+             "St Mark's CE Primary","St Martin's CE Primary","St Mary Magdalen Catholic Primary",
+             "St Mary's Catholic Primary","St Nicolas CE Primary","St Paul's CE Primary",
+             "St Peter's Community Primary","Stanford Infant","West Blatchington Primary",
+             "West Hove Infant, Holland Road","West Hove Infant, Portland Road",
+             "Westdene Primary","Woodingdean Primary"),
+  PAN = c(60,120,60,60,90,30,120,60,30,60,60,30,60,120,60,60,90,90,60,30,90,60,30,90,30,
+          60,60,90,90,30,30,30,30,90,30,30,30,30,30,60,30,30,90,60,90,120,90,60),
+  No_1st_pref = c("54 (54)","98 (98)","42 (42)","35 (35)","126 (86)","17 (17)","126 (117)",
+                  "33 (33)","52 (28)","57 (57)","35 (35)","31 (30)","50 (50)","142 (119)",
+                  "49 (44)","39 (39)","88 (83)","53 (53)","42 (42)","23 (22)","54 (54)",
+                  "31 (31)","27 (27)","80 (80)","29 (26)","28 (28)","35 (35)","93 (90)",
+                  "88 (87)","7 (7)","29 (28)","33 (29)","16 (16)","114 (86)","24 (24)",
+                  "15 (15)","17 (17)","18 (18)","41 (30)","65 (56)","23 (23)","21 (21)",
+                  "87 (81)","23 (23)","46 (46)","108 (108)","102 (87)","45 (45)"),
+  No_2nd_pref = c("49 (5)","72 (7)","33 (3)","11 (0)","101 (3)","19 (3)","80 (3)","27 (3)",
+                  "47 (2)","7 (3)","20 (0)","18 (0)","54 (5)","139 (1)","95 (14)","38 (2)",
+                  "77 (7)","50 (1)","63 (8)","31 (7)","14 (3)","17 (0)","40 (0)","86 (4)",
+                  "52 (3)","47 (10)","22 (1)","12 (0)","72 (3)","14 (2)","32 (2)","14 (1)",
+                  "7 (1)","80 (3)","31 (1)","24 (5)","20 (0)","18 (0)","39 (0)","58 (4)",
+                  "24 (1)","20 (7)","65 (7)","20 (1)","127 (10)","68 (10)","69 (3)","39 (2)"),
+  No_3rd_pref = c("51 (1)","105 (1)","40 (0)","14 (0)","90 (1)","36 (1)","71 (0)","26 (1)",
+                  "47 (0)","9 (0)","12 (0)","22 (0)","37 (0)","65 (0)","85 (2)","54 (3)",
+                  "82 (0)","33 (0)","87 (2)","30 (1)","12 (0)","9 (0)","20 (0)","35 (0)",
+                  "37 (1)","57 (8)","11 (0)","15 (0)","83 (0)","16 (0)","28 (0)","18 (0)",
+                  "10 (0)","73 (1)","29 (0)","9 (0)","22 (0)","19 (1)","24 (0)","38 (0)",
+                  "31 (1)","27 (1)","88 (2)","21 (0)","84 (0)","79 (0)","36 (0)","12 (1)"),
+  Total = c("154 (60)","275 (106)","115 (45)","60 (35)","317 (90)","72 (21)","277 (120)",
+            "86 (37)","146 (30)","72 (60)","67 (35)","72 (30)","141 (55)","346 (120)",
+            "229 (60)","131 (44)","247 (90)","136 (54)","192 (52)","84 (30)","80 (57)",
+            "57 (31)","87 (27)","201 (84)","118 (30)","132 (46)","68 (36)","120 (90)",
+            "243 (90)","37 (9)","89 (30)","65 (30)","34 (17)","267 (90)","84 (25)",
+            "48 (20)","60 (17)","55 (19)","104 (30)","161 (60)","78 (25)","68 (29)",
+            "240 (90)","64 (24)","257 (56)","255 (118)","207 (90)","96 (48)"),
+  stringsAsFactors = FALSE
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(primary_2019, extensions = 'Buttons', options = dt_opts)
+```
+
+## 2018
+
+<https://web.archive.org/web/2024/https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Primary%20Allocation%20Fact%20Sheet%202018.pdf>
+
+```{r}
+primary_2018 <- data.frame(
+  School = c("Aldrington CE Primary","Balfour Primary","Benfield Primary","Bevendean Primary",
+             "Bilingual Primary","Brackenbury Primary","Brunswick Primary","Carden Primary",
+             "Carlton Hill Primary","City Academy Whitehawk","Coldean Primary","Coombe Road Primary",
+             "Cottesmore St Mary Catholic Primary","Downs Infant","Elm Grove Primary",
+             "Fairlight Primary","Goldstone Primary","Hangleton Primary","Hertford Primary",
+             "Middle Street Primary","Mile Oak Primary","Moulsecoomb Primary",
+             "Our Lady of Lourdes Catholic Primary","Patcham Infant","Peter Gladwin Primary",
+             "Queens Park Primary","Rudyard Kipling Primary","Saltdean Primary",
+             "St Andrew's CE Primary","St Bartholomew's CE Primary",
+             "St Bernadette's Catholic Primary","St John The Baptist Catholic Primary",
+             "St Joseph's Catholic Primary","St Luke's Primary","St Margaret's CE Primary",
+             "St Mark's CE Primary","St Martin's CE Primary","St Mary Magdalen Catholic Primary",
+             "St Mary's Catholic Primary","St Nicolas CE Primary","St Paul's CE Primary",
+             "St Peter's Community Primary","Stanford Infant","West Blatchington Primary",
+             "West Hove Infant, Holland Road","West Hove Infant, Portland Road",
+             "Westdene Primary","Woodingdean Primary"),
+  PAN = c(60,120,60,60,90,30,120,60,30,60,60,60,60,120,60,60,90,90,60,30,90,90,30,90,30,
+          60,60,90,90,30,30,30,30,90,30,30,30,30,30,60,30,30,90,60,120,120,90,60),
+  No_1st_pref = c("46 (46)","86 (86)","27 (27)","28 (28)","93 (72)","15 (15)","119 (110)",
+                  "47 (47)","35 (27)","38 (38)","32 (32)","22 (22)","76 (60)","127 (119)",
+                  "54 (47)","41 (41)","98 (85)","67 (67)","36 (36)","35 (26)","63 (63)",
+                  "29 (29)","21 (21)","76 (76)","47 (29)","38 (38)","51 (51)","83 (83)",
+                  "150 (88)","11 (11)","22 (22)","24 (24)","17 (17)","135 (89)","22 (22)",
+                  "15 (15)","25 (25)","29 (27)","31 (29)","45 (45)","24 (24)","23 (23)",
+                  "82 (82)","25 (25)","47 (47)","130 (110)","78 (78)","49 (49)"),
+  No_2nd_pref = c("64 (10)","103 (3)","23 (2)","9 (0)","84 (14)","18 (1)","90 (9)","23 (0)",
+                  "31 (2)","5 (0)","16 (0)","8 (1)","39 (0)","122 (1)","97 (13)","36 (0)",
+                  "82 (5)","54 (10)","49 (8)","34 (4)","22 (12)","11 (0)","30 (2)","59 (0)",
+                  "41 (1)","56 (16)","25 (2)","11 (2)","65 (2)","7 (1)","20 (1)","15 (3)",
+                  "5 (0)","74 (1)","35 (0)","18 (2)","21 (1)","23 (1)","26 (1)","53 (6)",
+                  "23 (0)","19 (3)","56 (7)","13 (0)","132 (30)","86 (10)","45 (1)","37 (1)"),
+  No_3rd_pref = c("41 (2)","112 (1)","41 (2)","14 (0)","99 (4)","26 (0)","72 (1)","30 (0)",
+                  "47 (1)","6 (1)","6 (0)","9 (0)","28 (0)","63 (0)","82 (0)","43 (3)",
+                  "71 (0)","50 (3)","63 (0)","30 (0)","13 (0)","5 (0)","16 (0)","37 (0)",
+                  "36 (0)","68 (7)","12 (0)","18 (0)","76 (0)","10 (1)","17 (0)","11 (0)",
+                  "7 (0)","47 (0)","29 (0)","14 (0)","16 (0)","21 (2)","14 (0)","50 (0)",
+                  "29 (0)","15 (0)","71 (1)","23 (0)","112 (8)","87 (0)","47 (0)","22 (1)"),
+  Total = c("151 (58)","301 (90)","91 (31)","51 (28)","276 (90)","59 (16)","281 (120)",
+            "100 (47)","113 (30)","49 (39)","54 (32)","39 (23)","143 (60)","312 (120)",
+            "233 (60)","120 (44)","251 (90)","171 (80)","148 (44)","99 (30)","98 (75)",
+            "45 (29)","67 (23)","172 (76)","124 (30)","162 (61)","88 (53)","112 (85)",
+            "291 (90)","28 (13)","59 (23)","50 (27)","29 (17)","256 (90)","86 (22)",
+            "47 (17)","62 (26)","73 (30)","71 (30)","148 (51)","76 (24)","57 (26)",
+            "209 (90)","61 (25)","291 (85)","303 (120)","170 (79)","108 (51)"),
+  stringsAsFactors = FALSE
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(primary_2018, extensions = 'Buttons', options = dt_opts)
+```
+
+## 2017
+
+<https://web.archive.org/web/2022/https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Primary%20Allocation%20Fact%20Sheet%202017_0.pdf>
+
+```{r}
+primary_2017 <- data.frame(
+  School = c("Aldrington CE Primary","Balfour Primary","Benfield Primary","Bevendean Primary",
+             "Bilingual Primary","Brackenbury Primary","Brunswick Primary","Carden Primary",
+             "Carlton Hill Primary","City Academy Whitehawk","Coldean Primary","Coombe Road Primary",
+             "Cottesmore St Mary Catholic Primary","Downs Infant","Elm Grove Primary",
+             "Fairlight Primary","Goldstone Primary","Hangleton Primary","Hertford Primary",
+             "Middle Street Primary","Mile Oak Primary","Moulsecoomb Primary",
+             "Our Lady of Lourdes Catholic Primary","Patcham Infant","Peter Gladwin Primary",
+             "Queens Park Primary","Rudyard Kipling Primary","Saltdean Primary",
+             "St Andrew's CE Primary","St Bartholomew's CE Primary",
+             "St Bernadette's Catholic Primary","St John The Baptist Catholic Primary",
+             "St Joseph's Catholic Primary","St Luke's Primary","St Margaret's CE Primary",
+             "St Mark's CE Primary","St Martin's CE Primary","St Mary Magdalen Catholic Primary",
+             "St Mary's Catholic Primary","St Nicolas CE Primary","St Paul's CE Primary",
+             "St Peter's Community Primary","Stanford Infant","West Blatchington Primary",
+             "West Hove Infant, Holland Road","West Hove Infant, Portland Road",
+             "Westdene Primary","Woodingdean Primary"),
+  PAN = c(60,120,60,60,90,30,120,60,30,60,60,60,60,120,60,60,90,90,60,30,90,90,30,90,30,
+          60,60,90,90,30,30,30,30,90,30,30,30,30,30,60,30,30,90,60,120,120,90,60),
+  No_1st_pref = c("81 (58)","122 (117)","28 (28)","31 (31)","105 (77)","17 (17)","97 (97)",
+                  "44 (44)","37 (26)","41 (41)","41 (41)","14 (14)","42 (42)","105 (105)",
+                  "58 (46)","49 (49)","94 (82)","62 (62)","34 (34)","31 (27)","58 (58)",
+                  "22 (22)","31 (29)","116 (88)","20 (20)","47 (46)","47 (47)","83 (83)",
+                  "101 (86)","15 (15)","38 (30)","22 (22)","11 (11)","131 (87)","26 (26)",
+                  "26 (26)","27 (27)","22 (22)","20 (20)","67 (60)","31 (27)","19 (19)",
+                  "98 (85)","23 (23)","70 (70)","123 (110)","88 (87)","48 (48)"),
+  No_2nd_pref = c("54 (2)","77 (3)","18 (4)","7 (0)","76 (9)","19 (2)","94 (14)","26 (7)",
+                  "41 (4)","11 (2)","16 (2)","6 (1)","44 (7)","118 (7)","102 (9)","44 (2)",
+                  "90 (5)","56 (6)","47 (3)","33 (4)","13 (1)","6 (0)","32 (0)","81 (2)",
+                  "45 (2)","58 (9)","29 (0)","11 (1)","63 (4)","18 (3)","18 (0)","16 (3)",
+                  "8 (1)","81 (3)","41 (2)","11 (1)","9 (2)","10 (0)","19 (1)","47 (0)",
+                  "19 (3)","21 (1)","60 (5)","11 (0)","128 (15)","86 (9)","87 (3)","33 (1)"),
+  No_3rd_pref = c("35 (0)","122 (0)","23 (1)","9 (0)","89 (4)","20 (0)","65 (2)","32 (5)",
+                  "33 (0)","6 (1)","12 (0)","14 (0)","24 (1)","71 (1)","77 (5)","39 (3)",
+                  "75 (3)","40 (2)","80 (0)","37 (0)","18 (0)","4 (0)","19 (1)","33 (0)",
+                  "33 (1)","67 (5)","8 (0)","20 (0)","62 (0)","18 (0)","23 (0)","8 (1)",
+                  "7 (0)","58 (0)","24 (0)","10 (0)","16 (0)","19 (0)","19 (0)","28 (0)",
+                  "27 (0)","31 (0)","67 (0)","19 (1)","92 (3)","77 (1)","49 (0)","14 (0)"),
+  Total = c("170 (60)","321 (120)","69 (33)","47 (31)","270 (90)","56 (19)","256 (113)",
+            "102 (56)","111 (30)","58 (44)","69 (43)","34 (15)","110 (50)","294 (113)",
+            "237 (60)","132 (54)","259 (90)","158 (70)","161 (37)","101 (31)","89 (59)",
+            "32 (22)","82 (30)","230 (90)","98 (23)","172 (60)","84 (47)","114 (84)",
+            "226 (90)","51 (18)","79 (30)","46 (26)","26 (12)","270 (90)","91 (28)",
+            "47 (27)","52 (29)","51 (22)","58 (21)","142 (60)","77 (30)","71 (20)",
+            "225 (90)","53 (24)","290 (88)","286 (120)","224 (90)","95 (49)"),
+  stringsAsFactors = FALSE
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(primary_2017, extensions = 'Buttons', options = dt_opts)
+```
+
+## 2016
+
+<https://web.archive.org/web/2022/https://ww3.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Primary%20Allocation%20Fact%20sheet%202016%20-%20final.pdf>
+
+```{r}
+primary_2016 <- data.frame(
+  School = c("Aldrington CE Primary","Balfour Primary","Benfield Primary","Bevendean Primary",
+             "Bilingual Primary","Brackenbury Primary","Brunswick Primary","Carden Primary",
+             "Carlton Hill Primary","City Academy Whitehawk","Coldean Primary","Coombe Road Primary",
+             "Cottesmore St Mary Catholic Primary","Downs Infant","Elm Grove Primary",
+             "Fairlight Primary","Goldstone Primary","Hangleton Primary","Hertford Primary",
+             "Middle Street Primary","Mile Oak Primary","Moulsecoomb Primary",
+             "Our Lady of Lourdes Catholic Primary","Patcham Infant","Peter Gladwin Primary",
+             "Queens Park Primary","Rudyard Kipling Primary","Saltdean Primary",
+             "St Andrew's CE Primary","St Bartholomew's CE Primary",
+             "St Bernadette's Catholic Primary","St John The Baptist Catholic Primary",
+             "St Joseph's Catholic Primary","St Luke's Primary","St Margaret's CE Primary",
+             "St Mark's CE Primary","St Martin's CE Primary","St Mary Magdalen Catholic Primary",
+             "St Mary's Catholic Primary","St Nicolas CE Primary","St Paul's CE Primary",
+             "St Peter's Community Primary","Stanford Infant","West Blatchington Primary",
+             "West Hove Infant, Holland Road","West Hove Infant, Portland Road",
+             "Westdene Primary","Woodingdean Primary"),
+  PAN = c(60,120,60,60,90,60,120,60,30,60,60,60,60,120,60,60,90,90,60,30,90,90,30,90,30,
+          60,60,90,90,30,30,30,30,90,30,30,30,30,30,60,30,30,90,60,120,120,90,60),
+  No_1st_pref = c("82 (60)","147 (118)","18 (18)","36 (36)","67 (67)","21 (21)","164 (118)",
+                  "38 (38)","37 (25)","46 (46)","42 (42)","21 (21)","48 (48)","129 (114)",
+                  "65 (49)","45 (45)","84 (81)","76 (76)","40 (40)","27 (22)","77 (77)",
+                  "39 (39)","33 (29)","87 (86)","45 (29)","60 (47)","51 (51)","87 (87)",
+                  "133 (89)","22 (22)","31 (28)","27 (27)","14 (14)","123 (88)","34 (29)",
+                  "19 (19)","25 (25)","22 (22)","26 (26)","51 (51)","36 (29)","37 (30)",
+                  "93 (83)","16 (16)","74 (73)","128 (109)","86 (83)","40 (40)"),
+  No_2nd_pref = c("65 (0)","110 (2)","16 (3)","12 (0)","47 (12)","34 (2)","84 (1)","20 (4)",
+                  "50 (5)","3 (3)","15 (1)","16 (0)","52 (5)","133 (6)","82 (9)","43 (5)",
+                  "78 (7)","59 (8)","43 (9)","42 (7)","20 (4)","10 (2)","29 (1)","67 (3)",
+                  "33 (1)","74 (10)","15 (0)","17 (1)","74 (1)","19 (4)","23 (2)","7 (1)",
+                  "5 (1)","85 (1)","48 (1)","11 (0)","12 (2)","17 (2)","21 (2)","43 (6)",
+                  "27 (1)","21 (0)","76 (5)","9 (0)","167 (32)","90 (9)","77 (6)","36 (3)"),
+  No_3rd_pref = c("52 (0)","116 (0)","28 (0)","16 (0)","43 (2)","45 (4)","65 (1)","27 (0)",
+                  "36 (0)","7 (3)","15 (0)","12 (0)","37 (4)","74 (0)","94 (2)","55 (3)",
+                  "100 (2)","47 (1)","66 (2)","36 (1)","17 (0)","7 (0)","16 (0)","36 (1)",
+                  "38 (0)","86 (3)","18 (2)","22 (1)","79 (0)","14 (2)","34 (0)","5 (0)",
+                  "9 (0)","53 (1)","27 (0)","4 (2)","22 (1)","20 (1)","18 (1)","36 (1)",
+                  "22 (0)","20 (0)","104 (2)","20 (1)","103 (15)","108 (2)","47 (1)","18 (1)"),
+  Total = c("199 (60)","373 (120)","62 (21)","64 (36)","157 (81)","100 (27)","313 (120)",
+            "85 (42)","123 (30)","56 (52)","72 (43)","49 (21)","137 (57)","336 (120)",
+            "241 (60)","143 (53)","262 (90)","182 (85)","149 (51)","105 (30)","114 (81)",
+            "56 (41)","78 (30)","190 (90)","116 (30)","220 (60)","84 (53)","126 (89)",
+            "286 (90)","55 (28)","88 (30)","39 (28)","28 (15)","261 (90)","109 (30)",
+            "34 (21)","59 (28)","59 (25)","65 (29)","130 (58)","85 (30)","78 (30)",
+            "273 (90)","45 (17)","344 (120)","326 (120)","210 (90)","94 (44)"),
+  stringsAsFactors = FALSE
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(primary_2016, extensions = 'Buttons', options = dt_opts)
+```
+
+## 2015
+
+<https://web.archive.org/web/2015/http://www.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Primary%20Factsheet%20-%20allocation%20details%20with%20Woodingdean.pdf>
+
+```{r}
+primary_2015 <- data.frame(
+  School = c("Aldrington CE Primary","Balfour Primary","Benfield Primary","Bevendean Primary",
+             "Bilingual Primary","Brackenbury Primary","Carden Primary","Carlton Hill Primary",
+             "City Academy Whitehawk","Coldean Primary","Coombe Road Primary",
+             "Cottesmore St Mary Catholic Primary","Davigdor Infant","Downs Infant",
+             "Elm Grove Primary","Fairlight Primary","Goldstone Primary","Hangleton Infant",
+             "Hertford Infant","Middle Street Primary","Mile Oak Primary","Moulsecoomb Primary",
+             "Patcham Infant","Peter Gladwin Primary","Queens Park Primary",
+             "Rudyard Kipling Primary","Saltdean Primary","St Andrew's CE Primary",
+             "St Bartholomew's CE Primary","St Bernadette's Catholic Primary",
+             "St John The Baptist Catholic Primary","St Joseph's Catholic Primary",
+             "St Luke's Primary","St Margaret's CE Primary","St Mark's CE Primary",
+             "St Martin's CE Primary","St Mary Magdalen Catholic Primary",
+             "St Mary's Catholic Primary","St Nicolas CE Primary","St Paul's CE Primary",
+             "St Peter's Community Primary","Stanford Infant","West Blatchington Primary",
+             "West Hove Infant, Holland Road","West Hove Infant, Portland Road",
+             "Westdene Primary","Woodingdean Primary"),
+  PAN = c(60,120,60,60,60,60,60,30,60,60,60,60,120,120,60,60,90,90,60,30,90,90,90,30,
+          60,60,90,90,30,30,30,30,90,30,30,30,30,30,60,30,30,90,60,120,120,90,60),
+  No_1st_pref = c("58 (57)","144 (115)","21 (21)","53 (53)","38 (38)","24 (24)","37 (37)",
+                  "29 (27)","43 (43)","43 (43)","22 (22)","50 (50)","140 (116)","138 (114)",
+                  "66 (49)","64 (53)","88 (87)","82 (82)","50 (49)","30 (23)","70 (70)",
+                  "28 (28)","97 (85)","42 (30)","62 (50)","53 (53)","91 (89)","102 (89)",
+                  "18 (18)","32 (28)","31 (25)","16 (16)","129 (87)","23 (23)","18 (18)",
+                  "30 (28)","21 (21)","35 (28)","57 (56)","40 (28)","43 (28)","97 (85)",
+                  "23 (23)","87 (86)","147 (117)","109 (90)","60 (58)"),
+  No_2nd_pref = c("44 (2)","113 (5)","16 (7)","7 (1)","16 (3)","37 (5)","18 (3)","36 (2)",
+                  "7 (1)","11 (1)","13 (3)","39 (8)","99 (4)","130 (6)","92 (9)","28 (5)",
+                  "79 (2)","55 (6)","45 (5)","42 (3)","17 (4)","9 (3)","72 (4)","36 (1)",
+                  "68 (9)","21 (1)","17 (1)","75 (1)","17 (8)","23 (1)","7 (2)","8 (1)",
+                  "92 (1)","51 (0)","15 (4)","13 (1)","14 (1)","20 (2)","44 (3)","28 (2)",
+                  "33 (2)","87 (5)","18 (0)","156 (26)","96 (2)","89 (0)","34 (1)"),
+  No_3rd_pref = c("35 (1)","122 (0)","26 (1)","10 (2)","36 (3)","45 (2)","31 (1)","46 (1)",
+                  "7 (0)","18 (2)","16 (1)","31 (1)","92 (0)","70 (0)","62 (2)","49 (2)",
+                  "81 (1)","45 (0)","76 (6)","48 (4)","12 (0)","10 (0)","36 (1)","29 (0)",
+                  "87 (1)","16 (1)","17 (0)","66 (0)","20 (2)","17 (1)","11 (3)","10 (0)",
+                  "50 (2)","21 (0)","13 (3)","24 (1)","12 (2)","13 (0)","26 (1)","25 (0)",
+                  "32 (0)","98 (0)","16 (1)","103 (8)","99 (1)","43 (0)","16 (1)"),
+  Total = c("137 (60)","379 (120)","63 (29)","70 (56)","90 (44)","106 (31)","86 (41)",
+            "111 (30)","57 (44)","72 (46)","51 (26)","120 (59)","331 (120)","338 (120)",
+            "220 (60)","141 (60)","248 (90)","182 (88)","171 (60)","120 (30)","99 (74)",
+            "47 (31)","205 (90)","107 (31)","217 (60)","90 (55)","125 (90)","243 (90)",
+            "55 (28)","72 (30)","49 (30)","34 (17)","271 (90)","95 (23)","46 (25)",
+            "67 (30)","47 (24)","68 (30)","127 (60)","93 (30)","108 (30)","282 (90)",
+            "57 (24)","346 (120)","342 (120)","241 (90)","110 (60)"),
+  stringsAsFactors = FALSE
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(primary_2015, extensions = 'Buttons', options = dt_opts)
+```
+
+## 2014
+
+<https://web.archive.org/web/2014/http://www.brighton-hove.gov.uk/sites/brighton-hove.gov.uk/files/Primary%20Allocation%20Fact%20Sheet%202014_0.pdf>
+
+```{r}
+primary_2014 <- data.frame(
+  School = c("Aldrington CE Primary","Balfour Primary","Benfield Primary","Bevendean Primary",
+             "Bilingual Primary","Brackenbury Primary","Carden Primary","Carlton Hill Primary",
+             "City Academy Whitehawk","Coldean Primary","Coombe Road Primary",
+             "Cottesmore St Mary Catholic Primary","Davigdor Infant","Downs Infant",
+             "Elm Grove Primary","Fairlight Primary","Goldstone Primary","Hangleton Infant",
+             "Hertford Infant","Middle Street Primary","Mile Oak Primary","Moulsecoomb Primary",
+             "Our Lady of Lourdes Catholic Primary","Patcham Infant","Peter Gladwin Primary",
+             "Queens Park Primary","Rudyard Kipling Primary","Saltdean Primary",
+             "St Andrew's CE Primary","St Bartholomew's CE Primary",
+             "St Bernadette's Catholic Primary","St John The Baptist Catholic Primary",
+             "St Joseph's Catholic Primary","St Luke's Primary","St Margaret's CE Primary",
+             "St Mark's CE Primary","St Martin's CE Primary","St Mary Magdalen Catholic Primary",
+             "St Mary's Catholic Primary","St Nicolas CE Primary","St Paul's CE Primary",
+             "St Peter's Community Primary","Stanford Infant","West Blatchington Primary",
+             "West Hove Infant, Holland Road","West Hove Infant, Portland Road",
+             "Westdene Primary","Woodingdean Primary"),
+  PAN = c(60,120,60,60,60,60,60,30,60,60,60,60,150,120,60,60,90,90,60,30,90,90,30,90,30,
+          60,60,90,60,30,30,30,30,90,30,30,30,30,30,60,30,30,90,60,120,120,90,60),
+  No_1st_pref = c("49 (46)","131 (113)","28 (28)","46 (46)","61 (51)","34 (34)","35 (35)",
+                  "48 (29)","25 (25)","55 (55)","17 (17)","76 (59)","142 (130)","145 (113)",
+                  "66 (53)","48 (48)","116 (86)","84 (73)","48 (47)","30 (26)","62 (62)",
+                  "25 (25)","28 (27)","95 (80)","53 (29)","49 (38)","48 (48)","82 (82)",
+                  "121 (60)","23 (22)","42 (31)","38 (28)","15 (15)","125 (88)","32 (30)",
+                  "26 (24)","31 (29)","37 (29)","18 (18)","32 (32)","32 (30)","56 (29)",
+                  "100 (87)","21 (21)","82 (74)","147 (104)","109 (88)","48 (48)"),
+  No_2nd_pref = c("62 (9)","119 (7)","14 (4)","6 (0)","28 (2)","47 (14)","14 (3)","33 (0)",
+                  "9 (5)","13 (1)","11 (1)","41 (1)","120 (15)","140 (6)","81 (7)","31 (8)",
+                  "74 (3)","84 (15)","38 (6)","31 (4)","13 (7)","6 (0)","36 (2)","55 (7)",
+                  "57 (1)","71 (16)","21 (0)","11 (0)","77 (0)","22 (6)","20 (0)","10 (0)",
+                  "10 (4)","93 (2)","46 (0)","13 (4)","14 (1)","16 (1)","15 (5)","43 (12)",
+                  "26 (0)","35 (1)","89 (3)","16 (3)","158 (34)","103 (12)","90 (1)","23 (4)"),
+  No_3rd_pref = c("43 (5)","123 (0)","21 (2)","11 (0)","37 (7)","62 (11)","19 (4)","48 (1)",
+                  "1 (1)","9 (1)","15 (0)","36 (0)","96 (5)","57 (1)","65 (0)","47 (4)",
+                  "87 (1)","60 (2)","71 (7)","43 (0)","17 (1)","11 (0)","21 (1)","36 (3)",
+                  "20 (0)","83 (6)","15 (0)","21 (0)","70 (0)","20 (2)","27 (0)","10 (2)",
+                  "8 (0)","38 (0)","19 (0)","11 (2)","21 (0)","20 (0)","22 (5)","31 (5)",
+                  "17 (0)","29 (0)","92 (0)","26 (2)","100 (12)","106 (4)","41 (1)","36 (4)"),
+  Total = c("154 (60)","373 (120)","63 (34)","63 (46)","126 (60)","143 (59)","68 (42)",
+            "130 (30)","35 (31)","77 (57)","43 (18)","153 (60)","358 (150)","342 (120)",
+            "212 (60)","126 (60)","278 (90)","228 (90)","157 (60)","104 (30)","92 (70)",
+            "42 (25)","85 (30)","186 (90)","130 (30)","203 (60)","84 (48)","114 (82)",
+            "268 (60)","65 (30)","89 (31)","58 (30)","33 (19)","256 (90)","97 (30)",
+            "50 (30)","66 (30)","73 (30)","55 (28)","106 (49)","75 (30)","120 (30)",
+            "282 (90)","63 (26)","340 (120)","356 (120)","240 (90)","107 (56)"),
+  stringsAsFactors = FALSE
+) |>
+  parse_prefs(c("No_1st_pref", "No_2nd_pref", "No_3rd_pref", "Total"))
+
+datatable(primary_2014, extensions = 'Buttons', options = dt_opts)
+```
+:::
+
+## Data Prior to 2014
+
+A 2013 **Primary** allocation factsheet could not be recovered from either the live council site or the Internet Archive. A 2013 *Junior* factsheet exists, and 2010/2011 primary booklets are archived as Word documents — they may be digitised in future.
+
+## Combined Primary Data 2014–2026
+
+```{r}
+primary_frames <- list(
+  `2014` = primary_2014, `2015` = primary_2015, `2016` = primary_2016,
+  `2017` = primary_2017, `2018` = primary_2018, `2019` = primary_2019,
+  `2020` = primary_2020, `2021` = primary_2021, `2022` = primary_2022,
+  `2023` = primary_2023, `2024` = primary_2024, `2025` = primary_2025,
+  `2026` = primary_2026
+)
+
+primary_all <- bind_rows(lapply(names(primary_frames), function(y) {
+  primary_frames[[y]] %>% mutate(Year = as.integer(y))
+}))
+
+# Normalise naming so a single school can be tracked over time regardless of
+# infant/primary rebranding or RC -> Catholic rename.
+primary_all <- primary_all %>%
+  mutate(School = case_when(
+    School == "Hangleton Infant" ~ "Hangleton Primary",
+    School == "Hertford Infant" ~ "Hertford Primary",
+    School == "Cottesmore St Mary RC Primary" ~ "Cottesmore St Mary Catholic Primary",
+    School == "Our Lady of Lourdes RC Primary" ~ "Our Lady of Lourdes Catholic Primary",
+    School == "St Bernadette's RC Primary" ~ "St Bernadette's Catholic Primary",
+    School == "St John The Baptist RC Primary" ~ "St John The Baptist Catholic Primary",
+    School == "St Joseph's RC Primary" ~ "St Joseph's Catholic Primary",
+    School == "St Mary Magdalen RC Primary" ~ "St Mary Magdalen Catholic Primary",
+    School == "St Mary's RC Primary" ~ "St Mary's Catholic Primary",
+    School == "West Hove Connaught Road" ~ "West Hove Infant, Holland Road",
+    TRUE ~ School
+  ))
+
+datatable(
+  primary_all %>% select(Year, School, PAN, everything()),
+  extensions = 'Buttons',
+  options = dt_opts,
+  filter = "top"
+)
+```
+
+## Interactive Time Series — Primary
+
+Given the number of schools (\~46), plots below group them by size band (PAN) or by geographic/admissions area so lines stay legible. Use the legend to toggle schools on and off.
+
+### Total Applications by School (All)
+
+```{r, fig.height=9}
+p_prim_apps <- ggplot(primary_all,
+                      aes(x = Year, y = Total, color = School, group = School,
+                          text = paste0(School, "<br>Year: ", Year,
+                                        "<br>Applications: ", Total,
+                                        "<br>Offers: ", Total_offer,
+                                        "<br>PAN: ", PAN))) +
+  geom_line() +
+  geom_point(size = 0.6) +
+  scale_x_continuous(breaks = seq(2014, 2026, 2)) +
+  labs(title = "Total Primary Applications by School, 2014–2026",
+       x = "Year", y = "Total Applications") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggplotly(p_prim_apps, tooltip = "text")
+```
+
+Legend suppressed due to number of schools — hover to identify a line.
+
+### Offers vs PAN — How Full Is Each School?
+
+```{r, fig.height=9}
+primary_fill <- primary_all %>%
+  mutate(FillPct = 100 * Total_offer / PAN)
+
+p_fill <- ggplot(primary_fill,
+                 aes(x = Year, y = FillPct, color = School, group = School,
+                     text = paste0(School, "<br>Year: ", Year,
+                                   "<br>Offers: ", Total_offer, " / PAN ", PAN,
+                                   "<br>Fill: ", round(FillPct, 1), "%"))) +
+  geom_line() +
+  geom_point(size = 0.6) +
+  geom_hline(yintercept = 100, linetype = "dashed", color = "grey40") +
+  scale_x_continuous(breaks = seq(2014, 2026, 2)) +
+  labs(title = "Primary Schools — Offers as % of Published Admission Number",
+       x = "Year", y = "Offers ÷ PAN (%)") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggplotly(p_fill, tooltip = "text")
+```
+
+### 1st-Preference Offers — Were Families Getting Their First Choice?
+
+```{r, fig.height=9}
+p_1st <- ggplot(primary_all,
+                aes(x = Year, y = No_1st_pref_offer, color = School, group = School,
+                    text = paste0(School, "<br>Year: ", Year,
+                                  "<br>1st-pref offers: ", No_1st_pref_offer,
+                                  " / 1st-pref applications: ", No_1st_pref))) +
+  geom_line() +
+  geom_point(size = 0.6) +
+  scale_x_continuous(breaks = seq(2014, 2026, 2)) +
+  labs(title = "Primary — 1st Preference Offers Made, 2014–2026",
+       x = "Year", y = "1st-preference Offers") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggplotly(p_1st, tooltip = "text")
+```
+
+### City-wide Aggregate
+
+```{r}
+primary_city <- primary_all %>%
+  group_by(Year) %>%
+  summarise(
+    Applications_1st = sum(No_1st_pref, na.rm = TRUE),
+    Offers_1st       = sum(No_1st_pref_offer, na.rm = TRUE),
+    Offers_Total     = sum(Total_offer, na.rm = TRUE),
+    PAN_Total        = sum(PAN, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(FirstPrefRate = 100 * Offers_1st / Applications_1st,
+         FillRate      = 100 * Offers_Total / PAN_Total)
+
+p_city <- ggplot(primary_city, aes(x = Year)) +
+  geom_line(aes(y = FirstPrefRate, color = "1st-pref success rate",
+                text = paste0("Year: ", Year,
+                              "<br>1st-pref success: ", round(FirstPrefRate, 1), "%")),
+            group = 1) +
+  geom_point(aes(y = FirstPrefRate, color = "1st-pref success rate",
+                 text = paste0("Year: ", Year,
+                               "<br>1st-pref success: ", round(FirstPrefRate, 1), "%"))) +
+  geom_line(aes(y = FillRate, color = "City-wide fill rate (offers/PAN)",
+                text = paste0("Year: ", Year,
+                              "<br>Fill rate: ", round(FillRate, 1), "%")),
+            group = 1) +
+  geom_point(aes(y = FillRate, color = "City-wide fill rate (offers/PAN)",
+                 text = paste0("Year: ", Year,
+                               "<br>Fill rate: ", round(FillRate, 1), "%"))) +
+  scale_x_continuous(breaks = seq(2014, 2026, 1)) +
+  labs(title = "City-wide Primary Admissions Indicators",
+       x = "Year", y = "Percentage", color = NULL) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggplotly(p_city, tooltip = "text")
+```
+
+### Oversubscribed vs Undersubscribed Schools, 2026
+
+```{r}
+latest <- primary_all %>% filter(Year == 2026) %>%
+  mutate(Balance = No_1st_pref - PAN,
+         Status  = ifelse(Balance > 0, "Oversubscribed (1st prefs > PAN)",
+                           "Undersubscribed"))
+
+p_bal <- ggplot(latest,
+                aes(x = reorder(School, Balance), y = Balance, fill = Status,
+                    text = paste0(School, "<br>1st preferences: ", No_1st_pref,
+                                  "<br>PAN: ", PAN,
+                                  "<br>Balance: ", Balance))) +
+  geom_col() +
+  coord_flip() +
+  labs(title = "2026 Reception: 1st-Preference Applications − PAN",
+       x = NULL, y = "Applications minus PAN") +
+  theme_minimal()
+
+ggplotly(p_bal, tooltip = "text")
+```
+
+# Maps — Applications and Offers as Proportional Circles
+
+School locations are taken from [Get Information about Schools](https://get-information-schools.service.gov.uk/) (GIAS). Catchment boundaries reflect the 2025/26 arrangements. Each circle is scaled to √(count) so area is **proportional to the count**.
+
+Drag the year slider above each map to step through the time series. Each map has its own independent slider, so you can pin one map to a historic year while scrubbing through another. Click a school for the underlying figures.
+
+```{r}
+library(leaflet)
+library(sf)
+library(htmltools)
+library(htmlwidgets)
+library(jsonlite)
+
+# ---- School coordinate lookup (GIAS URN + WGS84 lat/lon) ----
+# Primary and secondary schools from edubasealldata20241003.xlsx via GIAS,
+# lat/lon from ONSPD Feb 2024. West Hove Infant sites geocoded separately
+# to BN3 1JL (Holland Road) and BN3 5JA (Portland Road). Closed schools
+# (Davigdor Infant, St Bartholomew's, St Peter's) retained for pre-2020
+# historic coverage.
+school_locs <- tibble::tribble(
+  ~School,                                 ~Phase,      ~URN,     ~lat,       ~lon,
+  # Secondary (10 schools)
+  "Blatchington Mill",                     "Secondary", 114606L,  50.845298, -0.184029,
+  "Brighton Aldridge Community Academy",   "Secondary", 136164L,  50.858017, -0.091234,
+  "Cardinal Newman",                       "Secondary", 114611L,  50.836811, -0.158368,
+  "Dorothy Stringer",                      "Secondary", 114580L,  50.848948, -0.143414,
+  "Hove Park",                             "Secondary", 114607L,  50.840867, -0.179613,
+  "Kings School",                          "Secondary", 139409L,  50.853022, -0.192069,
+  "Longhill High",                         "Secondary", 114581L,  50.818999, -0.067270,
+  "Patcham High",                          "Secondary", 114608L,  50.862195, -0.143940,
+  "Portslade Aldridge Community Academy",  "Secondary", 137063L,  50.850644, -0.225774,
+  "Varndean",                              "Secondary", 114579L,  50.850296, -0.137138,
+  # Primary (open)
+  "Aldrington CE Primary",                 "Primary",   114555L,  50.844506, -0.178606,
+  "Balfour Primary",                       "Primary",   114382L,  50.847735, -0.138348,
+  "Benfield Primary",                      "Primary",   151063L,  50.837928, -0.207026,
+  "Bevendean Primary",                     "Primary",   114485L,  50.841871, -0.099293,
+  "Bilingual Primary",                     "Primary",   138261L,  50.844225, -0.175804,
+  "Brackenbury Primary",                   "Primary",   114413L,  50.840626, -0.216424,
+  "Brunswick Primary",                     "Primary",   114446L,  50.831152, -0.158236,
+  "Carden Primary",                        "Primary",   131789L,  50.863304, -0.128889,
+  "Carlton Hill Primary",                  "Primary",   114381L,  50.824652, -0.132167,
+  "City Academy Whitehawk",                "Primary",   139677L,  50.825445, -0.107386,
+  "Coldean Primary",                       "Primary",   114384L,  50.865344, -0.112621,
+  "Coombe Road Primary",                   "Primary",   114365L,  50.840172, -0.117685,
+  "Cottesmore St Mary Catholic Primary",   "Primary",   114567L,  50.837319, -0.158093,
+  "Downs Infant",                          "Primary",   114367L,  50.837970, -0.133397,
+  "Elm Grove Primary",                     "Primary",   114477L,  50.831581, -0.121453,
+  "Fairlight Primary",                     "Primary",   114487L,  50.834574, -0.125792,
+  "Goldstone Primary",                     "Primary",   114398L,  50.841566, -0.192185,
+  "Hangleton Primary",                     "Primary",   151062L,  50.846678, -0.195922,
+  "Hertford Primary",                      "Primary",   114368L,  50.846789, -0.124536,
+  "Middle Street Primary",                 "Primary",   114369L,  50.821362, -0.142961,
+  "Mile Oak Primary",                      "Primary",   114430L,  50.853978, -0.227977,
+  "Moulsecoomb Primary",                   "Primary",   147680L,  50.849467, -0.110705,
+  "Our Lady of Lourdes Catholic Primary",  "Primary",   114544L,  50.806289, -0.058668,
+  "Patcham Infant",                        "Primary",   114373L,  50.861340, -0.147043,
+  "Peter Gladwin Primary",                 "Primary",   114443L,  50.843682, -0.220215,
+  "Queens Park Primary",                   "Primary",   114478L,  50.823015, -0.125659,
+  "Rudyard Kipling Primary",               "Primary",   114486L,  50.833830, -0.063732,
+  "Saltdean Primary",                      "Primary",   114479L,  50.808777, -0.038083,
+  "St Andrew's CE Primary",                "Primary",   114556L,  50.830581, -0.174575,
+  "St Bernadette's Catholic Primary",      "Primary",   114546L,  50.846703, -0.150421,
+  "St John The Baptist Catholic Primary",  "Primary",   114540L,  50.822669, -0.115861,
+  "St Joseph's Catholic Primary",          "Primary",   114542L,  50.842027, -0.126743,
+  "St Luke's Primary",                     "Primary",   114374L,  50.827216, -0.120137,
+  "St Margaret's CE Primary",              "Primary",   114537L,  50.806308, -0.055801,
+  "St Mark's CE Primary",                  "Primary",   114545L,  50.819405, -0.111237,
+  "St Martin's CE Primary",                "Primary",   114539L,  50.835193, -0.123481,
+  "St Mary Magdalen Catholic Primary",     "Primary",   114541L,  50.825073, -0.149217,
+  "St Mary's Catholic Primary",            "Primary",   114570L,  50.832265, -0.213633,
+  "St Nicolas CE Primary",                 "Primary",   114560L,  50.840626, -0.216424,
+  "St Paul's CE Primary",                  "Primary",   114543L,  50.826597, -0.144358,
+  "Stanford Infant",                       "Primary",   114377L,  50.838582, -0.152120,
+  "West Blatchington Primary",             "Primary",   149963L,  50.853022, -0.192069,
+  "West Hove Infant, Holland Road",        "Primary",   114428L,  50.826834, -0.161984,
+  "West Hove Infant, Portland Road",       "Primary",   114428L,  50.834027, -0.189693,
+  "Westdene Primary",                      "Primary",   114380L,  50.860040, -0.161759,
+  "Woodingdean Primary",                   "Primary",   114480L,  50.836176, -0.078079,
+  # Closed/renamed schools retained for historic series
+  "Davigdor Infant",                       "Primary",   114397L,  50.828776, -0.159267,
+  "St Bartholomew's CE Primary",           "Primary",   114538L,  50.830378, -0.137278,
+  "St Peter's Community Primary",          "Primary",   114411L,  50.831506, -0.215153,
+  "Hangleton Infant",                      "Primary",   151062L,  50.846678, -0.195922,
+  "Hertford Infant",                       "Primary",   114368L,  50.846789, -0.124536
+)
+
+# ---- Catchment boundaries (2025/26) ----
+optionZ <- st_read(here::here("data", "optionZ.geojson"), quiet = TRUE) |>
+  st_transform(4326)
+
+catchment_colours <- c(
+  "BACA" = "#e41a1c", "HoveBlatchington" = "#377eb8", "Longhill" = "#4daf4a",
+  "PACA" = "#984ea3", "Patcham" = "#ff7f00", "VarndeanStringer" = "#a65628"
+)
+catchment_labels <- c(
+  "BACA" = "BACA (Brighton Aldridge)",
+  "HoveBlatchington" = "Hove Park / Blatchington Mill",
+  "Longhill" = "Longhill",
+  "PACA" = "PACA (Portslade Aldridge)",
+  "Patcham" = "Patcham",
+  "VarndeanStringer" = "Varndean / Dorothy Stringer"
+)
+pal_catch <- colorFactor(unname(catchment_colours), domain = names(catchment_colours))
+
+# ---- Helper: join allocations to locations ----
+prep_map_data <- function(long_df, extra_cols = NULL) {
+  base <- long_df |>
+    dplyr::filter(School != "Total") |>
+    dplyr::left_join(school_locs, by = "School")
+  missing <- base |> dplyr::filter(is.na(lat)) |> dplyr::pull(School) |> unique()
+  if (length(missing) > 0) warning("Missing coordinates for: ", paste(missing, collapse = ", "))
+  base |> dplyr::filter(!is.na(lat))
+}
+
+# ---- Radius scaling (square-root so area ~ value) ----
+radius_scale <- function(x, k = 0.9) ifelse(is.na(x) | x <= 0, 0, sqrt(x) * k)
+```
+
+```{r}
+# ---- Popup helpers ----
+sec_popup_html <- function(d) {
+  sprintf(
+    "<b>%s</b><br>Year: %d<br>Applications (all prefs): <b>%s</b><br>Offers: <b>%s</b><br>1st-pref applications: %s<br>1st-pref offers: %s",
+    d$School, d$Year,
+    format(d$Total, big.mark = ","),
+    format(d$Total_offer, big.mark = ","),
+    format(d$No_1st_pref, big.mark = ","),
+    format(d$No_1st_pref_offer, big.mark = ",")
+  )
+}
+prim_popup_html <- function(d) {
+  fill_pct <- ifelse(is.na(d$PAN) | d$PAN == 0, NA_real_, 100 * d$Total_offer / d$PAN)
+  sprintf(
+    "<b>%s</b><br>Year: %d<br>PAN: %s<br>Applications (all prefs): <b>%s</b><br>Offers: <b>%s</b><br>Fill: %s%%<br>1st-pref applications: %s<br>1st-pref offers: %s",
+    d$School, d$Year,
+    ifelse(is.na(d$PAN), "–", as.character(d$PAN)),
+    format(d$Total, big.mark = ","),
+    format(d$Total_offer, big.mark = ","),
+    ifelse(is.na(fill_pct), "–", sprintf("%.0f", fill_pct)),
+    format(d$No_1st_pref, big.mark = ","),
+    format(d$No_1st_pref_offer, big.mark = ",")
+  )
+}
+
+legend_html <- function(title, swatch_colour, swatch_label) {
+  paste0(
+    '<div style="background:white;padding:6px 10px;border-radius:4px;',
+    'box-shadow:0 1px 4px rgba(0,0,0,0.25);font:12px sans-serif;max-width:220px;">',
+    '<b>', title, '</b><br>',
+    '<span style="display:inline-block;width:12px;height:12px;background:', swatch_colour,
+    ';border-radius:50%;opacity:0.7;margin-right:4px;"></span>', swatch_label, '<br>',
+    'Circle area is proportional to the count.',
+    '</div>'
+  )
+}
+
+# ---- Build a full-width leaflet map with an external dropdown year picker ----
+#
+# This follows the working pattern from `bh-map-interactive` in
+# school_attainment_tool/output/brighton_case_study.qmd: a bare leaflet map
+# (tiles + setView only, plus optional catchment polygons), data shipped to
+# the browser in a hidden <script type="application/json"> tag with a unique
+# id, and onRender JS that reads the data, creates its own dropdown, and
+# redraws L.circleMarker's at the correct radius every time the user picks
+# a new year. No leaflet layer groups / no hideGroup/showGroup involved, so
+# there's no way for "wrong-sized, already-drawn" circles to appear — every
+# year's circles are freshly drawn at the year's counts.
+build_year_map <- function(map_data, value_col, colour, fill_opacity, radius_k,
+                            show_catchments, prefix, legend_title, legend_label,
+                            is_primary = FALSE, height = 520) {
+  years <- sort(unique(map_data$Year))
+  default_year <- max(years)
+  data_id <- paste0("data_", prefix)
+
+  # Only the columns the JS popup / radius code needs. One row per
+  # school-year. Ensure PAN column exists even for secondary data so the
+  # toJSON call has a consistent schema across maps.
+  df <- map_data
+  if (!"PAN" %in% names(df)) df$PAN <- NA_real_
+  d_json <- df |>
+    dplyr::transmute(
+      Year = as.integer(Year),
+      School,
+      lat, lon,
+      value = .data[[value_col]],
+      Total,
+      Total_offer,
+      No_1st_pref,
+      No_1st_pref_offer,
+      PAN
+    ) |>
+    dplyr::filter(!is.na(lat), !is.na(lon))
+  data_json <- jsonlite::toJSON(d_json, na = "null", dataframe = "rows")
+
+  # Bare leaflet — no markers added in R. Catchments are permanent polygons.
+  m <- leaflet(width = "100%", height = height) |>
+    addProviderTiles(providers$CartoDB.Positron) |>
+    setView(lng = -0.155, lat = 50.835, zoom = 12)
+
+  if (show_catchments) {
+    m <- m |> addPolygons(
+      data = optionZ,
+      fillColor = ~pal_catch(catchment), fillOpacity = 0.10,
+      color = ~pal_catch(catchment), weight = 2, opacity = 0.7,
+      label = ~catchment_labels[catchment]
+    )
+  }
+
+  # Hidden data tag, read by the JS on render. Unique id per map.
+  data_tag <- htmltools::tags$script(
+    type = "application/json",
+    id   = data_id,
+    htmltools::HTML(as.character(data_json))
+  )
+
+  # Build the onRender JS via placeholder substitution (safer than sprintf
+  # when the JS body contains lots of % and format-like characters).
+  js_template <- "
+function(el, x) {
+  var map = this;
+  var DATA_ID      = '__DATA_ID__';
+  var years        = __YEARS__;
+  var defaultYear  = __DEFAULT_YEAR__;
+  var colour       = '__COLOUR__';
+  var fillOpacity  = __FILL_OPACITY__;
+  var radiusK      = __RADIUS_K__;
+  var legendTitle  = '__LEGEND_TITLE__';
+  var legendLabel  = '__LEGEND_LABEL__';
+  var isPrimary    = __IS_PRIMARY__;
+
+  var dataEl = document.getElementById(DATA_ID);
+  if (!dataEl) return;
+  var all = JSON.parse(dataEl.textContent);
+
+  var markers = L.layerGroup().addTo(map);
+
+  // Legend control (bottom-left)
+  var legCtrl = L.control({position: 'bottomleft'});
+  var legDiv;
+  legCtrl.onAdd = function() {
+    legDiv = L.DomUtil.create('div');
+    legDiv.style.cssText = 'background:white;padding:8px 12px;' +
+      'border-radius:5px;box-shadow:0 1px 5px rgba(0,0,0,.25);' +
+      'font:12px sans-serif;max-width:240px;';
+    return legDiv;
+  };
+  legCtrl.addTo(map);
+
+  function fmt(v) {
+    if (v === null || v === undefined || isNaN(v)) return '\u2013';
+    return Number(v).toLocaleString();
+  }
+
+  function setLegend(year, n) {
+    if (!legDiv) return;
+    legDiv.innerHTML =
+      '<strong>' + legendTitle + ' &mdash; ' + year + '</strong><br>' +
+      '<span style=\"display:inline-block;width:12px;height:12px;background:' + colour +
+      ';border-radius:50%;opacity:' + fillOpacity + ';margin-right:4px;\"></span>' +
+      legendLabel + '<br>' +
+      '<em style=\"font-size:11px;color:#666\">Area &prop; count &middot; ' + n + ' schools</em>';
+  }
+
+  function popup(d) {
+    var html = '<b>' + d.School + '</b><br>Year: ' + d.Year + '<br>';
+    if (isPrimary && d.PAN !== null && d.PAN !== undefined) {
+      html += 'PAN: ' + fmt(d.PAN) + '<br>';
+    }
+    html += 'Applications (all prefs): <b>' + fmt(d.Total) + '</b><br>' +
+            'Offers: <b>' + fmt(d.Total_offer) + '</b><br>';
+    if (isPrimary && d.PAN && d.PAN > 0 &&
+        d.Total_offer !== null && d.Total_offer !== undefined) {
+      var pct = 100 * d.Total_offer / d.PAN;
+      html += 'Fill: ' + pct.toFixed(0) + '%<br>';
+    }
+    html += '1st-pref applications: ' + fmt(d.No_1st_pref) + '<br>' +
+            '1st-pref offers: ' + fmt(d.No_1st_pref_offer);
+    return html;
+  }
+
+  function draw(year) {
+    markers.clearLayers();
+    var rows = all.filter(function(d){ return String(d.Year) === String(year); });
+    var n = 0;
+    rows.forEach(function(d) {
+      if (d.lat == null || d.lon == null) return;
+      if (d.value == null || isNaN(d.value) || d.value <= 0) return;
+      var r = Math.sqrt(d.value) * radiusK;
+      L.circleMarker([d.lat, d.lon], {
+        radius:      r,
+        fillColor:   colour,
+        fillOpacity: fillOpacity,
+        color:       colour,
+        weight:      1.3
+      })
+      .bindPopup(popup(d))
+      .bindTooltip(d.School)
+      .addTo(markers);
+      n++;
+    });
+    setLegend(year, n);
+  }
+
+  // Slider, inserted directly before the map element.
+  // The slider is a plain HTML range input (no crosstalk, no shiny).
+  // The year label next to it updates as the user drags, and draw()
+  // is called on every input event so circles resize live.
+  var wrap = document.createElement('div');
+  wrap.style.cssText = 'margin:8px 0 12px 0;font:14px sans-serif;' +
+    'display:flex;align-items:center;gap:12px;flex-wrap:wrap;';
+
+  var lbl = document.createElement('label');
+  lbl.innerHTML = '<strong>Year:</strong>';
+  wrap.appendChild(lbl);
+
+  var yMin = years[0];
+  var yMax = years[years.length - 1];
+
+  var sld = document.createElement('input');
+  sld.type  = 'range';
+  sld.min   = String(yMin);
+  sld.max   = String(yMax);
+  sld.step  = '1';
+  sld.value = String(defaultYear);
+  sld.style.cssText = 'flex:1;min-width:240px;max-width:520px;' +
+    'accent-color:' + colour + ';';
+  wrap.appendChild(sld);
+
+  var val = document.createElement('span');
+  val.style.cssText = 'font-weight:bold;min-width:3.5em;text-align:right;';
+  val.textContent = String(defaultYear);
+  wrap.appendChild(val);
+
+  // Min/max endpoint labels under the slider
+  var ends = document.createElement('div');
+  ends.style.cssText = 'width:100%;display:flex;justify-content:space-between;' +
+    'font-size:11px;color:#666;margin-top:-4px;';
+  var endMin = document.createElement('span'); endMin.textContent = String(yMin);
+  var endMax = document.createElement('span'); endMax.textContent = String(yMax);
+  ends.appendChild(endMin);
+  ends.appendChild(endMax);
+
+  el.parentNode.insertBefore(wrap, el);
+  el.parentNode.insertBefore(ends, el);
+
+  function onSlide() {
+    var y = +sld.value;
+    val.textContent = String(y);
+    draw(y);
+  }
+  sld.addEventListener('input', onSlide);
+  sld.addEventListener('change', onSlide);
+  draw(defaultYear);
+}
+"
+
+  js_code <- js_template
+  js_code <- gsub("__DATA_ID__",      data_id,                                             js_code, fixed = TRUE)
+  js_code <- gsub("__YEARS__",        as.character(jsonlite::toJSON(years)),               js_code, fixed = TRUE)
+  js_code <- gsub("__DEFAULT_YEAR__", as.character(default_year),                          js_code, fixed = TRUE)
+  js_code <- gsub("__COLOUR__",       colour,                                              js_code, fixed = TRUE)
+  js_code <- gsub("__FILL_OPACITY__", format(fill_opacity, nsmall = 2),                    js_code, fixed = TRUE)
+  js_code <- gsub("__RADIUS_K__",     format(radius_k, nsmall = 2),                        js_code, fixed = TRUE)
+  js_code <- gsub("__LEGEND_TITLE__", legend_title,                                        js_code, fixed = TRUE)
+  js_code <- gsub("__LEGEND_LABEL__", legend_label,                                        js_code, fixed = TRUE)
+  js_code <- gsub("__IS_PRIMARY__",   if (isTRUE(is_primary)) "true" else "false",         js_code, fixed = TRUE)
+
+  m <- m |> htmlwidgets::onRender(js_code)
+
+  htmltools::browsable(htmltools::tagList(data_tag, m))
+}
+
+# ---- Prep data once ----
+sec_map_data  <- prep_map_data(secondary_all)
+prim_map_data <- prep_map_data(primary_all)
+```
+
+## Secondary (Year 7) — Applications
+
+```{r}
+build_year_map(
+  map_data        = sec_map_data,
+  value_col       = "Total",
+  colour          = "#1f78b4",
+  fill_opacity    = 0.40,
+  radius_k        = 0.55,
+  show_catchments = TRUE,
+  prefix          = "sec_apps",
+  legend_title    = "Applications",
+  legend_label    = "Preferences received",
+  is_primary      = FALSE,
+  height          = 560
+)
+```
+
+## Secondary (Year 7) — Offers
+
+```{r}
+build_year_map(
+  map_data        = sec_map_data,
+  value_col       = "Total_offer",
+  colour          = "#e31a1c",
+  fill_opacity    = 0.55,
+  radius_k        = 0.55,
+  show_catchments = TRUE,
+  prefix          = "sec_offers",
+  legend_title    = "Offers",
+  legend_label    = "Places allocated",
+  is_primary      = FALSE,
+  height          = 560
+)
+```
+
+## Primary (Reception) — Applications
+
+```{r}
+build_year_map(
+  map_data        = prim_map_data,
+  value_col       = "Total",
+  colour          = "#1f78b4",
+  fill_opacity    = 0.35,
+  radius_k        = 1.0,
+  show_catchments = FALSE,
+  prefix          = "prim_apps",
+  legend_title    = "Applications",
+  legend_label    = "Preferences received",
+  is_primary      = TRUE,
+  height          = 600
+)
+```
+
+## Primary (Reception) — Offers
+
+```{r}
+build_year_map(
+  map_data        = prim_map_data,
+  value_col       = "Total_offer",
+  colour          = "#33a02c",
+  fill_opacity    = 0.55,
+  radius_k        = 1.0,
+  show_catchments = FALSE,
+  prefix          = "prim_offers",
+  legend_title    = "Offers",
+  legend_label    = "Places allocated",
+  is_primary      = TRUE,
+  height          = 600
+)
+```
+
+Notes on the maps:
+
+-   Each map has its own year slider. Dragging the slider redraws the circles on that map only — school **positions stay fixed**, but **radii change** because the circles are re-drawn from scratch at the selected year's counts (radius = √count × k).
+-   Secondary maps show the 2025/26 catchment polygons as a reference. Primary maps are plotted on a neutral basemap (no national primary catchments exist — primary admission uses home-to-school distance).
+-   West Hove Infant has two intake sites (Holland Road and Portland Road) plotted at their respective postcodes (BN3 1JL and BN3 5JA).
+-   Historic infant schools that amalgamated into primaries (Hangleton Infant, Hertford Infant) are plotted at their successor primary's location. Fully closed schools (Davigdor Infant to 2015, St Bartholomew's, St Peter's Community) are plotted at their original postcodes so pre-closure years render correctly.
+
+# Notes on Data Quality
+
+-   Secondary figures include on-time applications only. Late applications and post-allocation adjustments are excluded.
+-   2026 is the first secondary year reporting a 4th preference; earlier years show `NA` in 4th-preference columns in the combined dataset.
+-   Older primary factsheets (2014–2018) were retrieved from the Internet Archive (web.archive.org) as the council has removed them from the live site.
+-   School name harmonisation (e.g. *Hangleton Infant* → *Hangleton Primary*, *West Hove Connaught Road* → *West Hove Infant, Holland Road*) is applied in the combined dataset only; original per-year tables preserve the names as published.
+-   PAN values in the combined primary dataset are as published each year. PAN reductions (e.g. Balfour 120 → 90, Brunswick 120 → 90, Davigdor closure in 2015) are real and reflect council decisions.
