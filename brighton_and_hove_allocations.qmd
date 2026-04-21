@@ -2206,21 +2206,42 @@ ggplotly(p_catch_std, tooltip = "text")
 
 A line that is broadly flat between 2025 and 2026 on this chart means the catchment's 2026 rise in the raw by-catchment chart above is essentially the extra preference slot — not a real increase in families choosing that catchment. A line that steps clearly *up* from 2025 to 2026 is picking up genuine additional demand per slot; a line that steps *down* is losing demand even before the mechanical slot inflation is applied.
 
-# Council Forecast (BHCC Appendix 6, Oct 2024) vs Actual Offers
+# Council Forecast (BHCC) vs Actual Offers
 
-The table below is transcribed from [Appendix 6 — Secondary School Pupil Forecast](https://democracy.brighton-hove.gov.uk/documents/s211108/Appendix%206%20-%20Secondary%20School%20Pupil%20Forecast.pdf) of the Brighton & Hove City Council pupil-forecast paper (data source: **October 2024 school census**). It projects Year 7 demand for each catchment at the seven secondary-entry years from **2025 to 2031** — i.e. the children who were in Year 6 down to Reception at the time of the Oct 2024 census.
+The council has now published **two successive** Year-7 pupil forecasts, built with the same method but from different census snapshots:
 
-The council's method (summarised from the PDF):
+- [Appendix 6 — Oct 2024 forecast](https://democracy.brighton-hove.gov.uk/documents/s211108/Appendix%206%20-%20Secondary%20School%20Pupil%20Forecast.pdf) (secondary entry **2025–2031**).
+- [Appendix 7 — Oct 2025 forecast](https://democracy.brighton-hove.gov.uk/documents/s212430/School%20Admission%20Arrangements%202027-28%20APX.%20n%207.pdf) (secondary entry **2026–2032**).
 
-1. Start with the raw number of pupils living in each catchment in the relevant year group of the Oct 2024 census.
-2. Reduce by a catchment-specific leakage percentage (`2.01%`–`22.61%`) for pupils expected to move out of the state-maintained sector (independents, home-ed, out-of-city).
+The Oct 2025 forecast is the council's current view and is used as the primary reference below; the Oct 2024 forecast is retained because it supplies the only council-published projection for **2025** (now an actual offer year) and because comparing the two reveals how the council has revised its outlook year-on-year.
+
+The council's method, summarised from the two PDFs:
+
+1. Start with the raw number of pupils living in each catchment in the relevant year group of the school census (Oct 2024 or Oct 2025 respectively).
+2. Reduce by a catchment-specific leakage percentage for pupils expected to move out of the state-maintained sector (independents, home-ed, out-of-city). Leakage rates in the Oct 2025 forecast: PACA **2.46%**, Hove Park / Blatchington Mill **5.13%**, Varndean / Stringer **4.58%**, BACA **6.52%**, Patcham **3.03%**, Longhill **23.89%** — the Oct 2024 values were similar but slightly lower (e.g. Longhill was 22.61%).
 3. Further reduce by the historical share of the catchment going to **Cardinal Newman** or **Kings School** — the two city-wide faith secondaries that sit outside the geographic catchment framework.
 4. The resulting "adjusted for CN & Kings" figure is the forecast demand for the catchment's own schools. Compared with the catchment PAN this gives a surplus (`+`) or shortfall (`-`) of places.
 
 ## Forecast Demand by Catchment (adjusted for CN & Kings)
 
 ```{r}
+# Oct 2025 forecast (the council's current view). Columns cover Y7 entry in
+# 2026-2032 — i.e. the children who were in Year 6 down to Reception at the
+# time of the October 2025 school census.
 bhcc_forecast <- tibble::tribble(
+  ~CatchmentGroup,                 ~PAN, ~Y2026, ~Y2027, ~Y2028, ~Y2029, ~Y2030, ~Y2031, ~Y2032,
+  "PACA",                           220L,   218L,   178L,   194L,   179L,   212L,   147L,   173L,
+  "Hove Park / Blatchington Mill",  510L,   424L,   438L,   390L,   410L,   351L,   373L,   311L,
+  "Varndean / Dorothy Stringer",    630L,   601L,   588L,   563L,   530L,   543L,   527L,   496L,
+  "Longhill",                       210L,   162L,   148L,   160L,   146L,   129L,   148L,   100L,
+  "BACA",                           180L,   128L,   135L,   138L,   112L,    97L,   121L,   103L,
+  "Patcham",                        225L,   194L,   203L,   200L,   185L,   168L,   172L,   162L
+)
+
+# Oct 2024 forecast kept as reference. Columns cover Y7 entry in 2025-2031
+# (from the Oct 2024 school census) — useful for the 2025 actual vs forecast
+# comparison, and for contrasting the two successive forecasts.
+bhcc_forecast_oct24 <- tibble::tribble(
   ~CatchmentGroup,                 ~PAN, ~Y2025, ~Y2026, ~Y2027, ~Y2028, ~Y2029, ~Y2030, ~Y2031,
   "PACA",                           220L,   206L,   221L,   185L,   191L,   182L,   214L,   150L,
   "Hove Park / Blatchington Mill",  510L,   512L,   434L,   443L,   410L,   413L,   351L,   365L,
@@ -2230,38 +2251,39 @@ bhcc_forecast <- tibble::tribble(
   "Patcham",                        225L,   198L,   205L,   212L,   201L,   194L,   163L,   179L
 )
 
+# Surplus / shortfall from the Oct 2025 forecast (published directly in the PDF).
 bhcc_surplus <- tibble::tribble(
-  ~CatchmentGroup,                 ~Y2025, ~Y2026, ~Y2027, ~Y2028, ~Y2029, ~Y2030, ~Y2031,
-  "PACA",                             14L,    -1L,    35L,    29L,    38L,     6L,    70L,
-  "Hove Park / Blatchington Mill",    -2L,    76L,    67L,   100L,    97L,   159L,   145L,
-  "Varndean / Dorothy Stringer",      49L,     6L,    38L,    42L,    70L,    73L,    91L,
-  "Longhill",                         42L,    35L,    44L,    34L,    51L,    59L,    56L,
-  "BACA",                             46L,    51L,    42L,    37L,    68L,    85L,    55L,
-  "Patcham",                          27L,    20L,    13L,    24L,    31L,    62L,    46L
+  ~CatchmentGroup,                 ~Y2026, ~Y2027, ~Y2028, ~Y2029, ~Y2030, ~Y2031, ~Y2032,
+  "PACA",                              2L,    42L,    26L,    41L,     8L,    73L,    47L,
+  "Hove Park / Blatchington Mill",    86L,    72L,   120L,   100L,   159L,   137L,   199L,
+  "Varndean / Dorothy Stringer",      29L,    42L,    67L,   100L,    87L,   103L,   134L,
+  "Longhill",                         48L,    62L,    50L,    64L,    81L,    62L,   110L,
+  "BACA",                             52L,    45L,    42L,    68L,    83L,    59L,    77L,
+  "Patcham",                          31L,    22L,    25L,    40L,    57L,    53L,    63L
 )
 
-# Add the totals row for forecast demand (from the PDF).
+# Totals row from the Oct 2025 forecast.
 bhcc_forecast_with_total <- bhcc_forecast %>%
   dplyr::bind_rows(
     tibble::tibble(
       CatchmentGroup = "Total (catchment schools)",
       PAN    = 1975L,
-      Y2025  = 1800L, Y2026 = 1787L, Y2027 = 1737L, Y2028 = 1709L,
-      Y2029  = 1620L, Y2030 = 1531L, Y2031 = 1512L
+      Y2026  = 1726L, Y2027 = 1690L, Y2028 = 1644L, Y2029 = 1562L,
+      Y2030  = 1500L, Y2031 = 1488L, Y2032 = 1344L
     ),
     tibble::tibble(
       CatchmentGroup = "Total (all schools, incl. Kings + CN)",
       PAN    = 2500L,
-      Y2025  = 2297L, Y2026 = 2284L, Y2027 = 2234L, Y2028 = 2206L,
-      Y2029  = 2117L, Y2030 = 2028L, Y2031 = 2009L
+      Y2026  = 2251L, Y2027 = 2215L, Y2028 = 2169L, Y2029 = 2087L,
+      Y2030  = 2025L, Y2031 = 2013L, Y2032 = 1869L
     )
   )
 
 knitr::kable(bhcc_forecast_with_total,
              col.names = c("Catchment", "PAN",
-                           "2025", "2026", "2027", "2028", "2029", "2030", "2031"),
+                           "2026", "2027", "2028", "2029", "2030", "2031", "2032"),
              align = "lrrrrrrrr",
-             caption = "Forecast Y7 demand (adjusted for Cardinal Newman & Kings), BHCC Oct-24 census projection")
+             caption = "Forecast Y7 demand (adjusted for Cardinal Newman & Kings), BHCC Oct-25 census projection (Appendix 7)")
 ```
 
 ## Forecast Surplus / Shortfall of Places
@@ -2269,21 +2291,21 @@ knitr::kable(bhcc_forecast_with_total,
 ```{r}
 knitr::kable(bhcc_surplus,
              col.names = c("Catchment",
-                           "2025", "2026", "2027", "2028", "2029", "2030", "2031"),
+                           "2026", "2027", "2028", "2029", "2030", "2031", "2032"),
              align = "lrrrrrrr",
-             caption = "Surplus (+) or shortfall (–) of places: PAN minus forecast adjusted demand")
+             caption = "Surplus (+) or shortfall (–) of places: PAN minus Oct-25 forecast adjusted demand")
 ```
 
-Positive values = spare capacity; negative values = demand exceeds PAN. Across the city the council's forecast shows a rising surplus — from **8 %** of all secondary places in 2025 to **20 %** in 2031 — driven mainly by falling birth cohorts now working through the system.
+Positive values = spare capacity; negative values = demand exceeds PAN. In the Oct 2025 forecast the council now sees a rising surplus at city level — from **10 %** of all secondary places in 2026 to **19 %** in 2031 and **25 %** in 2032. The previous Oct 2024 forecast had demand *just* exceeding PAN at Hove Park / Blatchington Mill in 2025 (–2); the new forecast shows a small surplus (+86) at the same catchment a year on. Every catchment-year cell in the Oct 2025 forecast has a positive (surplus) balance — there is no longer a single catchment-year where forecast demand exceeds PAN.
 
 ## How Did the 2025 and 2026 Forecasts Compare With What Actually Happened?
 
-The 2025 and 2026 columns in the forecast are the two years for which we already have admissions data in this document. The table below sets the council's **projected demand** (from Appendix 6) alongside the **actual number of offers** we see for each catchment's schools.
+2025 and 2026 are the two secondary-entry years for which we now have actual offers data. For 2025, only the Oct-24 forecast was ever published; 2026 is the only year for which **both** forecasts can be checked against reality — so that's the most informative row of all.
 
 Two caveats on comparability:
 
 - The council's "adjusted for CN & Kings" figure is a projected demand from children *living in* the catchment who are expected to seek a state non-faith place. Our "actual offers" is the number of Y7 places *issued at* the catchment's schools — which will include some cross-catchment pupils and excludes in-catchment children who were offered a place elsewhere. Offers are also hard-capped at PAN.
-- The Kings + Cardinal Newman totals in the PDF aren't broken out as a catchment row — instead each geographic catchment's projection is reduced each year by a *per-year* estimate of how many of its resident pupils will go to Cardinal Newman (total across all catchments **330 / yr**) and Kings (**167 / yr**). Summed, that's roughly **497 / yr** of projected faith-school intake, vs a combined PAN of **540** (CN 360 + Kings 180) — so the PDF implicitly assumes Kings and CN run essentially full, with any spare places filled from outside the six geographic catchments (e.g. out-of-city faith applicants).
+- The Kings + Cardinal Newman totals aren't broken out as a catchment row. Instead each geographic catchment's projection is reduced each year by a *per-year* estimate of how many of its resident pupils will go to Cardinal Newman and Kings. In the Oct-25 forecast this is **355 / yr** to CN and **170 / yr** to Kings — **525 / yr** combined, vs PAN of **540** (CN 360 + Kings 180). The PDFs therefore implicitly assume the two faith schools run essentially full, with any residual places filled from outside the six geographic catchments (out-of-city faith applicants, etc.). The Oct-24 forecast had slightly lower implied CN + Kings demand (330 + 167 = **497 / yr**).
 
 ```{r}
 # Our actual offers per catchment per year, reusing the `catchment_offers`
@@ -2294,58 +2316,85 @@ actual_offers_2526 <- catchment_offers %>%
   tidyr::pivot_wider(names_from = Year, values_from = Total_offer,
                      names_prefix = "Actual_")
 
-compare_2526 <- bhcc_forecast %>%
+# 2025: only the Oct-24 forecast has a 2025 figure.
+compare_2025 <- bhcc_forecast_oct24 %>%
+  dplyr::select(CatchmentGroup, PAN, Forecast_oct24_2025 = Y2025) %>%
+  dplyr::left_join(actual_offers_2526 %>% dplyr::select(CatchmentGroup, Actual_2025),
+                   by = "CatchmentGroup") %>%
+  dplyr::mutate(Diff_2025 = Actual_2025 - Forecast_oct24_2025) %>%
   dplyr::select(CatchmentGroup, PAN,
-                Forecast_2025 = Y2025, Forecast_2026 = Y2026) %>%
-  dplyr::left_join(actual_offers_2526, by = "CatchmentGroup") %>%
-  dplyr::mutate(
-    Diff_2025 = Actual_2025 - Forecast_2025,
-    Diff_2026 = Actual_2026 - Forecast_2026
-  ) %>%
-  dplyr::select(CatchmentGroup, PAN,
-                Forecast_2025, Actual_2025, Diff_2025,
-                Forecast_2026, Actual_2026, Diff_2026)
+                Forecast_oct24_2025, Actual_2025, Diff_2025)
 
-knitr::kable(compare_2526,
+knitr::kable(compare_2025,
              col.names = c("Catchment", "PAN",
-                           "Forecast 2025", "Actual 2025", "Δ 2025",
-                           "Forecast 2026", "Actual 2026", "Δ 2026"),
-             align  = "lrrrrrrr",
+                           "Oct-24 forecast 2025", "Actual 2025", "Δ"),
+             align  = "lrrrr",
              format.args = list(big.mark = ","),
-             caption = "BHCC Appendix 6 forecast vs actual Y7 offers, 2025 and 2026")
+             caption = "2025: council Oct-24 forecast vs actual Y7 offers")
 ```
 
 ```{r}
-# Separate block for the religious schools since they're not one of the
-# six geographic catchments. PDF per-year implied demand = sum across all
-# catchments of "Estimated number going to CN / Kings".
+# 2026: both forecasts are available, plus actual offers.
+compare_2026 <- bhcc_forecast_oct24 %>%
+  dplyr::select(CatchmentGroup, PAN, Oct24 = Y2026) %>%
+  dplyr::left_join(
+    bhcc_forecast %>% dplyr::select(CatchmentGroup, Oct25 = Y2026),
+    by = "CatchmentGroup"
+  ) %>%
+  dplyr::left_join(actual_offers_2526 %>% dplyr::select(CatchmentGroup, Actual_2026),
+                   by = "CatchmentGroup") %>%
+  dplyr::mutate(
+    Diff_A_minus_Oct24 = Actual_2026 - Oct24,
+    Diff_A_minus_Oct25 = Actual_2026 - Oct25,
+    Diff_Oct25_minus_Oct24 = Oct25 - Oct24
+  ) %>%
+  dplyr::select(CatchmentGroup, PAN,
+                Oct24, Oct25, Actual_2026,
+                Diff_A_minus_Oct24, Diff_A_minus_Oct25,
+                Diff_Oct25_minus_Oct24)
+
+knitr::kable(compare_2026,
+             col.names = c("Catchment", "PAN",
+                           "Oct-24 forecast", "Oct-25 forecast", "Actual 2026",
+                           "Δ (Actual − Oct-24)", "Δ (Actual − Oct-25)",
+                           "Δ (Oct-25 − Oct-24)"),
+             align  = "lrrrrrrr",
+             format.args = list(big.mark = ","),
+             caption = "2026: both council forecasts vs actual Y7 offers — and how the council revised its view between Oct-24 and Oct-25")
+```
+
+```{r}
+# Religious schools: actuals vs PDF-implied demand (both forecasts).
 relig_actual <- secondary_all %>%
   dplyr::filter(School %in% c("Kings School", "Cardinal Newman"),
                 Year %in% c(2025L, 2026L)) %>%
   dplyr::select(Year, School, Total_offer) %>%
   tidyr::pivot_wider(names_from = School, values_from = Total_offer) %>%
   dplyr::mutate(`CN + Kings total` = `Cardinal Newman` + `Kings School`,
-                `PDF implied demand (per yr)` = 330L + 167L)
+                `Oct-24 implied (per yr)` = 330L + 167L,
+                `Oct-25 implied (per yr)` = 355L + 170L)
 
 knitr::kable(relig_actual,
-             align  = "lrrrr",
+             align  = "lrrrrr",
              format.args = list(big.mark = ","),
-             caption = "Religious schools: actual Y7 offers vs the PDF's implied per-year demand (CN + Kings, summed across catchments)")
+             caption = "Religious schools: actual Y7 offers vs each forecast's implied per-year demand (CN + Kings, summed across catchments)")
 ```
 
 **Headline read for 2025 and 2026:**
 
-- **Varndean / Dorothy Stringer** — the forecast under-estimated demand on both years. Forecast **581** in 2025 and **624** in 2026, but actual offers hit the PAN cap of **630** in both years (Δ +49 and +6). These two schools stay full regardless of the council's in-catchment demand model, because out-of-catchment demand tops them up. That's consistent with their long-standing over-subscription.
-- **Longhill** — the forecast *over-estimated* demand dramatically. Forecast **168 / 175**, actual offers only **97 / 81** (Δ –71 and –94). Offers are roughly **half** what the council modelled, and well below PAN 210. This is the single biggest forecast-vs-actual gap in the table.
-- **BACA** — 2025 actual (**89**) fell well below forecast (**134**), but 2026 flipped with actuals **146** against a forecast of **129** (Δ +17). The 2026 uptick mirrors the PAN increase from 180 to 180 and the modest city-wide 2026 rebound visible in the earlier charts — it will be worth watching whether this continues in 2027.
-- **PACA** — under-filled in both years relative to both forecast and PAN. 2025 offers **190** (forecast **206**, PAN 220), 2026 offers **183** (forecast **221**, PAN 220). So the council's model has been slightly optimistic for PACA — real-world demand was a bit softer than Oct-24 census data alone would suggest.
-- **Hove Park / Blatchington Mill** — 2025 tracked the forecast closely: offers **501** vs forecast **512** (Δ –11), both close to the combined PAN of **510**. 2026 is the striking case — the PDF projected a sharp drop in catchment demand to **434** (a shortfall position), but actual offers came in at **466**, i.e. **32 *above*** forecast (and still under PAN). Out-of-catchment demand appears to be filling some of the gap the council's demand-side model predicted.
-- **Patcham** — forecast and actual essentially agree in both years (offers 202 / 204 against forecast 198 / 205), small Δ of +4 and –1. The most accurately forecast catchment in the table.
-- **Religious schools (Kings + CN)** — both schools are at PAN in both years (CN 360 + Kings 180 = **540**), vs a PDF implied per-year demand of **497** summed across the six catchments. The **~43 / yr** gap is the outside-catchment faith intake (out-of-city Catholic applicants, siblings, etc.) that the PDF's catchment-side model doesn't see — exactly the flow that makes these schools city-wide admissions problems rather than local ones.
+- **Varndean / Dorothy Stringer** — both forecasts under-estimated demand. In 2025 the Oct-24 forecast was 581 vs actual 630 (PAN cap, Δ +49). In 2026 the Oct-24 forecast was 624 and the *revised* Oct-25 forecast is **601** — actual still hit PAN of **630** (Δ +29 against Oct-25). So the council revised demand *down* by 23 pupils between the two forecasts, but actual offers went the other way. These two schools stay full regardless of what the in-catchment demand model says — out-of-catchment demand tops them up.
+- **Longhill** — the most dramatic forecast-vs-actual gap. Oct-24 forecast **175** for 2026; Oct-25 revised to **162**; actual **81** (Δ –81 against Oct-25). Offers are less than **half** what the council now models, and well under PAN 210. The Oct-25 revision moves in the right direction but still over-estimates actual demand by a factor of two. Backing out an implied leakage from 2026 actuals gives roughly 67 %, vs the 23.89 % leakage baked into the Oct-25 forecast.
+- **BACA** — 2025 actual (**89**) fell well below the Oct-24 forecast of **134**, but 2026 flipped: actual **146** against forecasts of **129** (Oct-24) / **128** (Oct-25), i.e. +17–18 above both. The Oct-25 revision kept BACA essentially unchanged from Oct-24 — the council didn't update its view here, and the 2026 bounce-back in offers isn't picked up by either forecast.
+- **PACA** — consistently below forecast and below PAN. 2025 actual **190** (Oct-24 forecast 206, PAN 220). 2026 actual **183** against Oct-24 forecast **221** and Oct-25 forecast **218** — Δ –35 against the revised forecast. The Oct-25 revision barely changes the 2026 view (–3 vs Oct-24) but real-world demand was a further 35 below that.
+- **Hove Park / Blatchington Mill** — 2025 tracked the Oct-24 forecast closely (offers 501 vs forecast 512, both near PAN 510, Δ –11). 2026 is the striking case: the Oct-24 forecast projected a sharp drop to 434; Oct-25 revised **down further** to **424**; actual offers came in at **466**, i.e. **+42** above the Oct-25 forecast. The council is increasingly bearish on Hove Park / Blatch demand, but out-of-catchment pull-in is propping up offers.
+- **Patcham** — Oct-24 was the most accurate forecast on the table (198 / 205 against 202 / 204 actual, Δ +4 / –1). Oct-25 revised 2026 demand **down by 11** to **194**, but actual 2026 offers were **204** — so the revision moved *away* from reality by about 10 pupils.
+- **Religious schools (Kings + CN)** — both schools are at PAN in both years (CN 360 + Kings 180 = **540**). The Oct-24 forecast's implied demand of 497 / yr rose to **525 / yr** in the Oct-25 forecast, closing the gap with PAN. The council has (rightly) calibrated the faith-school draw upward, but both forecasts still under-state what actually happens there — the 15-pupil residual is the outside-catchment faith intake (out-of-city applicants, siblings, late admits) that no catchment-based model can see.
 
-**Bottom line** — Varndean / Dorothy Stringer, Patcham and the religious schools tracked the forecast closely or ran *full* regardless of forecast, so the council's demand model is a reasonable guide to supply-constrained catchments. The PDF over-estimates demand at **Longhill, PACA and BACA** (where schools run below PAN anyway, so forecast error doesn't translate to unmet demand), and under-estimates it at **Varndean / Stringer, Hove Park / Blatch (2026) and the religious schools** (where out-of-catchment demand fills any forecast gap). The practical implication: places-surplus forecasts for the under-filled catchments are probably *optimistic* — actual under-fill at Longhill and BACA is worse than the PDF's "adjusted demand vs PAN" surplus row would suggest.
+**The Oct-25 revision, in one paragraph.** The new forecast is **almost uniformly lower** than its predecessor for every catchment-year overlap. For 2026 specifically, the revisions are: Hove Park / Blatch −10, Varndean / Stringer −23, Longhill −13, Patcham −11, BACA −1, PACA −3. Compared with actual 2026 offers, the Oct-25 revision is closer to reality at **PACA** and **Longhill** (where the Oct-24 forecast was too high), and *further from reality* at **Hove Park / Blatch, Varndean / Stringer, BACA and Patcham** (where actual offers ran above both forecasts). The pattern is consistent with the council's method being a **residential-demand** model: when overall city demand falls, every forecast drops, but actual **offers** at individual schools are governed by where families apply — and Hove Park / Blatch, Varndean / Stringer and Patcham continue to attract more pupils than their own catchment produces.
 
-At the city level the council projects aggregate demand of **2,297** (2025) and **2,284** (2026). Summing actual 2025 + 2026 offers across all nine secondary schools from our data provides a direct check — any gap reflects a mix of (a) leakage rates the council has already baked in, (b) out-of-city and in-year late applicants, and (c) schools running below PAN where catchment demand fell short.
+**Bottom line.** For the supply-constrained catchments (Varndean / Stringer, the religious schools) the council's forecasts are essentially a lower bound on offers — both forecasts correctly predict demand near or above PAN. For the under-filled catchments (Longhill, BACA, PACA), the Oct-25 forecast is closer to reality than Oct-24 but still optimistic: actual under-fill at **Longhill** in particular is substantially worse than even the revised forecast implies.
+
+At the city level the council's Oct-25 forecast projects **2,251** (2026) aggregate demand, revised down from 2,284 in the Oct-24 forecast. The city-wide aggregate check against actual 2026 Y7 offers is worked through in the cohort-projection section below — for now, the main takeaway is that the forecast revisions and remaining disagreements are almost entirely about *distribution* across catchments rather than the city-level total.
 
 # Our Own Projection: Cohort-Aging From Primary Allocations
 
@@ -2441,29 +2490,29 @@ knitr::kable(
 The **retention ratio** column is how many Y7 offers a catchment has historically ended up making for each Reception offer it made seven years earlier. A number below 1 means the catchment's primary-age cohorts typically *shrink* by the time they reach Y7 (net leakage to independents, Catholic schools, out-of-city, etc.); a number above 1 means the catchment's Y7 schools typically end up larger than their own primary intake (cross-catchment pulling-in, or PAN-constrained schools being filled from outside). For the Religious schools the ratio is well above 1 because only Catholic primaries are counted in that row on the primary side, while both Kings and CN sit on the secondary side — so the ratio mechanically picks up every non-Catholic-primary pupil who joins Kings at Y7.
 
 ```{r}
-# --- Project 2027..2031 secondary offers from primary 2020..2024 ---
+# --- Project 2027..2033 secondary offers from primary 2020..2026 ---
+# Our primary offer data runs to 2026, so we can cohort-age through 2033.
+# The council's Oct-25 forecast reaches 2032 — overlap is 2027-2032.
 projection <- primary_by_catch %>%
-  dplyr::filter(Year >= 2020L, Year <= 2024L) %>%
+  dplyr::filter(Year >= 2020L, Year <= 2026L) %>%
   dplyr::rename(Primary_year = Year) %>%
   dplyr::mutate(Secondary_year = Primary_year + LAG) %>%
   dplyr::left_join(retention %>% dplyr::select(CatchmentGroup, retention_ratio),
                    by = "CatchmentGroup") %>%
   dplyr::mutate(Projected_offers = round(Primary_offers * retention_ratio))
 
-# Pull our projection into a wide table alongside the council's forecast
 proj_wide <- projection %>%
   dplyr::select(CatchmentGroup, Secondary_year, Projected_offers) %>%
   tidyr::pivot_wider(names_from = Secondary_year, values_from = Projected_offers,
                      names_prefix = "Proj_")
 
-# Council forecast (reshaped) — use only the six geographic catchments here;
-# the PDF doesn't publish a Religious-schools demand row.
+# Council Oct-25 forecast (reshaped) for the six geographic catchments.
 council_long <- bhcc_forecast %>%
   dplyr::select(CatchmentGroup, PAN,
-                `Council_2025` = Y2025, `Council_2026` = Y2026,
-                `Council_2027` = Y2027, `Council_2028` = Y2028,
-                `Council_2029` = Y2029, `Council_2030` = Y2030,
-                `Council_2031` = Y2031)
+                `Council_2026` = Y2026, `Council_2027` = Y2027,
+                `Council_2028` = Y2028, `Council_2029` = Y2029,
+                `Council_2030` = Y2030, `Council_2031` = Y2031,
+                `Council_2032` = Y2032)
 
 compare_proj <- council_long %>%
   dplyr::left_join(proj_wide, by = "CatchmentGroup") %>%
@@ -2472,7 +2521,9 @@ compare_proj <- council_long %>%
                 Council_2028, Proj_2028,
                 Council_2029, Proj_2029,
                 Council_2030, Proj_2030,
-                Council_2031, Proj_2031)
+                Council_2031, Proj_2031,
+                Council_2032, Proj_2032,
+                Proj_2033)
 
 knitr::kable(
   compare_proj,
@@ -2481,10 +2532,12 @@ knitr::kable(
                 "Council 2028", "Ours 2028",
                 "Council 2029", "Ours 2029",
                 "Council 2030", "Ours 2030",
-                "Council 2031", "Ours 2031"),
-  align = "lrrrrrrrrrrr",
+                "Council 2031", "Ours 2031",
+                "Council 2032", "Ours 2032",
+                "Ours 2033"),
+  align = "lrrrrrrrrrrrrrr",
   format.args = list(big.mark = ","),
-  caption = "Council's Appendix 6 forecast vs our cohort-aged projection, Y7 2027-2031"
+  caption = "Council's Oct-25 forecast vs our cohort-aged projection, Y7 2027-2032 (+ our 2033 extension, beyond the council window)"
 )
 ```
 
@@ -2503,13 +2556,23 @@ series_proj <- projection %>%
                    Series = "Our projection (cohort-aged)")
 
 series_council <- bhcc_forecast %>%
+  tidyr::pivot_longer(cols = c(Y2026, Y2027, Y2028, Y2029, Y2030, Y2031, Y2032),
+                      names_to = "YearStr", values_to = "Offers") %>%
+  dplyr::mutate(Year = as.integer(sub("^Y", "", YearStr)),
+                Series = "Council forecast (Oct-25, Appendix 7)") %>%
+  dplyr::select(CatchmentGroup, Year, Offers, Series)
+
+# Also bring in the Oct-24 forecast as a separate series so readers can see
+# how the council's view has shifted between the two successive forecasts.
+series_council_oct24 <- bhcc_forecast_oct24 %>%
   tidyr::pivot_longer(cols = c(Y2025, Y2026, Y2027, Y2028, Y2029, Y2030, Y2031),
                       names_to = "YearStr", values_to = "Offers") %>%
   dplyr::mutate(Year = as.integer(sub("^Y", "", YearStr)),
-                Series = "Council forecast (Appendix 6)") %>%
+                Series = "Council forecast (Oct-24, Appendix 6)") %>%
   dplyr::select(CatchmentGroup, Year, Offers, Series)
 
-series_all <- dplyr::bind_rows(series_actual, series_proj, series_council) %>%
+series_all <- dplyr::bind_rows(series_actual, series_proj,
+                               series_council, series_council_oct24) %>%
   dplyr::filter(!is.na(CatchmentGroup))
 
 # Keep the six geographic catchments + Religious schools (actuals + our proj
@@ -2542,12 +2605,15 @@ p_proj <- ggplot(series_all,
              linetype = "dotted", colour = "grey30", linewidth = 0.4) +
   geom_line(linewidth = 0.8) +
   geom_point(size = 1.4) +
-  scale_colour_manual(values = c("Actual offers"                   = "#1f78b4",
-                                 "Our projection (cohort-aged)"    = "#33a02c",
-                                 "Council forecast (Appendix 6)"   = "#e31a1c")) +
+  scale_colour_manual(values = c(
+    "Actual offers"                           = "#1f78b4",
+    "Our projection (cohort-aged)"            = "#33a02c",
+    "Council forecast (Oct-25, Appendix 7)"   = "#e31a1c",
+    "Council forecast (Oct-24, Appendix 6)"   = "#fb9a99"
+  )) +
   facet_wrap(~ CatchmentGroup, ncol = 3, scales = "free_y") +
-  labs(title = "Y7 offers: actuals, our cohort-aged projection, and the council forecast",
-       subtitle = "Dotted grey lines = catchment PAN; projection uses primary offers(Y) \u00d7 retention ratio as secondary offers(Y+7)",
+  labs(title = "Y7 offers: actuals, our cohort-aged projection, and the council's two forecasts",
+       subtitle = "Dotted grey = catchment PAN; our projection = primary offers(Y) \u00d7 retention ratio as secondary offers(Y+7); pink = superseded Oct-24 forecast",
        x = NULL, y = "Y7 offers",
        colour = NULL) +
   theme_minimal(base_size = 10) +
@@ -2564,21 +2630,22 @@ ggplotly(p_proj, tooltip = "text") %>%
 **Reading the chart:**
 
 - Blue = actual Y7 offers we have in this document (2013–2026).
-- Green = our projection from primary cohort aging (2027–2031).
-- Red = the council's Appendix 6 demand forecast (published 2025–2031).
+- Green = our cohort-aged projection (2027–2033, seven years ahead of the latest primary cohorts).
+- Red = the council's current Oct-25 forecast (Appendix 7, published 2026–2032).
+- Pink = the council's earlier Oct-24 forecast (Appendix 6, published 2025–2031), retained here so the revision between the two is visible.
 - Dotted grey line = catchment PAN (not plotted for the Religious schools panel, which has no single PAN).
 
-**Catchment-by-catchment read (2027–2031):**
+**The first thing to look at** is where the red (Oct-25) line sits relative to the pink (Oct-24) line: for almost every catchment the council has revised its view **downward** between the two forecasts. Where the revision was biggest — Longhill, Varndean / Stringer, Hove Park / Blatchington Mill — the Oct-25 forecast has moved partway towards our cohort-aged projection, though at Longhill it still sits well above what the 2025/2026 actuals and our projection imply.
 
-- **Longhill** — the biggest gap in the chart. Our projection is **96–112 offers/yr**, the council's is **151–176**. At a retention ratio of **0.50**, only half of a Longhill primary-catchment cohort has historically ended up with a Longhill Y7 offer. Projected forward, that implies Longhill runs at **under 50 % of PAN (210)** every year through 2031 — substantially below even the council's already-cautious forecast. If our projection is right, the council's "surplus of places" row materially understates how empty Longhill will be.
-- **BACA** — our projection (**74–108 offers/yr**) is 20–30 % below the council's (**95–143**). BACA's retention ratio is **1.27** (it pulls in more Y7 pupils than its own primaries produce), but its primary cohort base is small enough that the projection still comes out well below PAN (180) in every year. The 2030 dip to 74 reflects an unusually small 2023 Reception cohort in the BACA primary catchment.
-- **PACA** — our projection (**147–159**) sits consistently below the council's (**150–214**), by about **10–25 offers/yr**. PACA's primary base times the fitted retention ratio (**0.77**) gives a flatter, lower trajectory than the council's rising-then-falling demand profile. Both imply PACA running well below PAN (220) throughout.
-- **Hove Park / Blatchington Mill** — this is the one catchment where our projection is **above** the council's. We project **414–471** offers/yr; the council forecasts **351–443** demand. The two schools have historically absorbed more pupils than the Hove Park / Blatchington Mill primary catchment delivers (retention ratio **0.65** — i.e. lots of their primary-age pupils leak to CN / Kings / independents — but out-of-catchment secondary demand *more than* compensates). Projected forward, we expect Y7 offers to stay close to current ~500 levels and drift to ~410 by 2031; the council thinks it falls further, to ~365.
-- **Varndean / Dorothy Stringer** — our projection (**521–595**) is just below the council's (**539–592**). Both trend downward. Neither reaches PAN (630) on central assumptions — a meaningful shift away from the past decade's over-subscribed pattern, driven by shrinking primary cohorts at both ends of the funnel. If either our retention ratio is a little conservative or out-of-catchment demand holds up, the schools will continue filling to PAN; but for the first time in this dataset, neither model is *predicting* that outcome.
-- **Patcham** — our projection (**161–196**) is close to the council's (**163–212**), with the two lines essentially tracking each other at about 88–95 % of PAN (225). Patcham is the catchment where the two methods agree best.
-- **Religious schools** — our projection drifts downward from the current **540** offers (= PAN) to roughly **500** by 2030, then bounces to **543** in 2031 as a slightly larger 2024 Catholic-primary cohort arrives. The council doesn't publish a matching demand line for this group, so no direct comparison is possible. Note the retention ratio of **2.57** is inflated because Catholic primaries are small compared with Kings + CN combined — it mechanically includes every non-Catholic-primary pupil joining Kings at Y7. What matters here is the *trend* (downward through 2030), not the absolute value.
+**Catchment-by-catchment read (2027-2032 overlap):**
 
-**How to read the disagreement.** Where the green (ours) and red (council) lines disagree, it's not that one is "wrong" — they're measuring slightly different things. The council models projected demand from catchment residents, built up from the Oct-24 school census; our projection multiplies primary offers by an empirically fitted secondary/primary ratio, which absorbs everything that happens to a cohort between ages 4 and 11 (in-state-sector leakage, cross-catchment flows, and PAN-capping) in a single per-catchment number. Where the two methods agree (Patcham, Varndean / Stringer, Hove Park / Blatchington Mill broadly) we can have more confidence in the forecast direction. Where they disagree sharply (Longhill, PACA, BACA), the mechanisms baked into each method are pulling in different directions — and the outturn will depend on whether the council's demand-side assumptions or our empirical flow ratios are closer to what actually happens after 2026.
+- **Longhill** — the clearest disagreement. Our projection is 17-34 % below the council's Oct-25 line in every year of the overlap (e.g. 2028: 112 vs 160; 2031: 98 vs 148). The Oct-25 revision lowered Longhill by ~5-15 pupils/year vs the Oct-24 view, but the gap to our method is still large and one-sided.
+- **BACA** — our projection is 12-24 % below the council's in five of six overlap years, with 2032 the only year the two lines touch (108 vs 103). The Oct-25 Longhill-style revision didn't really happen at BACA — the council's line barely moved.
+- **PACA** — our projection is 10-26 % below the council's in five of six overlap years, and identical in 2031 (both 147). Oct-25 revised PACA down modestly from Oct-24.
+- **Hove Park / Blatchington Mill** — our projection is *above* the council's in every year of the overlap, by 3-24 %. This is the one catchment where we consistently forecast *more* demand than the council. The Oct-25 revision lowered the council's line here too, widening the gap.
+- **Varndean / Dorothy Stringer** — the two methods are close everywhere (within ±4 % in every year). This was the catchment where Oct-24 most obviously disagreed with our projection; the Oct-25 revision has largely closed that gap.
+- **Patcham** — also close, with the two methods within ±9 % in every year and no systematic direction.
+- **Religious schools (Kings + CN)** — the council's Appendix 7 row for "Kings + CN" is 355 + 170 = 525/year flat (up from 330 + 167 = 497/year in Oct-24); our cohort-aged projection for the Religious schools row varies by cohort. No direct per-catchment line in the chart above for this since the council publishes only a flat 525 assumption.
 
 ## Whole-City Aggregate: Our Projection vs the Council's
 
@@ -2599,17 +2666,25 @@ city_proj <- projection %>%
                    .groups = "drop") %>%
   dplyr::mutate(Series = "Our projection (cohort-aged)")
 
-# Council's "Total for all Schools" row from Appendix 6 (incl. Kings + CN)
+# Council's "Total for all Schools" row, Appendix 7 (Oct-25), incl. Kings + CN
 city_council <- tibble::tibble(
-  Year    = 2025:2031,
-  Offers  = c(2297L, 2284L, 2234L, 2206L, 2117L, 2028L, 2009L),
-  Series  = "Council forecast (Total for all schools)"
+  Year    = 2026:2032,
+  Offers  = c(2251L, 2215L, 2169L, 2087L, 2025L, 2013L, 1869L),
+  Series  = "Council forecast (Total for all schools, Oct-25)"
 )
 
-city_all <- dplyr::bind_rows(city_actual, city_proj, city_council)
+# Retain the earlier Oct-24 forecast as a reference series so the revision is
+# visible in the whole-city chart too.
+city_council_oct24 <- tibble::tibble(
+  Year    = 2025:2031,
+  Offers  = c(2297L, 2284L, 2234L, 2206L, 2117L, 2028L, 2009L),
+  Series  = "Council forecast (Total for all schools, Oct-24)"
+)
 
-# Summary table for the five projection years (2027-2031: the window where
-# we have both our projection and the council's forecast).
+city_all <- dplyr::bind_rows(city_actual, city_proj, city_council, city_council_oct24)
+
+# Summary table for the six projection years where we have both series
+# (2027-2032: our projection and the council's Oct-25 forecast overlap).
 city_table <- dplyr::inner_join(
   city_proj %>% dplyr::select(Year, Ours = Offers),
   city_council %>% dplyr::select(Year, Council = Offers),
@@ -2628,7 +2703,7 @@ knitr::kable(
   col.names = c("Year", "Ours", "Council", "Δ (ours − council)", "Δ %"),
   align  = "lrrrr",
   format.args = list(big.mark = ","),
-  caption = "City-wide Y7 projection (2027-2031): ours vs council's Appendix 6 total-for-all-schools"
+  caption = "City-wide Y7 projection (2027-2032): ours vs council's Appendix 7 (Oct-25) total-for-all-schools"
 )
 ```
 
@@ -2641,13 +2716,14 @@ p_city <- ggplot(city_all,
   geom_line(linewidth = 1) +
   geom_point(size = 2) +
   scale_colour_manual(values = c(
-    "Actual offers (all schools)"              = "#1f78b4",
-    "Our projection (cohort-aged)"             = "#33a02c",
-    "Council forecast (Total for all schools)" = "#e31a1c"
+    "Actual offers (all schools)"                      = "#1f78b4",
+    "Our projection (cohort-aged)"                     = "#33a02c",
+    "Council forecast (Total for all schools, Oct-25)" = "#e31a1c",
+    "Council forecast (Total for all schools, Oct-24)" = "#fb9a99"
   )) +
   scale_x_continuous(breaks = seq(min(city_all$Year), max(city_all$Year), 1)) +
-  labs(title = "City-wide Y7 offers: actuals, our projection, and council forecast",
-       subtitle = "Sum across all 9 secondary schools (6 catchments + Cardinal Newman + Kings)",
+  labs(title = "City-wide Y7 offers: actuals, our projection, and council forecasts",
+       subtitle = "Sum across all 9 secondary schools (6 catchments + Cardinal Newman + Kings); Oct-25 = current, Oct-24 = prior",
        x = NULL, y = "Total Y7 offers",
        colour = NULL) +
   theme_minimal(base_size = 11) +
@@ -2658,55 +2734,49 @@ ggplotly(p_city, tooltip = "text") %>%
   plotly::layout(legend = list(orientation = "h", x = 0, y = 1.1))
 ```
 
-At the city level the **overall direction is the same on both methods** — a steady decline in aggregate Y7 demand from ~2,300 in the mid-2020s to ~2,000 by 2031, a drop of roughly **10 %** over six years. That's consistent with the shrinking primary cohorts on our side, and the council's census-based school-roll decline on theirs.
+At the city level the **overall direction is the same on both methods and both forecasts** — a steady decline in aggregate Y7 demand from ~2,300 in the mid-2020s to well under 2,000 by the early 2030s. That's consistent with the shrinking primary cohorts on our side, and the council's census-based school-roll decline on theirs.
 
-The two methods agree most closely at the **ends** of the forecast window:
+Two things are visible in the chart and table above:
 
-- **2027**: Ours **2,206**, Council **2,234** — Δ −28 (−1.3 %).
-- **2031**: Ours **2,007**, Council **2,009** — Δ −2 (−0.1 %).
+1. **The council has revised its city-wide demand forecast downward between Oct-24 and Oct-25.** The Oct-24 forecast (pink) had aggregate demand of 2,206 in 2028 falling to 2,009 in 2031. The Oct-25 forecast (red) has 2,169 in 2028 falling to 2,013 in 2031 and 1,869 in 2032. So for the five-year overlap window 2027-2031 the council's own view has come down by roughly **50-100 pupils/year**, which narrows (but does not close) the gap to our cohort-aged projection.
+2. **Our projection still sits at or below the council's Oct-25 forecast in every year of the overlap.** The gap is smaller than it was against the Oct-24 forecast, but our method still finds retention ratios low enough — especially at Longhill, BACA and PACA — that the city total lands below the council's demand forecast. Hove Park / Blatchington Mill is the only catchment where our projection runs above the council's, and not by enough to cancel out the undershoots elsewhere.
 
-The biggest gap opens up in the middle years:
-
-- **2028**: Ours **2,124**, Council **2,206** — Δ −82 (−3.7 %).
-- **2029**: Ours **2,024**, Council **2,117** — Δ −93 (−4.4 %).
-- **2030**: Ours **1,929**, Council **2,028** — Δ −99 (−4.9 %).
-
-In every year our city-level projection sits **at or below** the council's. Our method finds that historical retention ratios (primary → secondary 7 years later) are low enough — especially at Longhill, BACA and PACA — that the city total lands around **100 pupils below** the council's demand forecast in 2028-2030. Hove Park / Blatchington Mill is the only catchment where our projection runs above the council's, and by not enough to cancel out the Longhill / BACA / PACA undershoot.
-
-The practical implication: both methods project a substantial city-wide **surplus** of places by 2030–2031. The council sees aggregate demand of ~2,009 against total PAN of **2,500** — a surplus of **491 places (~20 %)**. Our method projects ~2,007 offers in 2031 — essentially the same aggregate — but gets there mostly through lower Longhill, BACA and PACA throughputs than the council expects, partly offset by higher Hove Park / Blatchington Mill throughput. So the two methods agree on the overall surplus scale but disagree on where in the city it will fall hardest.
+The practical implication: both methods project a substantial city-wide **surplus** of places by the early 2030s. Against a total PAN of **2,500** (catchment schools + Cardinal Newman + Kings), the council's Oct-25 forecast implies an aggregate surplus rising from ~250 places in 2026 to ~630 places (~25 %) by 2032. Our method, applied only to 2027 onwards, lands in the same range for the overlap years. So the two methods agree on the overall surplus scale but disagree on where in the city it will fall hardest — and the council's Oct-25 revision has narrowed, but not eliminated, that disagreement.
 
 ## Are the Differences Methodological, or Just Noise?
 
 When comparing two forecasts it's worth asking whether the gaps between them are **systematic** (driven by the structure of the methods and likely to persist) or **noisy** (small random fluctuations that would wash out over enough years). Both matter for how to read the forecasts, but they imply very different next steps. A systematic gap in a particular direction at a particular school is a signal for planners; noise is not.
 
-Looking at the catchment-by-catchment numbers in the table above, three features stand out as **systematic rather than noise**:
+Looking at the catchment-by-catchment numbers in the table above — now against the council's **Oct-25** forecast — three features still stand out as **systematic rather than noise**, and two further patterns have shifted compared to the Oct-24 comparison:
 
-1. **The direction of the gap at Longhill is one-sided every single year.** Our projection is **39 %–43 % below** the council's in all five forecast years (2027: 107 vs 166; 2028: 112 vs 176; 2029: 104 vs 159; 2030: 96 vs 151; 2031: 98 vs 154). That's not random fluctuation — it's the two methods reaching fundamentally different answers about what will happen at Longhill.
-2. **BACA and PACA are consistently lower on our side.** Ours is below the council's in 10 of 10 BACA + PACA year-cells, with gaps of 10–30 %.
-3. **Hove Park / Blatchington Mill is consistently higher on our side.** Ours is above the council's in 5 of 5 years, with gaps of 6–21 %.
+1. **The direction of the gap at Longhill is one-sided every single year.** Our projection is **17 %–34 % below** the council's in all six overlap years (2027: 107 vs 148; 2028: 112 vs 160; 2029: 104 vs 146; 2030: 96 vs 129; 2031: 98 vs 148; 2032: 83 vs 100). That range is narrower than it was against the Oct-24 forecast (39–43 %), reflecting the council's upward revision of the Longhill leakage rate from 22.61 % to 23.89 % — but the gap is still substantial and one-directional.
+2. **BACA and PACA are consistently lower on our side.** Ours is below the council's in 10 of 12 BACA + PACA year-cells (with one tie at PACA 2031 and one small reversal at BACA 2032), with gaps typically 10–30 %.
+3. **Hove Park / Blatchington Mill is consistently higher on our side.** Ours is above the council's in 6 of 6 overlap years, with gaps of 3–24 %. This is the only catchment where our projection systematically exceeds the council's.
+4. **Varndean / Dorothy Stringer has largely been reconciled.** Under Oct-24 this catchment showed a consistent several-percent gap; under Oct-25 the two methods are within ±4 % in every year. The council's revision has closed most of that disagreement.
+5. **Patcham is now mixed rather than systematic.** Our projection alternates between slightly above and slightly below the council's Oct-25 line, with no clear direction.
 
-The SDs in the retention-ratio table (0.02–0.23) give another read: if the ratios were themselves noisy, we'd expect a roughly symmetric mixture of "ours is higher" and "ours is lower" across catchments and years. What we see instead is a clear pattern per catchment, pointing to structural drivers.
+The SDs in the retention-ratio table (0.02–0.23) give another read: if the ratios were themselves noisy, we'd expect a roughly symmetric mixture of "ours is higher" and "ours is lower" across catchments and years. What we see instead — even after the council's Oct-25 revision — is a clear pattern per catchment, pointing to structural drivers.
 
 ### Why Longhill is the big one
 
-Longhill is also the catchment where the council's **2025 and 2026 actuals undershot the forecast most dramatically** — 97 offers in 2025 against a forecast of 168, and 81 offers in 2026 against a forecast of 175. So the disagreement between our projection and the council's for 2027 onwards isn't theoretical: for the two years where both forecasts *can* be checked against actuals, **the council's method was substantially over-estimating Longhill demand and our method would have been much closer**.
+Longhill is also the catchment where the council's **2025 and 2026 actuals undershot the Oct-24 forecast most dramatically** — 97 offers in 2025 against a forecast of 168, and 81 offers in 2026 against a forecast of 175. So the disagreement between our projection and the council's for 2027 onwards isn't theoretical: for the two years where both forecasts *could* be checked against actuals, **the council's Oct-24 method was substantially over-estimating Longhill demand and our method would have been much closer**.
 
-The most likely structural reason: the council's method works by taking the current Oct-24 school census for each year group (children now in Longhill's primary catchment and currently in R–Y6) and applying a **single leakage percentage of 22.61 %**, then subtracting a fixed 55 + 3 = 58 going to CN/Kings. That 22.61 % leakage figure is already the highest in the city — so the council isn't blind to Longhill's difficulties — but it's still *much lower than what the actuals imply*. Backing out the implied leakage from the 2025/26 actuals gives ~65–70 %, i.e. roughly three times the council's assumed rate.
+The council has partially responded in the Oct-25 revision. The published Longhill leakage rate has been raised from **22.61 %** (Oct-24) to **23.89 %** (Oct-25), and the Longhill demand line has been pulled down year-by-year — 2027 now 148 (was 166 in Oct-24), 2028 now 160 (was 176), 2031 now 148 (was 154). But the underlying method is unchanged: take the current Oct-25 census for each year group (children now in Longhill's primary catchment and in R–Y6), apply a single leakage percentage, then subtract a fixed number going to CN/Kings. The revised 23.89 % is still the highest leakage figure in the city — so the council plainly is not blind to Longhill's difficulties — but it is *still much lower than what the actuals imply*. Backing out the implied leakage from the 2025/26 actuals gives ~65–70 %, i.e. roughly three times even the raised Oct-25 rate.
 
-Put another way: the council's method carries a built-in assumption that the relationship between "children of secondary age resident in Longhill's catchment" and "Y7 offers actually made at Longhill High" is broadly stable, with a fixed percentage moving elsewhere. Our empirical-ratio method learns that this relationship has been steadily deteriorating across the six cohorts we have data for, and the 2025/26 actuals confirm that. If the decline continues, both methods are biased upward, but the council's much more so.
+Put another way: the council's method carries a built-in assumption that the relationship between "children of secondary age resident in Longhill's catchment" and "Y7 offers actually made at Longhill High" is broadly stable, with a fixed percentage moving elsewhere. Our empirical-ratio method learns that this relationship has been steadily deteriorating across the six cohorts we have data for, and the 2025/26 actuals confirm that. The Oct-25 forecast has nudged the leakage assumption up by 1.28 percentage points, which helps at the margins, but if the real-world decline continues at the pace the 2021-2026 Y7 actuals suggest, both methods remain biased upward — the council's much more so.
 
 ### What this means in practice
 
 It's hard to tell from outside the council whether this is (a) deliberately cautious forecasting — "let's not project too fast a decline in case we need the capacity" — or (b) a consequence of the method itself, where a fixed leakage percentage naturally lags when real-world leakage is rising. I think **(b) is the more likely explanation**, for two reasons:
 
-- The 22.61 % Longhill leakage is already the highest by a wide margin, which suggests the council has tried to calibrate for the specific problem.
-- A method that decomposes census → fixed leakage % → fixed CN/Kings annual number will, by construction, propagate whatever the recent calibrated leakage was forward. If leakage is rising year-on-year (as Longhill's 2021–2026 actuals suggest it has been), the fitted percentage will lag behind reality until the calibration is revisited. That's a structural property of the method, not a judgement call.
+- The 23.89 % Longhill leakage (raised from 22.61 % in the Oct-25 revision) is already the highest by a wide margin, which suggests the council has tried to calibrate for the specific problem.
+- A method that decomposes census → fixed leakage % → fixed CN/Kings annual number will, by construction, propagate whatever the recent calibrated leakage was forward. If leakage is rising year-on-year (as Longhill's 2021–2026 actuals suggest it has been), the fitted percentage will lag behind reality until the calibration is revisited. The Oct-25 update has revisited it once — but only by 1.28 percentage points, against 2025/26 actuals implying a real rate around three times that. That's a structural property of the method, not a judgement call.
 
-But the *effect* is the same either way. For planning purposes, decisions about Longhill's future — whether to reduce PAN, consolidate provision, adjust catchment boundaries — will be taken on the basis of forecast demand figures that **both our method and the 2025/26 actuals suggest are optimistic by 50–100 pupils per year**. Whether one calls this "hope" or "methodological lag" is partly a matter of framing, but the practical implication is that if the council's Appendix 6 surplus numbers feel uncomfortable already, the underlying surplus at Longhill is very likely larger still.
+But the *effect* is the same either way. For planning purposes, decisions about Longhill's future — whether to reduce PAN, consolidate provision, adjust catchment boundaries — will be taken on the basis of forecast demand figures that **both our method and the 2025/26 actuals suggest are still optimistic by 30–50 pupils per year** even after the Oct-25 revision. Whether one calls this "hope" or "methodological lag" is partly a matter of framing, but the practical implication is that if the council's Appendix 7 surplus numbers feel uncomfortable already, the underlying surplus at Longhill is very likely larger still.
 
 A similar but smaller version of this story applies to **BACA** and **PACA**, where our projection sits 10–30 % below the council's and the 2025/26 actuals again point in our direction (the 2026 BACA rebound notwithstanding).
 
-**Summary**: the gaps are methodological, not noise. The direction of each gap is consistent with the structural features of each method — the council's fixed-leakage, census-driven approach tends to over-estimate demand in catchments where state-sector leakage is rising faster than the calibration assumes; our empirical-ratio approach picks that up automatically but is itself vulnerable if the future behaves very differently from the 2014–2019 cohorts. For Longhill specifically, the 2025 and 2026 actuals clearly back our projection over the council's, suggesting the council's forecast is optimistic there — not through hope, but through a method that struggles to keep up with an accelerating secular trend.
+**Summary**: the gaps are methodological, not noise. The direction of each gap is consistent with the structural features of each method — the council's fixed-leakage, census-driven approach tends to over-estimate demand in catchments where state-sector leakage is rising faster than the calibration assumes; our empirical-ratio approach picks that up automatically but is itself vulnerable if the future behaves very differently from the 2014–2019 cohorts. The Oct-25 revision has narrowed the disagreement at Varndean / Stringer and at the city-wide level, but at Longhill specifically the 2025 and 2026 actuals still clearly back our projection over the council's — suggesting the revised forecast is optimistic there too, not through hope, but through a method that struggles to keep up with an accelerating secular trend.
 
 # Maps — Applications and Offers as Proportional Circles
 
