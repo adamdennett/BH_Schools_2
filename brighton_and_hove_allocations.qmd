@@ -1630,6 +1630,53 @@ ggplotly(p_catch, tooltip = "text")
 
 Because two-school catchments are aggregated, all seven lines are on a comparable "catchment demand" footing. The Religious-schools line captures the total offer volume of the two faith schools together, which can rise or fall independently of the geographic catchments.
 
+## Applications per Slot by Catchment
+
+The per-preference-slot standardisation applied to the secondary applications chart above can also be aggregated by catchment. Each catchment's total applications (sum across its one or two schools) is divided by the number of preference slots available in that year (3 up to 2025, 4 from 2026), so any 2026 jump driven purely by adding a 4th slot is removed and catchments can be compared on a like-for-like demand basis across the whole period.
+
+```{r}
+catchment_apps_std <- secondary_all %>%
+  dplyr::filter(School != "Total", !is.na(Total)) %>%
+  dplyr::inner_join(catchment_lookup, by = "School") %>%
+  dplyr::group_by(Year, CatchmentGroup) %>%
+  dplyr::summarise(
+    Total   = sum(Total, na.rm = TRUE),
+    Schools = paste(sort(unique(School)), collapse = " + "),
+    .groups = "drop"
+  ) %>%
+  dplyr::mutate(
+    slots   = ifelse(Year >= 2026, 4L, 3L),
+    PerSlot = Total / slots
+  )
+
+p_catch_std <- ggplot(catchment_apps_std,
+                      aes(x = Year, y = PerSlot, color = CatchmentGroup,
+                          group = CatchmentGroup,
+                          text = paste0(CatchmentGroup, "<br>Year: ", Year,
+                                        "<br>Slots available: ", slots,
+                                        "<br>Total applications: ",
+                                        format(Total, big.mark = ","),
+                                        "<br>Applications / slot: ",
+                                        formatC(PerSlot, format = "f", digits = 1),
+                                        "<br>Schools: ", Schools))) +
+  geom_line(linewidth = 0.8) +
+  geom_point(size = 1.6) +
+  scale_x_continuous(breaks = seq(2013, 2026, 1)) +
+  scale_color_manual(values = catchment_palette) +
+  labs(title = "Secondary Applications per Preference Slot, by Catchment",
+       subtitle = "Catchment-total applications ÷ preference slots available (3 up to 2025, 4 from 2026)",
+       x = "Year",
+       y = "Applications ÷ slots available",
+       color = NULL) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
+ggplotly(p_catch_std, tooltip = "text")
+```
+
+A line that is broadly flat between 2025 and 2026 on this chart means the catchment's 2026 rise in the raw by-catchment chart above is essentially the extra preference slot — not a real increase in families choosing that catchment. A line that steps clearly *up* from 2025 to 2026 is picking up genuine additional demand per slot; a line that steps *down* is losing demand even before the mechanical slot inflation is applied.
+
 # Maps — Applications and Offers as Proportional Circles
 
 School locations are taken from [Get Information about Schools](https://get-information-schools.service.gov.uk/) (GIAS). Catchment boundaries reflect the 2025/26 arrangements. Each circle is scaled to √(count) so area is **proportional to the count**.

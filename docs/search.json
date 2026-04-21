@@ -712,5 +712,12 @@
     "title": "Brighton and Hove School Allocations",
     "section": "Secondary Offers by Catchment (and Religious Schools)",
     "text": "Secondary Offers by Catchment (and Religious Schools)\nThe six geographic secondary catchments are represented by eight schools. Two of Brighton & Hove’s secondary schools — Kings School and Cardinal Newman Catholic School — are faith schools that admit across the whole city and so sit outside the geographic catchment framework; they are combined here as Religious schools.\n\n\n\n\n\n\nBecause two-school catchments are aggregated, all seven lines are on a comparable “catchment demand” footing. The Religious-schools line captures the total offer volume of the two faith schools together, which can rise or fall independently of the geographic catchments."
+  },
+  {
+    "objectID": "brighton_and_hove_allocations.html#applications-per-slot-by-catchment",
+    "href": "brighton_and_hove_allocations.html#applications-per-slot-by-catchment",
+    "title": "Brighton and Hove School Allocations",
+    "section": "Applications per Slot by Catchment",
+    "text": "Applications per Slot by Catchment\nThe per-preference-slot standardisation applied to the secondary applications chart above can also be aggregated by catchment. Each catchment’s total applications (sum across its one or two schools) is divided by the number of preference slots available in that year (3 up to 2025, 4 from 2026), so any 2026 jump driven purely by adding a 4th slot is removed and catchments can be compared on a like-for-like demand basis across the whole period.\n\n\n\n\n\n\nA line that is broadly flat between 2025 and 2026 on this chart means the catchment’s 2026 rise in the raw by-catchment chart above is essentially the extra preference slot — not a real increase in families choosing that catchment. A line that steps clearly up from 2025 to 2026 is picking up genuine additional demand per slot; a line that steps down is losing demand even before the mechanical slot inflation is applied."
   }
 ]
