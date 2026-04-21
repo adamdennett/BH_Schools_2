@@ -2167,6 +2167,215 @@ knitr::kable(relig_actual,
 
 At the city level the council projects aggregate demand of **2,297** (2025) and **2,284** (2026). Summing actual 2025 + 2026 offers across all nine secondary schools from our data provides a direct check — any gap reflects a mix of (a) leakage rates the council has already baked in, (b) out-of-city and in-year late applicants, and (c) schools running below PAN where catchment demand fell short.
 
+# Our Own Projection: Cohort-Aging From Primary Allocations
+
+The council's forecast uses the Oct 2024 **school census** — it knows exactly how many children currently in each year group of primary school live in each catchment, and ages them forward by year. We don't have the census, but we do have something closely related: **primary offers by catchment** from this document, going back to 2014. Each primary cohort admitted to Reception in year *Y* will be applying for Y7 in year *Y + 7*. So we can build an alternative projection by:
+
+1. Computing, for each of the six catchments + Religious schools, the ratio **Secondary Y7 offers(Y + 7) ÷ Primary Reception offers(Y)** across every pair of years where we have both values (Reception 2014 → Y7 2021, all the way through Reception 2019 → Y7 2026 — six overlapping cohorts).
+2. Averaging those ratios to get a **retention ratio** per catchment. This number absorbs in-state-sector leakage, movement into and out of the catchment, and the pull of Kings / Cardinal Newman at age 11 — it's whatever the data shows actually happens between Reception and Y7 in each catchment.
+3. Applying that retention ratio to the primary offers made in 2020–2024 to project Y7 offers in **2027–2031** (the years the council also forecasts but we have no actual data for yet).
+
+This method is close in spirit to the council's approach but differs in three respects: (a) we use primary-offer data rather than the census; (b) the retention ratio is fitted from actual Y7 outcomes rather than decomposed into explicit leakage / CN-Kings components; and (c) because actual Y7 offers are **PAN-capped**, catchments that routinely fill to PAN (Varndean / Dorothy Stringer, the Religious schools) will have their retention ratios biased toward the PAN ceiling — so our projection for those catchments effectively projects "more of the same PAN-constrained supply" rather than latent demand.
+
+```{r}
+# --- Build primary and secondary offers by (Year, CatchmentGroup) ---
+
+primary_by_catch <- primary_all %>%
+  dplyr::filter(School != "Total", !is.na(Total_offer)) %>%
+  dplyr::inner_join(
+    schools_with_catchment %>%
+      dplyr::filter(Phase == "Primary", !is.na(CatchmentGroup)) %>%
+      dplyr::select(School, CatchmentGroup),
+    by = "School"
+  ) %>%
+  dplyr::group_by(Year, CatchmentGroup) %>%
+  dplyr::summarise(Primary_offers = sum(Total_offer, na.rm = TRUE),
+                   .groups = "drop")
+
+secondary_by_catch <- secondary_all %>%
+  dplyr::filter(School != "Total", !is.na(Total_offer)) %>%
+  dplyr::inner_join(
+    schools_with_catchment %>%
+      dplyr::filter(Phase == "Secondary", !is.na(CatchmentGroup)) %>%
+      dplyr::select(School, CatchmentGroup),
+    by = "School"
+  ) %>%
+  dplyr::group_by(Year, CatchmentGroup) %>%
+  dplyr::summarise(Secondary_offers = sum(Total_offer, na.rm = TRUE),
+                   .groups = "drop")
+
+# --- Join cohort-aligned pairs: primary Y -> secondary Y+7 ---
+LAG <- 7L
+cohort_pairs <- primary_by_catch %>%
+  dplyr::mutate(Secondary_year = Year + LAG) %>%
+  dplyr::inner_join(secondary_by_catch,
+                    by = c("Secondary_year" = "Year",
+                           "CatchmentGroup" = "CatchmentGroup")) %>%
+  dplyr::rename(Primary_year = Year) %>%
+  dplyr::mutate(Ratio = Secondary_offers / Primary_offers)
+
+# --- Retention ratio per catchment (mean over overlapping cohorts) ---
+retention <- cohort_pairs %>%
+  dplyr::group_by(CatchmentGroup) %>%
+  dplyr::summarise(
+    retention_ratio = mean(Ratio, na.rm = TRUE),
+    retention_sd    = sd(Ratio,   na.rm = TRUE),
+    n_cohorts       = dplyr::n(),
+    .groups = "drop"
+  )
+
+knitr::kable(
+  retention %>%
+    dplyr::mutate(retention_ratio = round(retention_ratio, 3),
+                  retention_sd    = round(retention_sd,    3)),
+  col.names = c("Catchment", "Retention ratio (mean)", "SD across cohorts", "Cohorts"),
+  align  = "lrrr",
+  caption = "Fitted Y7 / Reception retention ratio by catchment, cohorts 2014 Reception – 2019 Reception (i.e. Y7 2021 – Y7 2026)"
+)
+```
+
+The **retention ratio** column is how many Y7 offers a catchment has historically ended up making for each Reception offer it made seven years earlier. A number below 1 means the catchment's primary-age cohorts typically *shrink* by the time they reach Y7 (net leakage to independents, Catholic schools, out-of-city, etc.); a number above 1 means the catchment's Y7 schools typically end up larger than their own primary intake (cross-catchment pulling-in, or PAN-constrained schools being filled from outside). For the Religious schools the ratio is well above 1 because only Catholic primaries are counted in that row on the primary side, while both Kings and CN sit on the secondary side — so the ratio mechanically picks up every non-Catholic-primary pupil who joins Kings at Y7.
+
+```{r}
+# --- Project 2027..2031 secondary offers from primary 2020..2024 ---
+projection <- primary_by_catch %>%
+  dplyr::filter(Year >= 2020L, Year <= 2024L) %>%
+  dplyr::rename(Primary_year = Year) %>%
+  dplyr::mutate(Secondary_year = Primary_year + LAG) %>%
+  dplyr::left_join(retention %>% dplyr::select(CatchmentGroup, retention_ratio),
+                   by = "CatchmentGroup") %>%
+  dplyr::mutate(Projected_offers = round(Primary_offers * retention_ratio))
+
+# Pull our projection into a wide table alongside the council's forecast
+proj_wide <- projection %>%
+  dplyr::select(CatchmentGroup, Secondary_year, Projected_offers) %>%
+  tidyr::pivot_wider(names_from = Secondary_year, values_from = Projected_offers,
+                     names_prefix = "Proj_")
+
+# Council forecast (reshaped) — use only the six geographic catchments here;
+# the PDF doesn't publish a Religious-schools demand row.
+council_long <- bhcc_forecast %>%
+  dplyr::select(CatchmentGroup, PAN,
+                `Council_2025` = Y2025, `Council_2026` = Y2026,
+                `Council_2027` = Y2027, `Council_2028` = Y2028,
+                `Council_2029` = Y2029, `Council_2030` = Y2030,
+                `Council_2031` = Y2031)
+
+compare_proj <- council_long %>%
+  dplyr::left_join(proj_wide, by = "CatchmentGroup") %>%
+  dplyr::select(CatchmentGroup, PAN,
+                Council_2027, Proj_2027,
+                Council_2028, Proj_2028,
+                Council_2029, Proj_2029,
+                Council_2030, Proj_2030,
+                Council_2031, Proj_2031)
+
+knitr::kable(
+  compare_proj,
+  col.names = c("Catchment", "PAN",
+                "Council 2027", "Ours 2027",
+                "Council 2028", "Ours 2028",
+                "Council 2029", "Ours 2029",
+                "Council 2030", "Ours 2030",
+                "Council 2031", "Ours 2031"),
+  align = "lrrrrrrrrrrr",
+  format.args = list(big.mark = ","),
+  caption = "Council's Appendix 6 forecast vs our cohort-aged projection, Y7 2027-2031"
+)
+```
+
+```{r}
+# --- Projection chart: actuals + our projection + council forecast ---
+# One line per series, facet by catchment.
+
+# Long-format data for plotting: three series
+series_actual <- secondary_by_catch %>%
+  dplyr::transmute(CatchmentGroup, Year, Offers = Secondary_offers,
+                   Series = "Actual offers")
+
+series_proj <- projection %>%
+  dplyr::transmute(CatchmentGroup, Year = Secondary_year,
+                   Offers = Projected_offers,
+                   Series = "Our projection (cohort-aged)")
+
+series_council <- bhcc_forecast %>%
+  tidyr::pivot_longer(cols = c(Y2025, Y2026, Y2027, Y2028, Y2029, Y2030, Y2031),
+                      names_to = "YearStr", values_to = "Offers") %>%
+  dplyr::mutate(Year = as.integer(sub("^Y", "", YearStr)),
+                Series = "Council forecast (Appendix 6)") %>%
+  dplyr::select(CatchmentGroup, Year, Offers, Series)
+
+series_all <- dplyr::bind_rows(series_actual, series_proj, series_council) %>%
+  dplyr::filter(!is.na(CatchmentGroup))
+
+# Keep the six geographic catchments + Religious schools (actuals + our proj
+# only; council row doesn't publish a Religious schools demand line).
+catch_order <- c("BACA",
+                 "Hove Park / Blatchington Mill",
+                 "Longhill",
+                 "PACA",
+                 "Patcham",
+                 "Varndean / Dorothy Stringer",
+                 "Religious schools")
+series_all <- series_all %>%
+  dplyr::mutate(CatchmentGroup = factor(CatchmentGroup,
+                                        levels = intersect(catch_order,
+                                                           unique(CatchmentGroup))))
+
+# PAN reference lines per panel (only for the six geographic catchments)
+pan_df <- bhcc_forecast %>%
+  dplyr::select(CatchmentGroup, PAN) %>%
+  dplyr::mutate(CatchmentGroup = factor(CatchmentGroup,
+                                        levels = levels(series_all$CatchmentGroup)))
+
+p_proj <- ggplot(series_all,
+                 aes(x = Year, y = Offers, colour = Series, group = Series,
+                     text = paste0(Series,
+                                   "<br>Catchment: ", CatchmentGroup,
+                                   "<br>Year: ", Year,
+                                   "<br>Offers: ", format(Offers, big.mark = ",")))) +
+  geom_hline(data = pan_df, aes(yintercept = PAN),
+             linetype = "dotted", colour = "grey30", linewidth = 0.4) +
+  geom_line(linewidth = 0.8) +
+  geom_point(size = 1.4) +
+  scale_colour_manual(values = c("Actual offers"                   = "#1f78b4",
+                                 "Our projection (cohort-aged)"    = "#33a02c",
+                                 "Council forecast (Appendix 6)"   = "#e31a1c")) +
+  facet_wrap(~ CatchmentGroup, ncol = 3, scales = "free_y") +
+  labs(title = "Y7 offers: actuals, our cohort-aged projection, and the council forecast",
+       subtitle = "Dotted grey lines = catchment PAN; projection uses primary offers(Y) \u00d7 retention ratio as secondary offers(Y+7)",
+       x = NULL, y = "Y7 offers",
+       colour = NULL) +
+  theme_minimal(base_size = 10) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top",
+        strip.text = element_text(face = "bold"))
+```
+
+```{r, fig.width=12, fig.height=9, out.width="100%"}
+ggplotly(p_proj, tooltip = "text") %>%
+  plotly::layout(legend = list(orientation = "h", x = 0, y = 1.05))
+```
+
+**Reading the chart:**
+
+- Blue = actual Y7 offers we have in this document (2013–2026).
+- Green = our projection from primary cohort aging (2027–2031).
+- Red = the council's Appendix 6 demand forecast (published 2025–2031).
+- Dotted grey line = catchment PAN (not plotted for the Religious schools panel, which has no single PAN).
+
+**Catchment-by-catchment read (2027–2031):**
+
+- **Longhill** — the biggest gap in the chart. Our projection is **96–112 offers/yr**, the council's is **151–176**. At a retention ratio of **0.50**, only half of a Longhill primary-catchment cohort has historically ended up with a Longhill Y7 offer. Projected forward, that implies Longhill runs at **under 50 % of PAN (210)** every year through 2031 — substantially below even the council's already-cautious forecast. If our projection is right, the council's "surplus of places" row materially understates how empty Longhill will be.
+- **BACA** — our projection (**74–108 offers/yr**) is 20–30 % below the council's (**95–143**). BACA's retention ratio is **1.27** (it pulls in more Y7 pupils than its own primaries produce), but its primary cohort base is small enough that the projection still comes out well below PAN (180) in every year. The 2030 dip to 74 reflects an unusually small 2023 Reception cohort in the BACA primary catchment.
+- **PACA** — our projection (**147–159**) sits consistently below the council's (**150–214**), by about **10–25 offers/yr**. PACA's primary base times the fitted retention ratio (**0.77**) gives a flatter, lower trajectory than the council's rising-then-falling demand profile. Both imply PACA running well below PAN (220) throughout.
+- **Hove Park / Blatchington Mill** — this is the one catchment where our projection is **above** the council's. We project **414–471** offers/yr; the council forecasts **351–443** demand. The two schools have historically absorbed more pupils than the Hove Park / Blatchington Mill primary catchment delivers (retention ratio **0.65** — i.e. lots of their primary-age pupils leak to CN / Kings / independents — but out-of-catchment secondary demand *more than* compensates). Projected forward, we expect Y7 offers to stay close to current ~500 levels and drift to ~410 by 2031; the council thinks it falls further, to ~365.
+- **Varndean / Dorothy Stringer** — our projection (**521–595**) is just below the council's (**539–592**). Both trend downward. Neither reaches PAN (630) on central assumptions — a meaningful shift away from the past decade's over-subscribed pattern, driven by shrinking primary cohorts at both ends of the funnel. If either our retention ratio is a little conservative or out-of-catchment demand holds up, the schools will continue filling to PAN; but for the first time in this dataset, neither model is *predicting* that outcome.
+- **Patcham** — our projection (**161–196**) is close to the council's (**163–212**), with the two lines essentially tracking each other at about 88–95 % of PAN (225). Patcham is the catchment where the two methods agree best.
+- **Religious schools** — our projection drifts downward from the current **540** offers (= PAN) to roughly **500** by 2030, then bounces to **543** in 2031 as a slightly larger 2024 Catholic-primary cohort arrives. The council doesn't publish a matching demand line for this group, so no direct comparison is possible. Note the retention ratio of **2.57** is inflated because Catholic primaries are small compared with Kings + CN combined — it mechanically includes every non-Catholic-primary pupil joining Kings at Y7. What matters here is the *trend* (downward through 2030), not the absolute value.
+
+**How to read the disagreement.** Where the green (ours) and red (council) lines disagree, it's not that one is "wrong" — they're measuring slightly different things. The council models projected demand from catchment residents, built up from the Oct-24 school census; our projection multiplies primary offers by an empirically fitted secondary/primary ratio, which absorbs everything that happens to a cohort between ages 4 and 11 (in-state-sector leakage, cross-catchment flows, and PAN-capping) in a single per-catchment number. Where the two methods agree (Patcham, Varndean / Stringer, Hove Park / Blatchington Mill broadly) we can have more confidence in the forecast direction. Where they disagree sharply (Longhill, PACA, BACA), the mechanisms baked into each method are pulling in different directions — and the outturn will depend on whether the council's demand-side assumptions or our empirical flow ratios are closer to what actually happens after 2026.
+
 # Maps — Applications and Offers as Proportional Circles
 
 School locations are taken from [Get Information about Schools](https://get-information-schools.service.gov.uk/) (GIAS). Catchment boundaries reflect the 2025/26 arrangements. Circle radii are scaled as `count^0.72 × k` — slightly above strict area-proportional (`count^0.5`) scaling to make differences between large and small schools more visually obvious while still being monotonic in the count.
