@@ -430,6 +430,39 @@ p_apps <- ggplot(sec_schools,
 ggplotly(p_apps, tooltip = "text")
 ```
 
+### Applications per Preference Slot
+
+From 2013 to 2025 Brighton & Hove families could list up to **three** preferences on the secondary-transfer form, so "total applications" for a school was the sum of 1st, 2nd and 3rd preferences. From **2026** onwards the council added a **4th** preference slot, which mechanically inflates the "total applications" figure because every family now has one more slot to fill. To separate that mechanical jump from any real change in demand, the chart below divides each school's total applications by the number of preference slots available in that year.
+
+```{r}
+# Number of preference slots per year: 3 for 2013-2025, 4 from 2026.
+sec_std <- sec_schools %>%
+  mutate(
+    slots   = ifelse(Year >= 2026, 4L, 3L),
+    PerSlot = Total / slots
+  )
+
+p_apps_std <- ggplot(sec_std,
+                 aes(x = Year, y = PerSlot, color = School, group = School,
+                     text = paste0(School, "<br>Year: ", Year,
+                                   "<br>Slots available: ", slots,
+                                   "<br>Total applications: ", Total,
+                                   "<br>Applications / slot: ",
+                                   formatC(PerSlot, format = "f", digits = 1)))) +
+  geom_line() +
+  geom_point() +
+  scale_x_continuous(breaks = seq(2013, 2026, 1)) +
+  labs(title = "Applications per Preference Slot, Secondary 2013–2026",
+       x = "Year",
+       y = "Total applications ÷ preference slots available") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggplotly(p_apps_std, tooltip = "text")
+```
+
+On this slot-standardised basis a line that is broadly flat between 2025 and 2026 indicates that the jump in the raw total is almost entirely the extra slot — not a genuine surge in demand. A school whose 2026 point is still clearly higher than its 2025 point is picking up genuine extra preferences per slot.
+
 ### Total Offers by School
 
 ```{r}
@@ -1479,6 +1512,124 @@ p_bal <- ggplot(latest,
 ggplotly(p_bal, tooltip = "text")
 ```
 
+# City-Wide State-Sector Trends
+
+The school-by-school time series above make it hard to see the overall size of the state-sector cohort. The two charts here roll up the same offer data to the whole city (and then to the main secondary catchments) so the scale of demographic change — and how it lands across catchments — is visible.
+
+## Total Offers Made Across the City (Primary + Secondary)
+
+```{r}
+# Sum offers across all schools per year, separately for primary and
+# secondary, to get a single city-wide enrolment signal per phase.
+# Any "Total" summary rows are already dropped by filtering School != "Total".
+city_primary <- primary_all %>%
+  dplyr::filter(School != "Total", !is.na(Total_offer)) %>%
+  dplyr::group_by(Year) %>%
+  dplyr::summarise(Total_offer = sum(Total_offer, na.rm = TRUE),
+                   n_schools   = dplyr::n(), .groups = "drop") %>%
+  dplyr::mutate(Phase = "Primary (Reception)")
+
+city_secondary <- secondary_all %>%
+  dplyr::filter(School != "Total", !is.na(Total_offer)) %>%
+  dplyr::group_by(Year) %>%
+  dplyr::summarise(Total_offer = sum(Total_offer, na.rm = TRUE),
+                   n_schools   = dplyr::n(), .groups = "drop") %>%
+  dplyr::mutate(Phase = "Secondary (Year 7)")
+
+city_offers <- dplyr::bind_rows(city_primary, city_secondary)
+
+p_city <- ggplot(city_offers,
+                 aes(x = Year, y = Total_offer, color = Phase, group = Phase,
+                     text = paste0(Phase, "<br>Year: ", Year,
+                                   "<br>Total offers: ",
+                                   format(Total_offer, big.mark = ","),
+                                   "<br>Schools contributing: ", n_schools))) +
+  geom_line(linewidth = 0.9) +
+  geom_point(size = 1.8) +
+  scale_x_continuous(breaks = seq(2013, 2026, 1)) +
+  scale_color_manual(values = c("Primary (Reception)" = "#1f78b4",
+                                 "Secondary (Year 7)"  = "#e31a1c")) +
+  labs(title = "Total State-Sector Offers, Brighton & Hove",
+       subtitle = "Sum of offers made across all primary / secondary schools each year",
+       x = "Year", y = "Total offers made",
+       color = NULL) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
+ggplotly(p_city, tooltip = "text")
+```
+
+The secondary line tracks the Year 7 cohort; the primary line tracks the Reception cohort. Together they give a rough picture of how many state-sector school places the city is actually filling each year.
+
+## Secondary Offers by Catchment (and Religious Schools)
+
+The six geographic secondary catchments are represented by eight schools. Two of Brighton & Hove's secondary schools — **Kings School** and **Cardinal Newman Catholic School** — are faith schools that admit across the whole city and so sit outside the geographic catchment framework; they are combined here as **Religious schools**.
+
+```{r}
+# Map each secondary school to its catchment. Two of the six geographic
+# catchments (Hove Park / Blatchington Mill, Varndean / Dorothy Stringer)
+# contain two schools each; those pairs are summed. Kings + Cardinal Newman
+# are aggregated as "Religious schools" (both are faith schools admitting
+# city-wide, outside the geographic catchment framework).
+catchment_lookup <- tibble::tribble(
+  ~School,                                   ~CatchmentGroup,
+  "Brighton Aldridge Community Academy",     "BACA",
+  "Blatchington Mill",                       "Hove Park / Blatchington Mill",
+  "Hove Park",                               "Hove Park / Blatchington Mill",
+  "Longhill High",                           "Longhill",
+  "Patcham High",                            "Patcham",
+  "Portslade Aldridge Community Academy",    "PACA",
+  "Varndean",                                "Varndean / Dorothy Stringer",
+  "Dorothy Stringer",                        "Varndean / Dorothy Stringer",
+  "Kings School",                            "Religious schools",
+  "Cardinal Newman",                         "Religious schools"
+)
+
+catchment_palette <- c(
+  "BACA"                             = "#e41a1c",
+  "Hove Park / Blatchington Mill"    = "#377eb8",
+  "Longhill"                         = "#4daf4a",
+  "PACA"                             = "#984ea3",
+  "Patcham"                          = "#ff7f00",
+  "Varndean / Dorothy Stringer"      = "#a65628",
+  "Religious schools"                = "#666666"
+)
+
+catchment_offers <- secondary_all %>%
+  dplyr::filter(School != "Total", !is.na(Total_offer)) %>%
+  dplyr::inner_join(catchment_lookup, by = "School") %>%
+  dplyr::group_by(Year, CatchmentGroup) %>%
+  dplyr::summarise(
+    Total_offer = sum(Total_offer, na.rm = TRUE),
+    Schools     = paste(sort(unique(School)), collapse = " + "),
+    .groups     = "drop"
+  )
+
+p_catch <- ggplot(catchment_offers,
+                  aes(x = Year, y = Total_offer, color = CatchmentGroup,
+                      group = CatchmentGroup,
+                      text = paste0(CatchmentGroup, "<br>Year: ", Year,
+                                    "<br>Offers: ",
+                                    format(Total_offer, big.mark = ","),
+                                    "<br>Schools: ", Schools))) +
+  geom_line(linewidth = 0.8) +
+  geom_point(size = 1.6) +
+  scale_x_continuous(breaks = seq(2013, 2026, 1)) +
+  scale_color_manual(values = catchment_palette) +
+  labs(title = "Secondary Offers by Catchment (and Religious Schools)",
+       subtitle = "Two-school catchments (Hove Park / Blatchington Mill, Varndean / Dorothy Stringer) summed; Kings + Cardinal Newman combined",
+       x = "Year", y = "Total offers made",
+       color = NULL) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
+ggplotly(p_catch, tooltip = "text")
+```
+
+Because two-school catchments are aggregated, all seven lines are on a comparable "catchment demand" footing. The Religious-schools line captures the total offer volume of the two faith schools together, which can rise or fall independently of the geographic catchments.
+
 # Maps — Applications and Offers as Proportional Circles
 
 School locations are taken from [Get Information about Schools](https://get-information-schools.service.gov.uk/) (GIAS). Catchment boundaries reflect the 2025/26 arrangements. Each circle is scaled to √(count) so area is **proportional to the count**.
@@ -1566,8 +1717,11 @@ school_locs <- tibble::tribble(
   "Hertford Infant",                       "Primary",   114368L,  50.846789, -0.124536
 )
 
-# ---- Catchment boundaries (2025/26) ----
-optionZ <- st_read(here::here("data", "optionZ.geojson"), quiet = TRUE) |>
+# ---- Catchment boundaries (March 2025 / 2025–26 arrangements) ----
+# optionZ_Mar25.geojson reflects the catchments actually in force for the
+# 2025/26 intake (six catchments — note that Kings and Cardinal Newman are
+# faith schools and so sit outside the geographic catchment framework).
+optionZ <- st_read(here::here("data", "optionZ_Mar25.geojson"), quiet = TRUE) |>
   st_transform(4326)
 
 catchment_colours <- c(
