@@ -1825,7 +1825,7 @@ Reading this chart: each bar tells you how many *more* (green) or *fewer* (red) 
 
 The chart below splits the same-cohort comparison out by catchment. Each panel shows, for a single catchment, the Reception offers made to a cohort (blue) alongside the Year 7 offers made to that same cohort seven years later (red). Primary schools are assigned to a catchment by point-in-polygon on the six `optionZ` catchment polygons; **Cardinal Newman** and **Kings School** at secondary, and all **Catholic primaries**, are combined into a single **Religious schools** panel (they admit city-wide rather than on geography). Primaries that fall outside all six catchment polygons are excluded from this breakdown.
 
-```{r, fig.height=7}
+```{r, fig.width=12, fig.height=9, out.width="100%"}
 # Reuse the hidden `schools_with_catchment` lookup (built earlier, before
 # the City-Wide section). Join primary_all and secondary_all to it to get
 # a CatchmentGroup per school, then aggregate as in the whole-city
@@ -1894,7 +1894,7 @@ p_cohort_catch <- ggplot(cohort_long_catch,
   geom_point(size = 1.4) +
   scale_color_manual(values = c("Primary (Reception)"         = "#1f78b4",
                                  "Secondary (Year 7, +7 yrs)" = "#e31a1c")) +
-  facet_wrap(~ CatchmentGroup, ncol = 4, scales = "free_y") +
+  facet_wrap(~ CatchmentGroup, ncol = 3, scales = "free_y") +
   labs(title = "Same Cohort: Reception vs Year 7 Offers, by Catchment",
        subtitle = "Year 7 lagged by 7 years; x-axis = cohort's Reception year",
        x = "Cohort Reception Year",
