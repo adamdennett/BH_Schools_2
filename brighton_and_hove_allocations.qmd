@@ -1512,6 +1512,117 @@ p_bal <- ggplot(latest,
 ggplotly(p_bal, tooltip = "text")
 ```
 
+```{r schools-catchments, include=FALSE}
+# ---- Shared lookup: school locations + geographic catchment mapping ----
+# Used by the by-catchment cohort chart below and the proportional-circle
+# maps further down. Secondary faith schools (Kings, Cardinal Newman) are
+# overridden to "Religious schools" because they admit city-wide and sit
+# outside the geographic framework. Catholic primaries are also grouped as
+# "Religious schools" so they are compared against Cardinal Newman-style
+# secondary demand rather than against their geographic catchment.
+library(sf)
+
+school_locs <- tibble::tribble(
+  ~School,                                 ~Phase,      ~URN,     ~lat,       ~lon,
+  # Secondary (10 schools)
+  "Blatchington Mill",                     "Secondary", 114606L,  50.845298, -0.184029,
+  "Brighton Aldridge Community Academy",   "Secondary", 136164L,  50.858017, -0.091234,
+  "Cardinal Newman",                       "Secondary", 114611L,  50.836811, -0.158368,
+  "Dorothy Stringer",                      "Secondary", 114580L,  50.848948, -0.143414,
+  "Hove Park",                             "Secondary", 114607L,  50.840867, -0.179613,
+  "Kings School",                          "Secondary", 139409L,  50.853022, -0.192069,
+  "Longhill High",                         "Secondary", 114581L,  50.818999, -0.067270,
+  "Patcham High",                          "Secondary", 114608L,  50.862195, -0.143940,
+  "Portslade Aldridge Community Academy",  "Secondary", 137063L,  50.850644, -0.225774,
+  "Varndean",                              "Secondary", 114579L,  50.850296, -0.137138,
+  # Primary (open)
+  "Aldrington CE Primary",                 "Primary",   114555L,  50.844506, -0.178606,
+  "Balfour Primary",                       "Primary",   114382L,  50.847735, -0.138348,
+  "Benfield Primary",                      "Primary",   151063L,  50.837928, -0.207026,
+  "Bevendean Primary",                     "Primary",   114485L,  50.841871, -0.099293,
+  "Bilingual Primary",                     "Primary",   138261L,  50.844225, -0.175804,
+  "Brackenbury Primary",                   "Primary",   114413L,  50.840626, -0.216424,
+  "Brunswick Primary",                     "Primary",   114446L,  50.831152, -0.158236,
+  "Carden Primary",                        "Primary",   131789L,  50.863304, -0.128889,
+  "Carlton Hill Primary",                  "Primary",   114381L,  50.824652, -0.132167,
+  "City Academy Whitehawk",                "Primary",   139677L,  50.825445, -0.107386,
+  "Coldean Primary",                       "Primary",   114384L,  50.865344, -0.112621,
+  "Coombe Road Primary",                   "Primary",   114365L,  50.840172, -0.117685,
+  "Cottesmore St Mary Catholic Primary",   "Primary",   114567L,  50.837319, -0.158093,
+  "Downs Infant",                          "Primary",   114367L,  50.837970, -0.133397,
+  "Elm Grove Primary",                     "Primary",   114477L,  50.831581, -0.121453,
+  "Fairlight Primary",                     "Primary",   114487L,  50.834574, -0.125792,
+  "Goldstone Primary",                     "Primary",   114398L,  50.841566, -0.192185,
+  "Hangleton Primary",                     "Primary",   151062L,  50.846678, -0.195922,
+  "Hertford Primary",                      "Primary",   114368L,  50.846789, -0.124536,
+  "Middle Street Primary",                 "Primary",   114369L,  50.821362, -0.142961,
+  "Mile Oak Primary",                      "Primary",   114430L,  50.853978, -0.227977,
+  "Moulsecoomb Primary",                   "Primary",   147680L,  50.849467, -0.110705,
+  "Our Lady of Lourdes Catholic Primary",  "Primary",   114544L,  50.806289, -0.058668,
+  "Patcham Infant",                        "Primary",   114373L,  50.861340, -0.147043,
+  "Peter Gladwin Primary",                 "Primary",   114443L,  50.843682, -0.220215,
+  "Queens Park Primary",                   "Primary",   114478L,  50.823015, -0.125659,
+  "Rudyard Kipling Primary",               "Primary",   114486L,  50.833830, -0.063732,
+  "Saltdean Primary",                      "Primary",   114479L,  50.808777, -0.038083,
+  "St Andrew's CE Primary",                "Primary",   114556L,  50.830581, -0.174575,
+  "St Bernadette's Catholic Primary",      "Primary",   114546L,  50.846703, -0.150421,
+  "St John The Baptist Catholic Primary",  "Primary",   114540L,  50.822669, -0.115861,
+  "St Joseph's Catholic Primary",          "Primary",   114542L,  50.842027, -0.126743,
+  "St Luke's Primary",                     "Primary",   114374L,  50.827216, -0.120137,
+  "St Margaret's CE Primary",              "Primary",   114537L,  50.806308, -0.055801,
+  "St Mark's CE Primary",                  "Primary",   114545L,  50.819405, -0.111237,
+  "St Martin's CE Primary",                "Primary",   114539L,  50.835193, -0.123481,
+  "St Mary Magdalen Catholic Primary",     "Primary",   114541L,  50.825073, -0.149217,
+  "St Mary's Catholic Primary",            "Primary",   114570L,  50.832265, -0.213633,
+  "St Nicolas CE Primary",                 "Primary",   114560L,  50.840626, -0.216424,
+  "St Paul's CE Primary",                  "Primary",   114543L,  50.826597, -0.144358,
+  "Stanford Infant",                       "Primary",   114377L,  50.838582, -0.152120,
+  "West Blatchington Primary",             "Primary",   149963L,  50.853022, -0.192069,
+  "West Hove Infant, Holland Road",        "Primary",   114428L,  50.826834, -0.161984,
+  "West Hove Infant, Portland Road",       "Primary",   114428L,  50.834027, -0.189693,
+  "Westdene Primary",                      "Primary",   114380L,  50.860040, -0.161759,
+  "Woodingdean Primary",                   "Primary",   114480L,  50.836176, -0.078079,
+  # Closed/renamed schools retained for historic series
+  "Davigdor Infant",                       "Primary",   114397L,  50.828776, -0.159267,
+  "St Bartholomew's CE Primary",           "Primary",   114538L,  50.830378, -0.137278,
+  "St Peter's Community Primary",          "Primary",   114411L,  50.831506, -0.215153,
+  "Hangleton Infant",                      "Primary",   151062L,  50.846678, -0.195922,
+  "Hertford Infant",                       "Primary",   114368L,  50.846789, -0.124536
+)
+
+optionZ <- st_read(here::here("data", "optionZ_Mar25.geojson"), quiet = TRUE) |>
+  st_transform(4326)
+
+# Geographic catchment from point-in-polygon, with faith-school overrides.
+schools_sf <- school_locs |>
+  sf::st_as_sf(coords = c("lon", "lat"), crs = 4326, remove = FALSE)
+
+schools_with_catchment <- sf::st_join(
+    schools_sf,
+    optionZ |> dplyr::select(geo_catchment = catchment),
+    join = sf::st_within
+  ) |>
+  sf::st_drop_geometry() |>
+  dplyr::mutate(
+    is_faith_sec = Phase == "Secondary" &
+                   School %in% c("Kings School", "Cardinal Newman"),
+    is_catholic  = Phase == "Primary" &
+                   grepl("Catholic Primary", School, fixed = TRUE),
+    CatchmentGroup = dplyr::case_when(
+      is_faith_sec                      ~ "Religious schools",
+      is_catholic                       ~ "Religious schools",
+      geo_catchment == "BACA"           ~ "BACA",
+      geo_catchment == "HoveBlatchington" ~ "Hove Park / Blatchington Mill",
+      geo_catchment == "Longhill"       ~ "Longhill",
+      geo_catchment == "PACA"           ~ "PACA",
+      geo_catchment == "Patcham"        ~ "Patcham",
+      geo_catchment == "VarndeanStringer" ~ "Varndean / Dorothy Stringer",
+      TRUE                              ~ NA_character_
+    )
+  ) |>
+  dplyr::select(School, Phase, CatchmentGroup)
+```
+
 # City-Wide State-Sector Trends
 
 The school-by-school time series above make it hard to see the overall size of the state-sector cohort. The two charts here roll up the same offer data to the whole city (and then to the main secondary catchments) so the scale of demographic change — and how it lands across catchments — is visible.
@@ -1710,6 +1821,96 @@ ggplotly(p_diff, tooltip = "text")
 
 Reading this chart: each bar tells you how many *more* (green) or *fewer* (red) Year 7 places were offered to a given cohort than were offered to them at Reception, using the 7-year lag. The black line on the right axis normalises that same difference by the Reception cohort size, so a –100-pupil change in a large cohort doesn't look as alarming as the same –100 in a small one. Note this is a whole-city aggregate and so conflates several mechanisms (independent-sector movement, migration, home-ed, etc.) — it doesn't attribute the change to any single cause.
 
+### Same-Cohort Comparison, by Catchment
+
+The chart below splits the same-cohort comparison out by catchment. Each panel shows, for a single catchment, the Reception offers made to a cohort (blue) alongside the Year 7 offers made to that same cohort seven years later (red). Primary schools are assigned to a catchment by point-in-polygon on the six `optionZ` catchment polygons; **Cardinal Newman** and **Kings School** at secondary, and all **Catholic primaries**, are combined into a single **Religious schools** panel (they admit city-wide rather than on geography). Primaries that fall outside all six catchment polygons are excluded from this breakdown.
+
+```{r, fig.height=7}
+# Reuse the hidden `schools_with_catchment` lookup (built earlier, before
+# the City-Wide section). Join primary_all and secondary_all to it to get
+# a CatchmentGroup per school, then aggregate as in the whole-city
+# cohort chart — but keeping CatchmentGroup as an extra grouping.
+
+schools_primary_catch <- schools_with_catchment %>%
+  dplyr::filter(Phase == "Primary", !is.na(CatchmentGroup)) %>%
+  dplyr::select(School, CatchmentGroup)
+
+schools_secondary_catch <- schools_with_catchment %>%
+  dplyr::filter(Phase == "Secondary", !is.na(CatchmentGroup)) %>%
+  dplyr::select(School, CatchmentGroup)
+
+primary_cohort_catch <- primary_all %>%
+  dplyr::filter(School != "Total", !is.na(Total_offer)) %>%
+  dplyr::inner_join(schools_primary_catch, by = "School") %>%
+  dplyr::group_by(CohortYear = Year, CatchmentGroup) %>%
+  dplyr::summarise(Primary_offers = sum(Total_offer, na.rm = TRUE),
+                   .groups = "drop")
+
+secondary_cohort_catch <- secondary_all %>%
+  dplyr::filter(School != "Total", !is.na(Total_offer)) %>%
+  dplyr::inner_join(schools_secondary_catch, by = "School") %>%
+  dplyr::group_by(Year, CatchmentGroup) %>%
+  dplyr::summarise(Secondary_offers = sum(Total_offer, na.rm = TRUE),
+                   .groups = "drop") %>%
+  dplyr::mutate(CohortYear = Year - LAG) %>%
+  dplyr::select(CohortYear, Year_yr7 = Year, CatchmentGroup, Secondary_offers)
+
+cohort_long_catch <- dplyr::bind_rows(
+  primary_cohort_catch %>%
+    dplyr::transmute(CohortYear, CatchmentGroup,
+                     Phase    = "Primary (Reception)",
+                     Offers   = Primary_offers,
+                     AdmitYr  = CohortYear),
+  secondary_cohort_catch %>%
+    dplyr::transmute(CohortYear, CatchmentGroup,
+                     Phase    = "Secondary (Year 7, +7 yrs)",
+                     Offers   = Secondary_offers,
+                     AdmitYr  = Year_yr7)
+)
+
+# Fix panel order so Religious schools comes last
+catch_levels <- c("BACA",
+                  "Hove Park / Blatchington Mill",
+                  "Longhill",
+                  "PACA",
+                  "Patcham",
+                  "Varndean / Dorothy Stringer",
+                  "Religious schools")
+cohort_long_catch <- cohort_long_catch %>%
+  dplyr::mutate(CatchmentGroup = factor(CatchmentGroup,
+                                        levels = intersect(catch_levels,
+                                                           unique(CatchmentGroup))))
+
+p_cohort_catch <- ggplot(cohort_long_catch,
+                         aes(x = CohortYear, y = Offers,
+                             color = Phase, group = Phase,
+                             text = paste0(Phase,
+                                           "<br>Catchment: ", CatchmentGroup,
+                                           "<br>Cohort reception year: ", CohortYear,
+                                           "<br>Admission year: ", AdmitYr,
+                                           "<br>Offers: ",
+                                           format(Offers, big.mark = ",")))) +
+  geom_line(linewidth = 0.8) +
+  geom_point(size = 1.4) +
+  scale_color_manual(values = c("Primary (Reception)"         = "#1f78b4",
+                                 "Secondary (Year 7, +7 yrs)" = "#e31a1c")) +
+  facet_wrap(~ CatchmentGroup, ncol = 4, scales = "free_y") +
+  labs(title = "Same Cohort: Reception vs Year 7 Offers, by Catchment",
+       subtitle = "Year 7 lagged by 7 years; x-axis = cohort's Reception year",
+       x = "Cohort Reception Year",
+       y = "Total offers made for this cohort",
+       color = NULL) +
+  theme_minimal(base_size = 10) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top",
+        strip.text = element_text(face = "bold"))
+
+ggplotly(p_cohort_catch, tooltip = "text") %>%
+  plotly::layout(legend = list(orientation = "h", x = 0, y = 1.05))
+```
+
+Each panel's y-axis is independent (`free_y`), so the *shape* of the lines is directly comparable between catchments even where the absolute numbers differ a lot (e.g. Longhill is much smaller than Varndean / Dorothy Stringer). Within a panel, a red line *below* the blue line means the catchment lost pupils from the state sector between Reception and Year 7 for that cohort; a red line *above* means it gained them. The Religious-schools panel behaves differently from the geographic ones because primaries and secondaries in that group draw from across the city rather than a shared footprint — the comparison there is best read as "Catholic-sector Reception offers vs Kings + Cardinal Newman Y7 offers" rather than a flow within a single area.
+
 ## Secondary Offers by Catchment (and Religious Schools)
 
 The six geographic secondary catchments are represented by eight schools. Two of Brighton & Hove's secondary schools — **Kings School** and **Cardinal Newman Catholic School** — are faith schools that admit across the whole city and so sit outside the geographic catchment framework; they are combined here as **Religious schools**.
@@ -1838,86 +2039,9 @@ library(htmltools)
 library(htmlwidgets)
 library(jsonlite)
 
-# ---- School coordinate lookup (GIAS URN + WGS84 lat/lon) ----
-# Primary and secondary schools from edubasealldata20241003.xlsx via GIAS,
-# lat/lon from ONSPD Feb 2024. West Hove Infant sites geocoded separately
-# to BN3 1JL (Holland Road) and BN3 5JA (Portland Road). Closed schools
-# (Davigdor Infant, St Bartholomew's, St Peter's) retained for pre-2020
-# historic coverage.
-school_locs <- tibble::tribble(
-  ~School,                                 ~Phase,      ~URN,     ~lat,       ~lon,
-  # Secondary (10 schools)
-  "Blatchington Mill",                     "Secondary", 114606L,  50.845298, -0.184029,
-  "Brighton Aldridge Community Academy",   "Secondary", 136164L,  50.858017, -0.091234,
-  "Cardinal Newman",                       "Secondary", 114611L,  50.836811, -0.158368,
-  "Dorothy Stringer",                      "Secondary", 114580L,  50.848948, -0.143414,
-  "Hove Park",                             "Secondary", 114607L,  50.840867, -0.179613,
-  "Kings School",                          "Secondary", 139409L,  50.853022, -0.192069,
-  "Longhill High",                         "Secondary", 114581L,  50.818999, -0.067270,
-  "Patcham High",                          "Secondary", 114608L,  50.862195, -0.143940,
-  "Portslade Aldridge Community Academy",  "Secondary", 137063L,  50.850644, -0.225774,
-  "Varndean",                              "Secondary", 114579L,  50.850296, -0.137138,
-  # Primary (open)
-  "Aldrington CE Primary",                 "Primary",   114555L,  50.844506, -0.178606,
-  "Balfour Primary",                       "Primary",   114382L,  50.847735, -0.138348,
-  "Benfield Primary",                      "Primary",   151063L,  50.837928, -0.207026,
-  "Bevendean Primary",                     "Primary",   114485L,  50.841871, -0.099293,
-  "Bilingual Primary",                     "Primary",   138261L,  50.844225, -0.175804,
-  "Brackenbury Primary",                   "Primary",   114413L,  50.840626, -0.216424,
-  "Brunswick Primary",                     "Primary",   114446L,  50.831152, -0.158236,
-  "Carden Primary",                        "Primary",   131789L,  50.863304, -0.128889,
-  "Carlton Hill Primary",                  "Primary",   114381L,  50.824652, -0.132167,
-  "City Academy Whitehawk",                "Primary",   139677L,  50.825445, -0.107386,
-  "Coldean Primary",                       "Primary",   114384L,  50.865344, -0.112621,
-  "Coombe Road Primary",                   "Primary",   114365L,  50.840172, -0.117685,
-  "Cottesmore St Mary Catholic Primary",   "Primary",   114567L,  50.837319, -0.158093,
-  "Downs Infant",                          "Primary",   114367L,  50.837970, -0.133397,
-  "Elm Grove Primary",                     "Primary",   114477L,  50.831581, -0.121453,
-  "Fairlight Primary",                     "Primary",   114487L,  50.834574, -0.125792,
-  "Goldstone Primary",                     "Primary",   114398L,  50.841566, -0.192185,
-  "Hangleton Primary",                     "Primary",   151062L,  50.846678, -0.195922,
-  "Hertford Primary",                      "Primary",   114368L,  50.846789, -0.124536,
-  "Middle Street Primary",                 "Primary",   114369L,  50.821362, -0.142961,
-  "Mile Oak Primary",                      "Primary",   114430L,  50.853978, -0.227977,
-  "Moulsecoomb Primary",                   "Primary",   147680L,  50.849467, -0.110705,
-  "Our Lady of Lourdes Catholic Primary",  "Primary",   114544L,  50.806289, -0.058668,
-  "Patcham Infant",                        "Primary",   114373L,  50.861340, -0.147043,
-  "Peter Gladwin Primary",                 "Primary",   114443L,  50.843682, -0.220215,
-  "Queens Park Primary",                   "Primary",   114478L,  50.823015, -0.125659,
-  "Rudyard Kipling Primary",               "Primary",   114486L,  50.833830, -0.063732,
-  "Saltdean Primary",                      "Primary",   114479L,  50.808777, -0.038083,
-  "St Andrew's CE Primary",                "Primary",   114556L,  50.830581, -0.174575,
-  "St Bernadette's Catholic Primary",      "Primary",   114546L,  50.846703, -0.150421,
-  "St John The Baptist Catholic Primary",  "Primary",   114540L,  50.822669, -0.115861,
-  "St Joseph's Catholic Primary",          "Primary",   114542L,  50.842027, -0.126743,
-  "St Luke's Primary",                     "Primary",   114374L,  50.827216, -0.120137,
-  "St Margaret's CE Primary",              "Primary",   114537L,  50.806308, -0.055801,
-  "St Mark's CE Primary",                  "Primary",   114545L,  50.819405, -0.111237,
-  "St Martin's CE Primary",                "Primary",   114539L,  50.835193, -0.123481,
-  "St Mary Magdalen Catholic Primary",     "Primary",   114541L,  50.825073, -0.149217,
-  "St Mary's Catholic Primary",            "Primary",   114570L,  50.832265, -0.213633,
-  "St Nicolas CE Primary",                 "Primary",   114560L,  50.840626, -0.216424,
-  "St Paul's CE Primary",                  "Primary",   114543L,  50.826597, -0.144358,
-  "Stanford Infant",                       "Primary",   114377L,  50.838582, -0.152120,
-  "West Blatchington Primary",             "Primary",   149963L,  50.853022, -0.192069,
-  "West Hove Infant, Holland Road",        "Primary",   114428L,  50.826834, -0.161984,
-  "West Hove Infant, Portland Road",       "Primary",   114428L,  50.834027, -0.189693,
-  "Westdene Primary",                      "Primary",   114380L,  50.860040, -0.161759,
-  "Woodingdean Primary",                   "Primary",   114480L,  50.836176, -0.078079,
-  # Closed/renamed schools retained for historic series
-  "Davigdor Infant",                       "Primary",   114397L,  50.828776, -0.159267,
-  "St Bartholomew's CE Primary",           "Primary",   114538L,  50.830378, -0.137278,
-  "St Peter's Community Primary",          "Primary",   114411L,  50.831506, -0.215153,
-  "Hangleton Infant",                      "Primary",   151062L,  50.846678, -0.195922,
-  "Hertford Infant",                       "Primary",   114368L,  50.846789, -0.124536
-)
-
-# ---- Catchment boundaries (March 2025 / 2025–26 arrangements) ----
-# optionZ_Mar25.geojson reflects the catchments actually in force for the
-# 2025/26 intake (six catchments — note that Kings and Cardinal Newman are
-# faith schools and so sit outside the geographic catchment framework).
-optionZ <- st_read(here::here("data", "optionZ_Mar25.geojson"), quiet = TRUE) |>
-  st_transform(4326)
+# ---- School coordinate lookup + optionZ polygons are defined earlier in
+# the hidden `schools-catchments` setup chunk before the City-Wide section,
+# since they are shared by the by-catchment cohort chart and these maps.
 
 catchment_colours <- c(
   "BACA" = "#e41a1c", "HoveBlatchington" = "#377eb8", "Longhill" = "#4daf4a",
