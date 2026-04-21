@@ -1679,7 +1679,7 @@ A line that is broadly flat between 2025 and 2026 on this chart means the catchm
 
 # Maps — Applications and Offers as Proportional Circles
 
-School locations are taken from [Get Information about Schools](https://get-information-schools.service.gov.uk/) (GIAS). Catchment boundaries reflect the 2025/26 arrangements. Each circle is scaled to √(count) so area is **proportional to the count**.
+School locations are taken from [Get Information about Schools](https://get-information-schools.service.gov.uk/) (GIAS). Catchment boundaries reflect the 2025/26 arrangements. Circle radii are scaled as `count^0.72 × k` — slightly above strict area-proportional (`count^0.5`) scaling to make differences between large and small schools more visually obvious while still being monotonic in the count.
 
 Drag the year slider above each map to step through the time series. Each map has its own independent slider, so you can pin one map to a historic year while scrubbing through another. Click a school for the underlying figures.
 
@@ -1850,7 +1850,15 @@ legend_html <- function(title, swatch_colour, swatch_label) {
 # year's circles are freshly drawn at the year's counts.
 build_year_map <- function(map_data, value_col, colour, fill_opacity, radius_k,
                             show_catchments, prefix, legend_title, legend_label,
-                            is_primary = FALSE, height = 520) {
+                            is_primary = FALSE, height = 520,
+                            radius_exp = 0.7, min_radius = 3) {
+  # radius_exp controls how dramatic the size differences are.
+  # Area-proportional scaling corresponds to exp = 0.5 (Math.sqrt); values
+  # above that push towards linear scaling and exaggerate contrast between
+  # small and large schools. 0.7 gives roughly a sqrt-of-sqrt boost to
+  # perceived differences without tipping into mis-reading (linear = 1.0
+  # would make the biggest school 10x wider than a school with 1/10th the
+  # count). min_radius keeps tiny circles visible rather than vanishing.
   years <- sort(unique(map_data$Year))
   default_year <- max(years)
   data_id <- paste0("data_", prefix)
@@ -1907,6 +1915,8 @@ function(el, x) {
   var colour       = '__COLOUR__';
   var fillOpacity  = __FILL_OPACITY__;
   var radiusK      = __RADIUS_K__;
+  var radiusExp    = __RADIUS_EXP__;
+  var minRadius    = __MIN_RADIUS__;
   var legendTitle  = '__LEGEND_TITLE__';
   var legendLabel  = '__LEGEND_LABEL__';
   var isPrimary    = __IS_PRIMARY__;
@@ -1941,7 +1951,7 @@ function(el, x) {
       '<span style=\"display:inline-block;width:12px;height:12px;background:' + colour +
       ';border-radius:50%;opacity:' + fillOpacity + ';margin-right:4px;\"></span>' +
       legendLabel + '<br>' +
-      '<em style=\"font-size:11px;color:#666\">Area &prop; count &middot; ' + n + ' schools</em>';
+      '<em style=\"font-size:11px;color:#666\">Circles sized by count &middot; ' + n + ' schools</em>';
   }
 
   function popup(d) {
@@ -1968,7 +1978,8 @@ function(el, x) {
     rows.forEach(function(d) {
       if (d.lat == null || d.lon == null) return;
       if (d.value == null || isNaN(d.value) || d.value <= 0) return;
-      var r = Math.sqrt(d.value) * radiusK;
+      var r = Math.pow(d.value, radiusExp) * radiusK;
+      if (r < minRadius) r = minRadius;
       L.circleMarker([d.lat, d.lon], {
         radius:      r,
         fillColor:   colour,
@@ -2044,6 +2055,8 @@ function(el, x) {
   js_code <- gsub("__COLOUR__",       colour,                                              js_code, fixed = TRUE)
   js_code <- gsub("__FILL_OPACITY__", format(fill_opacity, nsmall = 2),                    js_code, fixed = TRUE)
   js_code <- gsub("__RADIUS_K__",     format(radius_k, nsmall = 2),                        js_code, fixed = TRUE)
+  js_code <- gsub("__RADIUS_EXP__",   format(radius_exp, nsmall = 2),                      js_code, fixed = TRUE)
+  js_code <- gsub("__MIN_RADIUS__",   format(min_radius, nsmall = 1),                      js_code, fixed = TRUE)
   js_code <- gsub("__LEGEND_TITLE__", legend_title,                                        js_code, fixed = TRUE)
   js_code <- gsub("__LEGEND_LABEL__", legend_label,                                        js_code, fixed = TRUE)
   js_code <- gsub("__IS_PRIMARY__",   if (isTRUE(is_primary)) "true" else "false",         js_code, fixed = TRUE)
@@ -2066,7 +2079,8 @@ build_year_map(
   value_col       = "Total",
   colour          = "#1f78b4",
   fill_opacity    = 0.40,
-  radius_k        = 0.55,
+  radius_k        = 0.28,
+  radius_exp      = 0.72,
   show_catchments = TRUE,
   prefix          = "sec_apps",
   legend_title    = "Applications",
@@ -2084,7 +2098,8 @@ build_year_map(
   value_col       = "Total_offer",
   colour          = "#e31a1c",
   fill_opacity    = 0.55,
-  radius_k        = 0.55,
+  radius_k        = 0.32,
+  radius_exp      = 0.72,
   show_catchments = TRUE,
   prefix          = "sec_offers",
   legend_title    = "Offers",
@@ -2102,7 +2117,8 @@ build_year_map(
   value_col       = "Total",
   colour          = "#1f78b4",
   fill_opacity    = 0.35,
-  radius_k        = 1.0,
+  radius_k        = 0.55,
+  radius_exp      = 0.72,
   show_catchments = FALSE,
   prefix          = "prim_apps",
   legend_title    = "Applications",
@@ -2120,7 +2136,8 @@ build_year_map(
   value_col       = "Total_offer",
   colour          = "#33a02c",
   fill_opacity    = 0.55,
-  radius_k        = 1.0,
+  radius_k        = 0.75,
+  radius_exp      = 0.72,
   show_catchments = FALSE,
   prefix          = "prim_offers",
   legend_title    = "Offers",
@@ -2132,7 +2149,7 @@ build_year_map(
 
 Notes on the maps:
 
--   Each map has its own year slider. Dragging the slider redraws the circles on that map only — school **positions stay fixed**, but **radii change** because the circles are re-drawn from scratch at the selected year's counts (radius = √count × k).
+-   Each map has its own year slider. Dragging the slider redraws the circles on that map only — school **positions stay fixed**, but **radii change** because the circles are re-drawn from scratch at the selected year's counts. Radius is computed as `count^0.72 × k`: the exponent is slightly above strict area-proportional scaling (0.5) to exaggerate perceived differences between small and large schools, while still being monotonic and keeping cross-year comparisons honest.
 -   Secondary maps show the 2025/26 catchment polygons as a reference. Primary maps are plotted on a neutral basemap (no national primary catchments exist — primary admission uses home-to-school distance).
 -   West Hove Infant has two intake sites (Holland Road and Portland Road) plotted at their respective postcodes (BN3 1JL and BN3 5JA).
 -   Historic infant schools that amalgamated into primaries (Hangleton Infant, Hertford Infant) are plotted at their successor primary's location. Fully closed schools (Davigdor Infant to 2015, St Bartholomew's, St Peter's Community) are plotted at their original postcodes so pre-closure years render correctly.
