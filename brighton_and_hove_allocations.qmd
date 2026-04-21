@@ -1645,6 +1645,71 @@ ggplotly(p_cohort, tooltip = "text")
 
 Within the shaded band both lines are available for the same cohort. The Reception line starts in 2014 (first year of primary data) and runs to 2026; the Year 7 line, because it's lagged, starts at cohort-year 2006 (from 2013 Year 7 admissions) and ends at cohort-year 2019 (from 2026 Year 7 admissions). Where both exist, a Year 7 line *below* the Reception line means net **loss** from the state-sector cohort between ages 4 and 11 (children moving to independents, moving out of the city, or being home-educated); a Year 7 line *above* the Reception line means net **entry** (families moving into the city, or moving into the state sector from independents).
 
+### Cohort Difference: Year 7 Offers − Reception Offers (Same Cohort)
+
+A standalone view of the gap between the two lines above. Bars show, for each cohort, Year 7 offers **minus** same-cohort Reception offers. Positive bars = the cohort grew between ages 4 and 11 (net entry); negative bars = the cohort shrank (net loss). The right-hand axis expresses the same thing as a percentage of the cohort's Reception size, so small and large cohorts can be compared fairly.
+
+```{r}
+# Inner join primary and secondary cohort totals on CohortYear so we
+# only keep the years where both are available. Reuse primary_cohort /
+# secondary_cohort built in the chunk above.
+cohort_diff <- primary_cohort %>%
+  dplyr::inner_join(secondary_cohort, by = "CohortYear") %>%
+  dplyr::mutate(
+    Diff    = Secondary_offers - Primary_offers,
+    PctDiff = 100 * Diff / Primary_offers,
+    Sign    = ifelse(Diff >= 0, "Net entry (Y7 > Reception)",
+                                "Net loss (Y7 < Reception)")
+  )
+
+# Scale factor so PctDiff (%) can share the primary y-axis (absolute
+# headcount). Pick a factor that makes the two series visually occupy
+# a similar vertical range.
+scale_fac <- max(abs(cohort_diff$Diff), na.rm = TRUE) /
+             max(abs(cohort_diff$PctDiff), na.rm = TRUE)
+
+p_diff <- ggplot(cohort_diff,
+                 aes(x = CohortYear,
+                     text = paste0("Cohort reception year: ", CohortYear,
+                                   "<br>Reception (year ", CohortYear, "): ",
+                                   format(Primary_offers, big.mark = ","),
+                                   "<br>Year 7 (year ", Year_yr7, "): ",
+                                   format(Secondary_offers, big.mark = ","),
+                                   "<br>Difference: ",
+                                   ifelse(Diff >= 0, "+", ""),
+                                   format(Diff, big.mark = ","),
+                                   " (", ifelse(PctDiff >= 0, "+", ""),
+                                   formatC(PctDiff, format = "f", digits = 1),
+                                   "%)"))) +
+  geom_col(aes(y = Diff, fill = Sign)) +
+  geom_hline(yintercept = 0, colour = "grey30", linewidth = 0.4) +
+  geom_line(aes(y = PctDiff * scale_fac, group = 1),
+            colour = "#222222", linewidth = 0.6) +
+  geom_point(aes(y = PctDiff * scale_fac),
+             colour = "#222222", size = 1.8) +
+  scale_fill_manual(values = c("Net entry (Y7 > Reception)" = "#33a02c",
+                                "Net loss (Y7 < Reception)"  = "#e31a1c"),
+                    name = NULL) +
+  scale_x_continuous(
+    breaks = seq(min(cohort_diff$CohortYear), max(cohort_diff$CohortYear), 1)
+  ) +
+  scale_y_continuous(
+    name = "Year 7 offers − Reception offers (headcount)",
+    sec.axis = sec_axis(~ . / scale_fac,
+                         name = "% change vs Reception cohort")
+  ) +
+  labs(title = "Cohort Change Between Reception and Year 7",
+       subtitle = "Bars: absolute headcount difference. Line: same difference as % of Reception cohort.",
+       x = "Cohort Reception Year") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
+ggplotly(p_diff, tooltip = "text")
+```
+
+Reading this chart: each bar tells you how many *more* (green) or *fewer* (red) Year 7 places were offered to a given cohort than were offered to them at Reception, using the 7-year lag. The black line on the right axis normalises that same difference by the Reception cohort size, so a –100-pupil change in a large cohort doesn't look as alarming as the same –100 in a small one. Note this is a whole-city aggregate and so conflates several mechanisms (independent-sector movement, migration, home-ed, etc.) — it doesn't attribute the change to any single cause.
+
 ## Secondary Offers by Catchment (and Religious Schools)
 
 The six geographic secondary catchments are represented by eight schools. Two of Brighton & Hove's secondary schools — **Kings School** and **Cardinal Newman Catholic School** — are faith schools that admit across the whole city and so sit outside the geographic catchment framework; they are combined here as **Religious schools**.
