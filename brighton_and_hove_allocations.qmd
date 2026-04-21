@@ -2026,6 +2026,147 @@ ggplotly(p_catch_std, tooltip = "text")
 
 A line that is broadly flat between 2025 and 2026 on this chart means the catchment's 2026 rise in the raw by-catchment chart above is essentially the extra preference slot — not a real increase in families choosing that catchment. A line that steps clearly *up* from 2025 to 2026 is picking up genuine additional demand per slot; a line that steps *down* is losing demand even before the mechanical slot inflation is applied.
 
+# Council Forecast (BHCC Appendix 6, Oct 2024) vs Actual Offers
+
+The table below is transcribed from [Appendix 6 — Secondary School Pupil Forecast](https://democracy.brighton-hove.gov.uk/documents/s211108/Appendix%206%20-%20Secondary%20School%20Pupil%20Forecast.pdf) of the Brighton & Hove City Council pupil-forecast paper (data source: **October 2024 school census**). It projects Year 7 demand for each catchment at the seven secondary-entry years from **2025 to 2031** — i.e. the children who were in Year 6 down to Reception at the time of the Oct 2024 census.
+
+The council's method (summarised from the PDF):
+
+1. Start with the raw number of pupils living in each catchment in the relevant year group of the Oct 2024 census.
+2. Reduce by a catchment-specific leakage percentage (`2.01%`–`22.61%`) for pupils expected to move out of the state-maintained sector (independents, home-ed, out-of-city).
+3. Further reduce by the historical share of the catchment going to **Cardinal Newman** or **Kings School** — the two city-wide faith secondaries that sit outside the geographic catchment framework.
+4. The resulting "adjusted for CN & Kings" figure is the forecast demand for the catchment's own schools. Compared with the catchment PAN this gives a surplus (`+`) or shortfall (`-`) of places.
+
+## Forecast Demand by Catchment (adjusted for CN & Kings)
+
+```{r}
+bhcc_forecast <- tibble::tribble(
+  ~CatchmentGroup,                 ~PAN, ~Y2025, ~Y2026, ~Y2027, ~Y2028, ~Y2029, ~Y2030, ~Y2031,
+  "PACA",                           220L,   206L,   221L,   185L,   191L,   182L,   214L,   150L,
+  "Hove Park / Blatchington Mill",  510L,   512L,   434L,   443L,   410L,   413L,   351L,   365L,
+  "Varndean / Dorothy Stringer",    630L,   581L,   624L,   592L,   588L,   560L,   557L,   539L,
+  "Longhill",                       210L,   168L,   175L,   166L,   176L,   159L,   151L,   154L,
+  "BACA",                           180L,   134L,   129L,   138L,   143L,   112L,    95L,   125L,
+  "Patcham",                        225L,   198L,   205L,   212L,   201L,   194L,   163L,   179L
+)
+
+bhcc_surplus <- tibble::tribble(
+  ~CatchmentGroup,                 ~Y2025, ~Y2026, ~Y2027, ~Y2028, ~Y2029, ~Y2030, ~Y2031,
+  "PACA",                             14L,    -1L,    35L,    29L,    38L,     6L,    70L,
+  "Hove Park / Blatchington Mill",    -2L,    76L,    67L,   100L,    97L,   159L,   145L,
+  "Varndean / Dorothy Stringer",      49L,     6L,    38L,    42L,    70L,    73L,    91L,
+  "Longhill",                         42L,    35L,    44L,    34L,    51L,    59L,    56L,
+  "BACA",                             46L,    51L,    42L,    37L,    68L,    85L,    55L,
+  "Patcham",                          27L,    20L,    13L,    24L,    31L,    62L,    46L
+)
+
+# Add the totals row for forecast demand (from the PDF).
+bhcc_forecast_with_total <- bhcc_forecast %>%
+  dplyr::bind_rows(
+    tibble::tibble(
+      CatchmentGroup = "Total (catchment schools)",
+      PAN    = 1975L,
+      Y2025  = 1800L, Y2026 = 1787L, Y2027 = 1737L, Y2028 = 1709L,
+      Y2029  = 1620L, Y2030 = 1531L, Y2031 = 1512L
+    ),
+    tibble::tibble(
+      CatchmentGroup = "Total (all schools, incl. Kings + CN)",
+      PAN    = 2500L,
+      Y2025  = 2297L, Y2026 = 2284L, Y2027 = 2234L, Y2028 = 2206L,
+      Y2029  = 2117L, Y2030 = 2028L, Y2031 = 2009L
+    )
+  )
+
+knitr::kable(bhcc_forecast_with_total,
+             col.names = c("Catchment", "PAN",
+                           "2025", "2026", "2027", "2028", "2029", "2030", "2031"),
+             align = "lrrrrrrrr",
+             caption = "Forecast Y7 demand (adjusted for Cardinal Newman & Kings), BHCC Oct-24 census projection")
+```
+
+## Forecast Surplus / Shortfall of Places
+
+```{r}
+knitr::kable(bhcc_surplus,
+             col.names = c("Catchment",
+                           "2025", "2026", "2027", "2028", "2029", "2030", "2031"),
+             align = "lrrrrrrr",
+             caption = "Surplus (+) or shortfall (–) of places: PAN minus forecast adjusted demand")
+```
+
+Positive values = spare capacity; negative values = demand exceeds PAN. Across the city the council's forecast shows a rising surplus — from **8 %** of all secondary places in 2025 to **20 %** in 2031 — driven mainly by falling birth cohorts now working through the system.
+
+## How Did the 2025 and 2026 Forecasts Compare With What Actually Happened?
+
+The 2025 and 2026 columns in the forecast are the two years for which we already have admissions data in this document. The table below sets the council's **projected demand** (from Appendix 6) alongside the **actual number of offers** we see for each catchment's schools.
+
+Two caveats on comparability:
+
+- The council's "adjusted for CN & Kings" figure is a projected demand from children *living in* the catchment who are expected to seek a state non-faith place. Our "actual offers" is the number of Y7 places *issued at* the catchment's schools — which will include some cross-catchment pupils and excludes in-catchment children who were offered a place elsewhere. Offers are also hard-capped at PAN.
+- The Kings + Cardinal Newman totals in the PDF aren't broken out as a catchment row — instead each geographic catchment's projection is reduced each year by a *per-year* estimate of how many of its resident pupils will go to Cardinal Newman (total across all catchments **330 / yr**) and Kings (**167 / yr**). Summed, that's roughly **497 / yr** of projected faith-school intake, vs a combined PAN of **540** (CN 360 + Kings 180) — so the PDF implicitly assumes Kings and CN run essentially full, with any spare places filled from outside the six geographic catchments (e.g. out-of-city faith applicants).
+
+```{r}
+# Our actual offers per catchment per year, reusing the `catchment_offers`
+# data built for the by-catchment offers chart earlier.
+actual_offers_2526 <- catchment_offers %>%
+  dplyr::filter(Year %in% c(2025L, 2026L)) %>%
+  dplyr::select(Year, CatchmentGroup, Total_offer) %>%
+  tidyr::pivot_wider(names_from = Year, values_from = Total_offer,
+                     names_prefix = "Actual_")
+
+compare_2526 <- bhcc_forecast %>%
+  dplyr::select(CatchmentGroup, PAN,
+                Forecast_2025 = Y2025, Forecast_2026 = Y2026) %>%
+  dplyr::left_join(actual_offers_2526, by = "CatchmentGroup") %>%
+  dplyr::mutate(
+    Diff_2025 = Actual_2025 - Forecast_2025,
+    Diff_2026 = Actual_2026 - Forecast_2026
+  ) %>%
+  dplyr::select(CatchmentGroup, PAN,
+                Forecast_2025, Actual_2025, Diff_2025,
+                Forecast_2026, Actual_2026, Diff_2026)
+
+knitr::kable(compare_2526,
+             col.names = c("Catchment", "PAN",
+                           "Forecast 2025", "Actual 2025", "Δ 2025",
+                           "Forecast 2026", "Actual 2026", "Δ 2026"),
+             align  = "lrrrrrrr",
+             format.args = list(big.mark = ","),
+             caption = "BHCC Appendix 6 forecast vs actual Y7 offers, 2025 and 2026")
+```
+
+```{r}
+# Separate block for the religious schools since they're not one of the
+# six geographic catchments. PDF per-year implied demand = sum across all
+# catchments of "Estimated number going to CN / Kings".
+relig_actual <- secondary_all %>%
+  dplyr::filter(School %in% c("Kings School", "Cardinal Newman"),
+                Year %in% c(2025L, 2026L)) %>%
+  dplyr::select(Year, School, Total_offer) %>%
+  tidyr::pivot_wider(names_from = School, values_from = Total_offer) %>%
+  dplyr::mutate(`CN + Kings total` = `Cardinal Newman` + `Kings School`,
+                `PDF implied demand (per yr)` = 330L + 167L)
+
+knitr::kable(relig_actual,
+             align  = "lrrrr",
+             format.args = list(big.mark = ","),
+             caption = "Religious schools: actual Y7 offers vs the PDF's implied per-year demand (CN + Kings, summed across catchments)")
+```
+
+**Headline read for 2025 and 2026:**
+
+- **Varndean / Dorothy Stringer** — the forecast under-estimated demand on both years. Forecast **581** in 2025 and **624** in 2026, but actual offers hit the PAN cap of **630** in both years (Δ +49 and +6). These two schools stay full regardless of the council's in-catchment demand model, because out-of-catchment demand tops them up. That's consistent with their long-standing over-subscription.
+- **Longhill** — the forecast *over-estimated* demand dramatically. Forecast **168 / 175**, actual offers only **97 / 81** (Δ –71 and –94). Offers are roughly **half** what the council modelled, and well below PAN 210. This is the single biggest forecast-vs-actual gap in the table.
+- **BACA** — 2025 actual (**89**) fell well below forecast (**134**), but 2026 flipped with actuals **146** against a forecast of **129** (Δ +17). The 2026 uptick mirrors the PAN increase from 180 to 180 and the modest city-wide 2026 rebound visible in the earlier charts — it will be worth watching whether this continues in 2027.
+- **PACA** — under-filled in both years relative to both forecast and PAN. 2025 offers **190** (forecast **206**, PAN 220), 2026 offers **183** (forecast **221**, PAN 220). So the council's model has been slightly optimistic for PACA — real-world demand was a bit softer than Oct-24 census data alone would suggest.
+- **Hove Park / Blatchington Mill** — 2025 tracked the forecast closely: offers **501** vs forecast **512** (Δ –11), both close to the combined PAN of **510**. 2026 is the striking case — the PDF projected a sharp drop in catchment demand to **434** (a shortfall position), but actual offers came in at **466**, i.e. **32 *above*** forecast (and still under PAN). Out-of-catchment demand appears to be filling some of the gap the council's demand-side model predicted.
+- **Patcham** — forecast and actual essentially agree in both years (offers 202 / 204 against forecast 198 / 205), small Δ of +4 and –1. The most accurately forecast catchment in the table.
+- **Religious schools (Kings + CN)** — both schools are at PAN in both years (CN 360 + Kings 180 = **540**), vs a PDF implied per-year demand of **497** summed across the six catchments. The **~43 / yr** gap is the outside-catchment faith intake (out-of-city Catholic applicants, siblings, etc.) that the PDF's catchment-side model doesn't see — exactly the flow that makes these schools city-wide admissions problems rather than local ones.
+
+**Bottom line** — Varndean / Dorothy Stringer, Patcham and the religious schools tracked the forecast closely or ran *full* regardless of forecast, so the council's demand model is a reasonable guide to supply-constrained catchments. The PDF over-estimates demand at **Longhill, PACA and BACA** (where schools run below PAN anyway, so forecast error doesn't translate to unmet demand), and under-estimates it at **Varndean / Stringer, Hove Park / Blatch (2026) and the religious schools** (where out-of-catchment demand fills any forecast gap). The practical implication: places-surplus forecasts for the under-filled catchments are probably *optimistic* — actual under-fill at Longhill and BACA is worse than the PDF's "adjusted demand vs PAN" surplus row would suggest.
+
+At the city level the council projects aggregate demand of **2,297** (2025) and **2,284** (2026). Summing actual 2025 + 2026 offers across all nine secondary schools from our data provides a direct check — any gap reflects a mix of (a) leakage rates the council has already baked in, (b) out-of-city and in-year late applicants, and (c) schools running below PAN where catchment demand fell short.
+
 # Maps — Applications and Offers as Proportional Circles
 
 School locations are taken from [Get Information about Schools](https://get-information-schools.service.gov.uk/) (GIAS). Catchment boundaries reflect the 2025/26 arrangements. Circle radii are scaled as `count^0.72 × k` — slightly above strict area-proportional (`count^0.5`) scaling to make differences between large and small schools more visually obvious while still being monotonic in the count.
