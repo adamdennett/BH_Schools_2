@@ -1380,146 +1380,14 @@ datatable(
 )
 ```
 
-## Interactive Time Series — Primary
-
-Given the number of schools (\~46), plots below group them by size band (PAN) or by geographic/admissions area so lines stay legible. Use the legend to toggle schools on and off.
-
-### Total Applications by School (All)
-
-```{r, fig.height=9}
-p_prim_apps <- ggplot(primary_all,
-                      aes(x = Year, y = Total, color = School, group = School,
-                          text = paste0(School, "<br>Year: ", Year,
-                                        "<br>Applications: ", Total,
-                                        "<br>Offers: ", Total_offer,
-                                        "<br>PAN: ", PAN))) +
-  geom_line() +
-  geom_point(size = 0.6) +
-  scale_x_continuous(breaks = seq(2014, 2026, 2)) +
-  labs(title = "Total Primary Applications by School, 2014–2026",
-       x = "Year", y = "Total Applications") +
-  theme_minimal() +
-  theme(legend.position = "none",
-        axis.text.x = element_text(angle = 45, hjust = 1))
-
-ggplotly(p_prim_apps, tooltip = "text")
-```
-
-Legend suppressed due to number of schools — hover to identify a line.
-
-### Offers vs PAN — How Full Is Each School?
-
-```{r, fig.height=9}
-primary_fill <- primary_all %>%
-  mutate(FillPct = 100 * Total_offer / PAN)
-
-p_fill <- ggplot(primary_fill,
-                 aes(x = Year, y = FillPct, color = School, group = School,
-                     text = paste0(School, "<br>Year: ", Year,
-                                   "<br>Offers: ", Total_offer, " / PAN ", PAN,
-                                   "<br>Fill: ", round(FillPct, 1), "%"))) +
-  geom_line() +
-  geom_point(size = 0.6) +
-  geom_hline(yintercept = 100, linetype = "dashed", color = "grey40") +
-  scale_x_continuous(breaks = seq(2014, 2026, 2)) +
-  labs(title = "Primary Schools — Offers as % of Published Admission Number",
-       x = "Year", y = "Offers ÷ PAN (%)") +
-  theme_minimal() +
-  theme(legend.position = "none",
-        axis.text.x = element_text(angle = 45, hjust = 1))
-
-ggplotly(p_fill, tooltip = "text")
-```
-
-### 1st-Preference Offers — Were Families Getting Their First Choice?
-
-```{r, fig.height=9}
-p_1st <- ggplot(primary_all,
-                aes(x = Year, y = No_1st_pref_offer, color = School, group = School,
-                    text = paste0(School, "<br>Year: ", Year,
-                                  "<br>1st-pref offers: ", No_1st_pref_offer,
-                                  " / 1st-pref applications: ", No_1st_pref))) +
-  geom_line() +
-  geom_point(size = 0.6) +
-  scale_x_continuous(breaks = seq(2014, 2026, 2)) +
-  labs(title = "Primary — 1st Preference Offers Made, 2014–2026",
-       x = "Year", y = "1st-preference Offers") +
-  theme_minimal() +
-  theme(legend.position = "none",
-        axis.text.x = element_text(angle = 45, hjust = 1))
-
-ggplotly(p_1st, tooltip = "text")
-```
-
-### City-wide Aggregate
-
-```{r}
-primary_city <- primary_all %>%
-  group_by(Year) %>%
-  summarise(
-    Applications_1st = sum(No_1st_pref, na.rm = TRUE),
-    Offers_1st       = sum(No_1st_pref_offer, na.rm = TRUE),
-    Offers_Total     = sum(Total_offer, na.rm = TRUE),
-    PAN_Total        = sum(PAN, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
-  mutate(FirstPrefRate = 100 * Offers_1st / Applications_1st,
-         FillRate      = 100 * Offers_Total / PAN_Total)
-
-p_city <- ggplot(primary_city, aes(x = Year)) +
-  geom_line(aes(y = FirstPrefRate, color = "1st-pref success rate",
-                text = paste0("Year: ", Year,
-                              "<br>1st-pref success: ", round(FirstPrefRate, 1), "%")),
-            group = 1) +
-  geom_point(aes(y = FirstPrefRate, color = "1st-pref success rate",
-                 text = paste0("Year: ", Year,
-                               "<br>1st-pref success: ", round(FirstPrefRate, 1), "%"))) +
-  geom_line(aes(y = FillRate, color = "City-wide fill rate (offers/PAN)",
-                text = paste0("Year: ", Year,
-                              "<br>Fill rate: ", round(FillRate, 1), "%")),
-            group = 1) +
-  geom_point(aes(y = FillRate, color = "City-wide fill rate (offers/PAN)",
-                 text = paste0("Year: ", Year,
-                               "<br>Fill rate: ", round(FillRate, 1), "%"))) +
-  scale_x_continuous(breaks = seq(2014, 2026, 1)) +
-  labs(title = "City-wide Primary Admissions Indicators",
-       x = "Year", y = "Percentage", color = NULL) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-ggplotly(p_city, tooltip = "text")
-```
-
-### Oversubscribed vs Undersubscribed Schools, 2026
-
-```{r}
-latest <- primary_all %>% filter(Year == 2026) %>%
-  mutate(Balance = No_1st_pref - PAN,
-         Status  = ifelse(Balance > 0, "Oversubscribed (1st prefs > PAN)",
-                           "Undersubscribed"))
-
-p_bal <- ggplot(latest,
-                aes(x = reorder(School, Balance), y = Balance, fill = Status,
-                    text = paste0(School, "<br>1st preferences: ", No_1st_pref,
-                                  "<br>PAN: ", PAN,
-                                  "<br>Balance: ", Balance))) +
-  geom_col() +
-  coord_flip() +
-  labs(title = "2026 Reception: 1st-Preference Applications − PAN",
-       x = NULL, y = "Applications minus PAN") +
-  theme_minimal()
-
-ggplotly(p_bal, tooltip = "text")
-```
-
 ```{r schools-catchments, include=FALSE}
 # ---- Shared lookup: school locations + geographic catchment mapping ----
-# Used by the by-catchment cohort chart below and the proportional-circle
-# maps further down. Secondary faith schools (Kings, Cardinal Newman) are
-# overridden to "Religious schools" because they admit city-wide and sit
-# outside the geographic framework. Catholic primaries are also grouped as
-# "Religious schools" so they are compared against Cardinal Newman-style
-# secondary demand rather than against their geographic catchment.
+# Used by the primary by-catchment tabsets below, the by-catchment cohort chart,
+# and the proportional-circle maps further down. Secondary faith schools (Kings,
+# Cardinal Newman) are overridden to "Religious schools" because they admit
+# city-wide and sit outside the geographic framework. Catholic primaries are
+# also grouped as "Religious schools" so they are compared against Cardinal
+# Newman-style secondary demand rather than against their geographic catchment.
 library(sf)
 
 school_locs <- tibble::tribble(
@@ -1621,6 +1489,318 @@ schools_with_catchment <- sf::st_join(
     )
   ) |>
   dplyr::select(School, Phase, CatchmentGroup)
+```
+
+```{r primary-catchment-helpers, include=FALSE}
+# ---- Helpers for the by-catchment primary tabsets -------------------------
+# Each catchment gets a distinct base hue; schools within a catchment get
+# a shaded ramp from that hue towards a pale grey, giving every school a
+# unique line colour within its tab while keeping catchments visually
+# distinct across tabs.
+
+primary_catch_base_colors <- c(
+  "BACA"                          = "forestgreen",
+  "Hove Park / Blatchington Mill" = "steelblue",
+  "Longhill"                      = "firebrick",
+  "PACA"                          = "darkorange",
+  "Patcham"                       = "purple",
+  "Varndean / Dorothy Stringer"   = "goldenrod",
+  "Religious schools"             = "mediumorchid"
+)
+
+# Tab display order (match the catchment colour vector above)
+primary_catch_order <- names(primary_catch_base_colors)
+
+# Which primaries fall in each catchment (based on the shared lookup above).
+# Filter to only schools that actually appear in the primary_all data so empty
+# tabs don't appear in the output.
+primary_catch_schools <- schools_with_catchment %>%
+  dplyr::filter(Phase == "Primary", !is.na(CatchmentGroup)) %>%
+  dplyr::filter(School %in% unique(primary_all$School)) %>%
+  dplyr::distinct(School, CatchmentGroup)
+
+# Build a named colour vector (school -> hex) for a given catchment.
+primary_catch_palette <- function(catch) {
+  base <- unname(primary_catch_base_colors[catch])
+  schs <- primary_catch_schools %>%
+    dplyr::filter(CatchmentGroup == catch) %>%
+    dplyr::arrange(School) %>%
+    dplyr::pull(School)
+  n <- length(schs)
+  if (n == 0) return(character(0))
+  # Ramp from base colour to a pale neutral so each school is distinguishable.
+  pal <- grDevices::colorRampPalette(c(base, "grey75"))(max(n, 2))[seq_len(n)]
+  stats::setNames(pal, schs)
+}
+
+# Generic plot builder — filters primary_all to one catchment and draws a
+# ggplotly with each school in its own shade.
+plot_primary_by_catchment <- function(catch, metric = c("Total", "FillPct", "No_1st_pref_offer")) {
+  metric <- match.arg(metric)
+  pal <- primary_catch_palette(catch)
+  if (length(pal) == 0) {
+    return(htmltools::tags$p(paste0("No primary schools mapped to ", catch, ".")))
+  }
+
+  dat <- primary_all %>%
+    dplyr::filter(School %in% names(pal)) %>%
+    dplyr::mutate(School = factor(School, levels = names(pal)))
+
+  # Compute y-value and tooltip text as explicit columns so aes() stays simple.
+  if (metric == "Total") {
+    dat <- dplyr::mutate(dat,
+      y_val = Total,
+      tt    = paste0(School, "<br>Year: ", Year,
+                     "<br>Applications: ", Total,
+                     "<br>Offers: ", Total_offer,
+                     "<br>PAN: ", PAN))
+    ylab  <- "Total Applications"
+    title <- paste0("Total Applications \u2014 ", catch)
+  } else if (metric == "FillPct") {
+    dat <- dplyr::mutate(dat,
+      y_val = 100 * Total_offer / PAN,
+      tt    = paste0(School, "<br>Year: ", Year,
+                     "<br>Offers: ", Total_offer, " / PAN ", PAN,
+                     "<br>Fill: ", round(100 * Total_offer / PAN, 1), "%"))
+    ylab  <- "Offers \u00f7 PAN (%)"
+    title <- paste0("Offers as % of PAN \u2014 ", catch)
+  } else { # No_1st_pref_offer
+    dat <- dplyr::mutate(dat,
+      y_val = No_1st_pref_offer,
+      tt    = paste0(School, "<br>Year: ", Year,
+                     "<br>1st-pref offers: ", No_1st_pref_offer,
+                     " / 1st-pref applications: ", No_1st_pref))
+    ylab  <- "1st-preference Offers"
+    title <- paste0("1st-Preference Offers \u2014 ", catch)
+  }
+
+  p <- ggplot(dat,
+              aes(x = Year, y = y_val, color = School, group = School, text = tt)) +
+    geom_line() +
+    geom_point(size = 0.9) +
+    scale_color_manual(values = pal) +
+    scale_x_continuous(breaks = seq(2014, 2026, 2)) +
+    labs(title = title, x = "Year", y = ylab, color = NULL) +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          legend.title = element_blank())
+
+  if (metric == "FillPct") {
+    p <- p + geom_hline(yintercept = 100, linetype = "dashed", color = "grey40")
+  }
+
+  plotly::ggplotly(p, tooltip = "text") %>%
+    plotly::layout(legend = list(orientation = "v"))
+}
+```
+
+## Interactive Time Series — Primary
+
+The full primary-school series contains ~46 schools, so a single plot is unreadable. Below, each chart is split into tabs by the **secondary catchment** each primary sits within (these catchments don't formally govern primary admissions, but they're a useful geographic grouping — and they match how the cohort-aging projection later in this document treats primaries). Catholic primaries are grouped together as "Religious schools", mirroring how Kings and Cardinal Newman are handled on the secondary side. Within each tab, schools are given distinct shades of the catchment's base colour.
+
+### Total Applications by School
+
+::: {.panel-tabset}
+
+#### BACA
+
+```{r, fig.height=6}
+plot_primary_by_catchment("BACA", "Total")
+```
+
+#### Hove Park / Blatchington Mill
+
+```{r, fig.height=6}
+plot_primary_by_catchment("Hove Park / Blatchington Mill", "Total")
+```
+
+#### Longhill
+
+```{r, fig.height=6}
+plot_primary_by_catchment("Longhill", "Total")
+```
+
+#### PACA
+
+```{r, fig.height=6}
+plot_primary_by_catchment("PACA", "Total")
+```
+
+#### Patcham
+
+```{r, fig.height=6}
+plot_primary_by_catchment("Patcham", "Total")
+```
+
+#### Varndean / Dorothy Stringer
+
+```{r, fig.height=6}
+plot_primary_by_catchment("Varndean / Dorothy Stringer", "Total")
+```
+
+#### Religious schools
+
+```{r, fig.height=6}
+plot_primary_by_catchment("Religious schools", "Total")
+```
+
+:::
+
+### Offers vs PAN — How Full Is Each School?
+
+::: {.panel-tabset}
+
+#### BACA
+
+```{r, fig.height=6}
+plot_primary_by_catchment("BACA", "FillPct")
+```
+
+#### Hove Park / Blatchington Mill
+
+```{r, fig.height=6}
+plot_primary_by_catchment("Hove Park / Blatchington Mill", "FillPct")
+```
+
+#### Longhill
+
+```{r, fig.height=6}
+plot_primary_by_catchment("Longhill", "FillPct")
+```
+
+#### PACA
+
+```{r, fig.height=6}
+plot_primary_by_catchment("PACA", "FillPct")
+```
+
+#### Patcham
+
+```{r, fig.height=6}
+plot_primary_by_catchment("Patcham", "FillPct")
+```
+
+#### Varndean / Dorothy Stringer
+
+```{r, fig.height=6}
+plot_primary_by_catchment("Varndean / Dorothy Stringer", "FillPct")
+```
+
+#### Religious schools
+
+```{r, fig.height=6}
+plot_primary_by_catchment("Religious schools", "FillPct")
+```
+
+:::
+
+### 1st-Preference Offers — Were Families Getting Their First Choice?
+
+::: {.panel-tabset}
+
+#### BACA
+
+```{r, fig.height=6}
+plot_primary_by_catchment("BACA", "No_1st_pref_offer")
+```
+
+#### Hove Park / Blatchington Mill
+
+```{r, fig.height=6}
+plot_primary_by_catchment("Hove Park / Blatchington Mill", "No_1st_pref_offer")
+```
+
+#### Longhill
+
+```{r, fig.height=6}
+plot_primary_by_catchment("Longhill", "No_1st_pref_offer")
+```
+
+#### PACA
+
+```{r, fig.height=6}
+plot_primary_by_catchment("PACA", "No_1st_pref_offer")
+```
+
+#### Patcham
+
+```{r, fig.height=6}
+plot_primary_by_catchment("Patcham", "No_1st_pref_offer")
+```
+
+#### Varndean / Dorothy Stringer
+
+```{r, fig.height=6}
+plot_primary_by_catchment("Varndean / Dorothy Stringer", "No_1st_pref_offer")
+```
+
+#### Religious schools
+
+```{r, fig.height=6}
+plot_primary_by_catchment("Religious schools", "No_1st_pref_offer")
+```
+
+:::
+
+### City-wide Aggregate
+
+```{r}
+primary_city <- primary_all %>%
+  group_by(Year) %>%
+  summarise(
+    Applications_1st = sum(No_1st_pref, na.rm = TRUE),
+    Offers_1st       = sum(No_1st_pref_offer, na.rm = TRUE),
+    Offers_Total     = sum(Total_offer, na.rm = TRUE),
+    PAN_Total        = sum(PAN, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(FirstPrefRate = 100 * Offers_1st / Applications_1st,
+         FillRate      = 100 * Offers_Total / PAN_Total)
+
+p_city <- ggplot(primary_city, aes(x = Year)) +
+  geom_line(aes(y = FirstPrefRate, color = "1st-pref success rate",
+                text = paste0("Year: ", Year,
+                              "<br>1st-pref success: ", round(FirstPrefRate, 1), "%")),
+            group = 1) +
+  geom_point(aes(y = FirstPrefRate, color = "1st-pref success rate",
+                 text = paste0("Year: ", Year,
+                               "<br>1st-pref success: ", round(FirstPrefRate, 1), "%"))) +
+  geom_line(aes(y = FillRate, color = "City-wide fill rate (offers/PAN)",
+                text = paste0("Year: ", Year,
+                              "<br>Fill rate: ", round(FillRate, 1), "%")),
+            group = 1) +
+  geom_point(aes(y = FillRate, color = "City-wide fill rate (offers/PAN)",
+                 text = paste0("Year: ", Year,
+                               "<br>Fill rate: ", round(FillRate, 1), "%"))) +
+  scale_x_continuous(breaks = seq(2014, 2026, 1)) +
+  labs(title = "City-wide Primary Admissions Indicators",
+       x = "Year", y = "Percentage", color = NULL) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggplotly(p_city, tooltip = "text")
+```
+
+### Oversubscribed vs Undersubscribed Schools, 2026
+
+```{r}
+latest <- primary_all %>% filter(Year == 2026) %>%
+  mutate(Balance = No_1st_pref - PAN,
+         Status  = ifelse(Balance > 0, "Oversubscribed (1st prefs > PAN)",
+                           "Undersubscribed"))
+
+p_bal <- ggplot(latest,
+                aes(x = reorder(School, Balance), y = Balance, fill = Status,
+                    text = paste0(School, "<br>1st preferences: ", No_1st_pref,
+                                  "<br>PAN: ", PAN,
+                                  "<br>Balance: ", Balance))) +
+  geom_col() +
+  coord_flip() +
+  labs(title = "2026 Reception: 1st-Preference Applications − PAN",
+       x = NULL, y = "Applications minus PAN") +
+  theme_minimal()
+
+ggplotly(p_bal, tooltip = "text")
 ```
 
 # City-Wide State-Sector Trends
@@ -2542,8 +2722,9 @@ library(htmlwidgets)
 library(jsonlite)
 
 # ---- School coordinate lookup + optionZ polygons are defined earlier in
-# the hidden `schools-catchments` setup chunk before the City-Wide section,
-# since they are shared by the by-catchment cohort chart and these maps.
+# the hidden `schools-catchments` setup chunk (just before the Interactive
+# Time Series — Primary section), since they are shared by the primary
+# by-catchment tabsets, the by-catchment cohort chart, and these maps.
 
 catchment_colours <- c(
   "BACA" = "#e41a1c", "HoveBlatchington" = "#377eb8", "Longhill" = "#4daf4a",
