@@ -1562,6 +1562,89 @@ ggplotly(p_city, tooltip = "text")
 
 The secondary line tracks the Year 7 cohort; the primary line tracks the Reception cohort. Together they give a rough picture of how many state-sector school places the city is actually filling each year.
 
+## Same Cohort Aligned: Primary Offers vs Lagged Secondary Offers
+
+The previous chart plots each year's Reception and Year 7 offers side-by-side on the calendar year. That's a useful cross-section of how many places the state sector is filling overall, but the two lines aren't tracking the *same* children. The chart below re-bases the comparison on the **cohort's Reception year**: Year 7 offers are shifted back by seven years so that they sit above the same cohort's Reception offers. A child offered a Reception place in 2014, for example, was offered a Year 7 place in 2021 — so the **2014** point on the x-axis shows the 2014 Reception total alongside the 2021 Year 7 total for the same cohort of children.
+
+In a closed system — no migration, no moves to / from the independent sector — those two lines would be identical. Where they diverge, the gap measures net **leakage out of** or **entry into** the state sector between ages 4 and 11.
+
+```{r}
+# x-axis is the cohort's reception year. Primary offers are indexed by
+# that year directly; secondary offers are indexed by (SecondaryYear - 7)
+# so a family whose child started Reception in year Y appears on the
+# secondary line at x = Y using the Year 7 offers made in year Y + 7.
+LAG <- 7L
+
+primary_cohort <- primary_all %>%
+  dplyr::filter(School != "Total", !is.na(Total_offer)) %>%
+  dplyr::group_by(CohortYear = Year) %>%
+  dplyr::summarise(Primary_offers = sum(Total_offer, na.rm = TRUE),
+                   .groups = "drop")
+
+secondary_cohort <- secondary_all %>%
+  dplyr::filter(School != "Total", !is.na(Total_offer)) %>%
+  dplyr::group_by(Year) %>%
+  dplyr::summarise(Secondary_offers = sum(Total_offer, na.rm = TRUE),
+                   .groups = "drop") %>%
+  dplyr::mutate(CohortYear = Year - LAG) %>%
+  dplyr::select(CohortYear, Year_yr7 = Year, Secondary_offers)
+
+cohort_long <- dplyr::bind_rows(
+  primary_cohort %>%
+    dplyr::transmute(CohortYear,
+                     Phase    = "Primary (Reception)",
+                     Offers   = Primary_offers,
+                     AdmitYr  = CohortYear),
+  secondary_cohort %>%
+    dplyr::transmute(CohortYear,
+                     Phase    = "Secondary (Year 7, +7 yrs)",
+                     Offers   = Secondary_offers,
+                     AdmitYr  = Year_yr7)
+)
+
+# Overlap band — years where both phases have data for the same cohort
+overlap <- cohort_long %>%
+  dplyr::group_by(CohortYear) %>%
+  dplyr::summarise(n_phases = dplyr::n_distinct(Phase), .groups = "drop") %>%
+  dplyr::filter(n_phases == 2)
+
+p_cohort <- ggplot(cohort_long,
+                   aes(x = CohortYear, y = Offers, color = Phase, group = Phase,
+                       text = paste0(Phase, "<br>Cohort reception year: ", CohortYear,
+                                     "<br>Admission year: ", AdmitYr,
+                                     "<br>Offers: ", format(Offers, big.mark = ","))))
+
+if (nrow(overlap) > 0) {
+  p_cohort <- p_cohort +
+    annotate("rect",
+             xmin = min(overlap$CohortYear) - 0.5,
+             xmax = max(overlap$CohortYear) + 0.5,
+             ymin = -Inf, ymax = Inf,
+             fill = "#f0f0f0", alpha = 0.6)
+}
+
+p_cohort <- p_cohort +
+  geom_line(linewidth = 0.9) +
+  geom_point(size = 1.8) +
+  scale_x_continuous(
+    breaks = seq(min(cohort_long$CohortYear), max(cohort_long$CohortYear), 1)
+  ) +
+  scale_color_manual(values = c("Primary (Reception)"           = "#1f78b4",
+                                 "Secondary (Year 7, +7 yrs)"   = "#e31a1c")) +
+  labs(title = "Same Cohort: Reception vs Year 7 Offers (Year 7 lagged by 7 years)",
+       subtitle = "x-axis is the cohort's Reception year; shaded band = years with both data points",
+       x = "Cohort Reception Year",
+       y = "Total offers made for this cohort",
+       color = NULL) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
+ggplotly(p_cohort, tooltip = "text")
+```
+
+Within the shaded band both lines are available for the same cohort. The Reception line starts in 2014 (first year of primary data) and runs to 2026; the Year 7 line, because it's lagged, starts at cohort-year 2006 (from 2013 Year 7 admissions) and ends at cohort-year 2019 (from 2026 Year 7 admissions). Where both exist, a Year 7 line *below* the Reception line means net **loss** from the state-sector cohort between ages 4 and 11 (children moving to independents, moving out of the city, or being home-educated); a Year 7 line *above* the Reception line means net **entry** (families moving into the city, or moving into the state sector from independents).
+
 ## Secondary Offers by Catchment (and Religious Schools)
 
 The six geographic secondary catchments are represented by eight schools. Two of Brighton & Hove's secondary schools — **Kings School** and **Cardinal Newman Catholic School** — are faith schools that admit across the whole city and so sit outside the geographic catchment framework; they are combined here as **Religious schools**.
