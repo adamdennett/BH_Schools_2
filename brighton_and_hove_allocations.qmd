@@ -1921,7 +1921,14 @@ p_city <- ggplot(city_offers,
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         legend.position = "top")
 
-ggplotly(p_city, tooltip = "text")
+ggplotly(p_city, tooltip = "text") %>%
+  plotly::layout(
+    legend = list(
+      orientation = "h",
+      x = 0.5, y = -0.18,
+      xanchor = "center", yanchor = "top"
+    )
+  )
 ```
 
 The secondary line tracks the Year 7 cohort; the primary line tracks the Reception cohort. Together they give a rough picture of how many state-sector school places the city is actually filling each year.
@@ -2004,7 +2011,14 @@ p_cohort <- p_cohort +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         legend.position = "top")
 
-ggplotly(p_cohort, tooltip = "text")
+ggplotly(p_cohort, tooltip = "text") %>%
+  plotly::layout(
+    legend = list(
+      orientation = "h",
+      x = 0.5, y = -0.18,
+      xanchor = "center", yanchor = "top"
+    )
+  )
 ```
 
 Within the shaded band both lines are available for the same cohort. The Reception line starts in 2014 (first year of primary data) and runs to 2026; the Year 7 line, because it's lagged, starts at cohort-year 2006 (from 2013 Year 7 admissions) and ends at cohort-year 2019 (from 2026 Year 7 admissions). Where both exist, a Year 7 line *below* the Reception line means net **loss** from the state-sector cohort between ages 4 and 11 (children moving to independents, moving out of the city, or being home-educated); a Year 7 line *above* the Reception line means net **entry** (families moving into the city, or moving into the state sector from independents).
@@ -2067,9 +2081,17 @@ p_diff <- ggplot(cohort_diff,
        x = "Cohort Reception Year") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position = "top")
+        legend.position = "right")
 
-ggplotly(p_diff, tooltip = "text")
+ggplotly(p_diff, tooltip = "text") %>%
+  plotly::layout(
+    legend = list(
+      orientation = "v",
+      x = 1.08, y = 1,
+      xanchor = "left", yanchor = "top"
+    ),
+    margin = list(r = 180)
+  )
 ```
 
 Reading this chart: each bar tells you how many *more* (green) or *fewer* (red) Year 7 places were offered to a given cohort than were offered to them at Reception, using the 7-year lag. The black line on the right axis normalises that same difference by the Reception cohort size, so a –100-pupil change in a large cohort doesn't look as alarming as the same –100 in a small one. Note this is a whole-city aggregate and so conflates several mechanisms (independent-sector movement, migration, home-ed, etc.) — it doesn't attribute the change to any single cause.
@@ -2239,9 +2261,17 @@ p_catch <- ggplot(catchment_offers,
        color = NULL) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position = "top")
+        legend.position = "bottom")
 
-ggplotly(p_catch, tooltip = "text")
+ggplotly(p_catch, tooltip = "text") %>%
+  plotly::layout(
+    legend = list(
+      orientation = "h",
+      x = 0.5, y = -0.2,
+      xanchor = "center", yanchor = "top"
+    ),
+    margin = list(t = 90, b = 120)
+  )
 ```
 
 Because two-school catchments are aggregated, all seven lines are on a comparable "catchment demand" footing. The Religious-schools line captures the total offer volume of the two faith schools together, which can rise or fall independently of the geographic catchments.
@@ -2286,9 +2316,17 @@ p_catch_std <- ggplot(catchment_apps_std,
        color = NULL) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position = "top")
+        legend.position = "bottom")
 
-ggplotly(p_catch_std, tooltip = "text")
+ggplotly(p_catch_std, tooltip = "text") %>%
+  plotly::layout(
+    legend = list(
+      orientation = "h",
+      x = 0.5, y = -0.2,
+      xanchor = "center", yanchor = "top"
+    ),
+    margin = list(t = 90, b = 120)
+  )
 ```
 
 A line that is broadly flat between 2025 and 2026 on this chart means the catchment's 2026 rise in the raw by-catchment chart above is essentially the extra preference slot — not a real increase in families choosing that catchment. A line that steps clearly *up* from 2025 to 2026 is picking up genuine additional demand per slot; a line that steps *down* is losing demand even before the mechanical slot inflation is applied.
