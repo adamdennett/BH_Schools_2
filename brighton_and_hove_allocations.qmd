@@ -1876,6 +1876,181 @@ p_bal <- ggplot(latest,
 ggplotly(p_bal, tooltip = "text")
 ```
 
+The map below shows the same over- / under-subscription picture spatially, with a year slider so you can step back through earlier admission rounds. Red circles are oversubscribed primaries (1st-preference applications above PAN); teal circles are undersubscribed (1st-preference applications below PAN). Circle area is proportional to the *magnitude* of the gap, so a big red circle is a heavily oversubscribed school in that year and a big teal circle is a heavily undersubscribed one.
+
+```{r}
+library(leaflet)
+library(htmltools)
+library(htmlwidgets)
+library(jsonlite)
+
+balance_map_data <- primary_all %>%
+  dplyr::filter(School != "Total",
+                !is.na(No_1st_pref), !is.na(PAN)) %>%
+  dplyr::mutate(Balance = No_1st_pref - PAN) %>%
+  dplyr::left_join(school_locs, by = "School") %>%
+  dplyr::filter(!is.na(lat), !is.na(lon))
+
+years_bal    <- sort(unique(balance_map_data$Year))
+default_bal  <- max(years_bal)
+
+d_json_bal <- balance_map_data %>%
+  dplyr::transmute(
+    Year    = as.integer(Year),
+    School,
+    lat, lon,
+    PAN,
+    No_1st_pref,
+    Balance
+  )
+
+data_json_bal <- jsonlite::toJSON(d_json_bal, na = "null", dataframe = "rows")
+
+m_bal <- leaflet(width = "100%", height = 560) |>
+  addProviderTiles(providers$CartoDB.Positron) |>
+  setView(lng = -0.155, lat = 50.835, zoom = 12)
+
+data_tag_bal <- htmltools::tags$script(
+  type = "application/json",
+  id   = "data_bal",
+  htmltools::HTML(as.character(data_json_bal))
+)
+
+js_bal <- "
+function(el, x) {
+  var map = this;
+  var all = JSON.parse(document.getElementById('data_bal').textContent);
+  var years = __YEARS__;
+  var defaultYear = __DEFAULT_YEAR__;
+  var colourOver  = '#e31a1c';
+  var colourUnder = '#1b9e77';
+  var radiusK     = 0.85;
+  var radiusExp   = 0.72;
+  var minRadius   = 3;
+
+  var markers = L.layerGroup().addTo(map);
+
+  var legCtrl = L.control({position: 'bottomleft'});
+  var legDiv;
+  legCtrl.onAdd = function() {
+    legDiv = L.DomUtil.create('div');
+    legDiv.style.cssText = 'background:white;padding:8px 12px;' +
+      'border-radius:5px;box-shadow:0 1px 5px rgba(0,0,0,.25);' +
+      'font:12px sans-serif;max-width:260px;';
+    return legDiv;
+  };
+  legCtrl.addTo(map);
+
+  function fmt(v) {
+    if (v === null || v === undefined || isNaN(v)) return '\u2013';
+    return Number(v).toLocaleString();
+  }
+
+  function setLegend(year, nOver, nUnder) {
+    if (!legDiv) return;
+    legDiv.innerHTML =
+      '<strong>1st-pref apps &minus; PAN &mdash; ' + year + '</strong><br>' +
+      '<span style=\"display:inline-block;width:12px;height:12px;background:' + colourOver +
+      ';border-radius:50%;opacity:0.55;margin-right:4px;\"></span>' +
+      'Oversubscribed (' + nOver + ')<br>' +
+      '<span style=\"display:inline-block;width:12px;height:12px;background:' + colourUnder +
+      ';border-radius:50%;opacity:0.55;margin-right:4px;\"></span>' +
+      'Undersubscribed (' + nUnder + ')<br>' +
+      '<em style=\"font-size:11px;color:#666\">Circle area \u221d |1st-pref apps \u2212 PAN|</em>';
+  }
+
+  function popup(d) {
+    var status = d.Balance > 0 ? 'Oversubscribed' :
+                 (d.Balance < 0 ? 'Undersubscribed' : 'At capacity');
+    var bStr = d.Balance > 0 ? ('+' + fmt(d.Balance)) : fmt(d.Balance);
+    return '<b>' + d.School + '</b><br>Year: ' + d.Year + '<br>' +
+           'PAN: ' + fmt(d.PAN) + '<br>' +
+           '1st-pref applications: ' + fmt(d.No_1st_pref) + '<br>' +
+           'Balance: <b>' + bStr + '</b><br>' +
+           '<em>' + status + '</em>';
+  }
+
+  function draw(year) {
+    markers.clearLayers();
+    var rows = all.filter(function(d){ return String(d.Year) === String(year); });
+    var nOver = 0, nUnder = 0;
+    rows.forEach(function(d) {
+      if (d.lat == null || d.lon == null) return;
+      if (d.Balance == null || isNaN(d.Balance)) return;
+      var mag = Math.abs(d.Balance);
+      var r = mag <= 0 ? minRadius : Math.pow(mag, radiusExp) * radiusK;
+      if (r < minRadius) r = minRadius;
+      var colour = d.Balance >= 0 ? colourOver : colourUnder;
+      if (d.Balance > 0) nOver++; else if (d.Balance < 0) nUnder++;
+      L.circleMarker([d.lat, d.lon], {
+        radius:      r,
+        fillColor:   colour,
+        fillOpacity: 0.55,
+        color:       colour,
+        weight:      1.3
+      })
+      .bindPopup(popup(d))
+      .bindTooltip(d.School)
+      .addTo(markers);
+    });
+    setLegend(year, nOver, nUnder);
+  }
+
+  var wrap = document.createElement('div');
+  wrap.style.cssText = 'margin:8px 0 12px 0;font:14px sans-serif;' +
+    'display:flex;align-items:center;gap:12px;flex-wrap:wrap;';
+  var lbl = document.createElement('label');
+  lbl.innerHTML = '<strong>Year:</strong>';
+  wrap.appendChild(lbl);
+
+  var yMin = years[0];
+  var yMax = years[years.length - 1];
+
+  var sld = document.createElement('input');
+  sld.type  = 'range';
+  sld.min   = String(yMin);
+  sld.max   = String(yMax);
+  sld.step  = '1';
+  sld.value = String(defaultYear);
+  sld.style.cssText = 'flex:1;min-width:240px;max-width:520px;' +
+    'accent-color:' + colourOver + ';';
+  wrap.appendChild(sld);
+
+  var val = document.createElement('span');
+  val.style.cssText = 'font-weight:bold;min-width:3.5em;text-align:right;';
+  val.textContent = String(defaultYear);
+  wrap.appendChild(val);
+
+  var ends = document.createElement('div');
+  ends.style.cssText = 'width:100%;display:flex;justify-content:space-between;' +
+    'font-size:11px;color:#666;margin-top:-4px;';
+  var endMin = document.createElement('span'); endMin.textContent = String(yMin);
+  var endMax = document.createElement('span'); endMax.textContent = String(yMax);
+  ends.appendChild(endMin);
+  ends.appendChild(endMax);
+
+  el.parentNode.insertBefore(wrap, el);
+  el.parentNode.insertBefore(ends, el);
+
+  function onSlide() {
+    var y = +sld.value;
+    val.textContent = String(y);
+    draw(y);
+  }
+  sld.addEventListener('input', onSlide);
+  sld.addEventListener('change', onSlide);
+  draw(defaultYear);
+}
+"
+
+js_bal <- gsub("__YEARS__",        as.character(jsonlite::toJSON(years_bal)), js_bal, fixed = TRUE)
+js_bal <- gsub("__DEFAULT_YEAR__", as.character(default_bal),                  js_bal, fixed = TRUE)
+
+m_bal <- m_bal |> htmlwidgets::onRender(js_bal)
+
+htmltools::browsable(htmltools::tagList(data_tag_bal, m_bal))
+```
+
 # City-Wide State-Sector Trends
 
 The school-by-school time series above make it hard to see the overall size of the state-sector cohort. The two charts here roll up the same offer data to the whole city (and then to the main secondary catchments) so the scale of demographic change — and how it lands across catchments — is visible.
@@ -2870,7 +3045,7 @@ p_city <- ggplot(city_all,
         legend.position = "top")
 
 ggplotly(p_city, tooltip = "text") %>%
-  plotly::layout(legend = list(orientation = "h", x = 0, y = 1.1))
+  plotly::layout(legend = list(orientation = "V", x = 0.48, y = 0.05))
 ```
 
 At the city level the **overall direction is the same on both methods and both forecasts** — a steady decline in aggregate Y7 demand from \~2,300 in the mid-2020s to well under 2,000 by the early 2030s. That's consistent with the shrinking primary cohorts on our side, and the council's census-based school-roll decline on theirs.
