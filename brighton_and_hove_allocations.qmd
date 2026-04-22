@@ -2695,9 +2695,14 @@ p_proj <- ggplot(series_all,
         strip.text = element_text(face = "bold"))
 ```
 
-```{r, fig.width=12, fig.height=9, out.width="100%"}
+```{r}
+#| column: screen-inset
+#| fig-width: 16
+#| fig-height: 9
+#| out-width: "100%"
 ggplotly(p_proj, tooltip = "text") %>%
-  plotly::layout(legend = list(orientation = "h", x = 0, y = 1.05))
+  plotly::layout(autosize = TRUE,
+                 legend = list(orientation = "h", x = 0, y = 1.05))
 ```
 
 **Reading the chart:**
