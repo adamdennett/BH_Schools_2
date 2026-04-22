@@ -2375,6 +2375,94 @@ ggplotly(p_cohort_catch, tooltip = "text") %>%
 
 Each panel's y-axis is independent (`free_y`), so the *shape* of the lines is directly comparable between catchments even where the absolute numbers differ a lot (e.g. Longhill is much smaller than Varndean / Dorothy Stringer). Within a panel, a red line *below* the blue line means the catchment lost pupils from the state sector between Reception and Year 7 for that cohort; a red line *above* means it gained them. The Religious-schools panel behaves differently from the geographic ones because primaries and secondaries in that group draw from across the city rather than a shared footprint — the comparison there is best read as "Catholic-sector Reception offers vs Kings + Cardinal Newman Y7 offers" rather than a flow within a single area.
 
+### Who is gaining and who is losing, cohort by cohort?
+
+The panels above show the two lines side-by-side; the chart below pulls out just the **gap** between them — Year 7 offers minus same-cohort Reception offers — so that all seven catchments can be compared directly on a single set of axes. Positive values mean that catchment's secondary schools picked up *more* offers at Year 7 than its primaries made seven years earlier (net gain). Negative values mean the opposite (net loss between ages 4 and 11). Each line is a full cohort's journey: the data point at x = 2019, for instance, tracks children offered a Reception place in 2019 and a Year 7 place in 2026.
+
+```{r}
+#| column: page
+#| fig-width: 12
+#| fig-height: 6
+#| out-width: "100%"
+cohort_gap_catch <- cohort_long_catch %>%
+  dplyr::select(CohortYear, CatchmentGroup, Phase, Offers) %>%
+  tidyr::pivot_wider(names_from = Phase, values_from = Offers) %>%
+  dplyr::rename(Primary   = `Primary (Reception)`,
+                Secondary = `Secondary (Year 7, +7 yrs)`) %>%
+  dplyr::filter(!is.na(Primary), !is.na(Secondary)) %>%
+  dplyr::mutate(Gap    = Secondary - Primary,
+                GapPct = 100 * Gap / Primary,
+                AdmitYr = CohortYear + LAG)
+
+catch_palette <- c(
+  "BACA"                         = "#e41a1c",
+  "Hove Park / Blatchington Mill" = "#377eb8",
+  "Longhill"                     = "#4daf4a",
+  "PACA"                         = "#984ea3",
+  "Patcham"                      = "#ff7f00",
+  "Varndean / Dorothy Stringer"  = "#a65628",
+  "Religious schools"            = "#111111"
+)
+
+p_gap <- ggplot(cohort_gap_catch,
+                aes(x = CohortYear, y = Gap,
+                    color = CatchmentGroup, group = CatchmentGroup,
+                    text = paste0(
+                      CatchmentGroup,
+                      "<br>Cohort Reception year: ", CohortYear,
+                      " (Y7 ", AdmitYr, ")",
+                      "<br>Reception offers: ", format(Primary, big.mark = ","),
+                      "<br>Y7 offers: ", format(Secondary, big.mark = ","),
+                      "<br>Gap: ", ifelse(Gap > 0, "+", ""), format(Gap, big.mark = ","),
+                      " (", sprintf("%+.1f", GapPct), "%)"))) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "grey40") +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  scale_x_continuous(breaks = seq(min(cohort_gap_catch$CohortYear),
+                                  max(cohort_gap_catch$CohortYear), 1)) +
+  scale_color_manual(values = catch_palette) +
+  labs(title = "Net gain / loss between Reception and Year 7, by catchment",
+       subtitle = "Y7 offers minus same-cohort Reception offers (7-year lag). Positive = gain; Negative = loss.",
+       x = "Cohort Reception year",
+       y = "Year 7 offers − Reception offers",
+       color = NULL) +
+  theme_minimal(base_size = 11) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "right")
+
+ggplotly(p_gap, tooltip = "text") %>%
+  plotly::layout(
+    autosize = TRUE,
+    margin = list(t = 80, r = 40, b = 80, l = 60),
+    legend = list(
+      orientation = "v",
+      x = 1.02, y = 1,
+      xanchor = "left", yanchor = "top",
+      bgcolor = "rgba(255,255,255,0.7)",
+      bordercolor = "rgba(0,0,0,0.15)",
+      borderwidth = 1
+    )
+  )
+```
+
+Three things jump out of this chart:
+
+1.  **Religious schools are the only catchment in persistent net *gain*.** Across every cohort we have data for, Cardinal Newman and Kings between them hand out substantially more Year 7 offers than the Catholic primaries that feed them make at Reception — and the gap has been widening. Because both CN and Kings admit city-wide rather than on a geographic catchment, every extra place they fill is a pupil who switched *into* faith secondary education somewhere between ages 4 and 11, drawn from the geographic catchments (or from outside the LEA / independent sector). The net gain for the religious bloc is the structural counterpart of the losses showing up in the geographic catchments — most of those "lost" pupils haven't left the state sector at all, they've just moved across it to CN or Kings.
+2.  **Longhill is the biggest structural loser, and the trend is accelerating.** Its same-cohort gap has deepened year on year across the six cohorts plotted, consistent with the rising empirical leakage rate discussed in the council-forecast section. BACA and PACA sit in the same territory, though less severely and less monotonically.
+3.  **Hove Park / Blatchington Mill and Varndean / Dorothy Stringer are close to balance** — small, noisy losses that don't obviously trend. These are the catchments whose secondaries are already operating at or near their PANs, so there isn't much head-room for *net* growth even if some pupils are moving in.
+
+### How much of the "loss" leaves the state sector? An FOI crosscheck
+
+A [2024 FOI request](https://www.whatdotheyknow.com/request/schools_admissions_breakdowns_fo) published on WhatDoTheyKnow (summarised in [this Google Sheet](https://docs.google.com/spreadsheets/d/1F_NDqefjBBeG8TMUXkUx3bF5WG2BuDGmpNAwm-Ct7Rc/edit?usp=sharing) from a B&H parent group) lets us put a size on the two mechanisms separately for the 2024 Year 7 intake. The FOI gives, per catchment, the number of children from that catchment who were *offered* a state secondary place on national offer day and the number who had actually *taken up* a state secondary place by the autumn census.
+
+For the 2024 cohort, the city-level figures are:
+
+-   **2,468** Y7 offers made to children resident in B&H catchments (plus a small out-of-LEA group).
+-   **2,306** children from those same catchments attending a B&H or neighbouring-LEA state school in the autumn.
+-   **−162** pupils — the difference BHCC describes in its FOI response as "the vast majority" going to independent schools.
+
+That 162-pupil autumn fall-off is the *genuinely out-of-state* leakage for 2024, which is roughly **6.5 %** of the offers made. It is *not* the same quantity as the Reception-to-Y7 gaps plotted above: those gaps compound seven years of movement (independent-sector switches, families moving in or out of Brighton, home-ed, SEND placements, as well as churn between state schools), whereas the FOI figure is a single-year snapshot of the post-offer step only. But the ordering is informative. In 2024, the biggest autumn fall-offs came from **Hove Park / Blatchington Mill (−69 pupils, ≈ −9 %)** and **Varndean / Dorothy Stringer (−38, ≈ −5 %)** — the two catchments that are roughly balanced on the Reception-to-Y7 chart above. That is consistent with the interpretation that most of what shows up as a seven-year same-cohort *loss* in the geographic catchments is *not* leakage to the private sector but **movement across the state sector into Kings / Cardinal Newman**. The FOI confirms CN and Kings are net receivers in every catchment — in 2024 alone they absorbed **24 PACA pupils, 255 Hove Park / BMS pupils, 71 Varndean / DS pupils, 64 Longhill pupils, 22 BACA pupils, 27 Patcham pupils and 53 Out-of-LEA pupils at offer stage** (treating CN and Kings as "in-catchment" only for the Hove Park / BMS area as the FOI sheet does). The out-of-state component is real but relatively small; the far larger flow is within-state reallocation towards the two faith schools.
+
 ## Secondary Offers by Catchment (and Religious Schools)
 
 The six geographic secondary catchments are represented by eight schools. Two of Brighton & Hove's secondary schools — **Kings School** and **Cardinal Newman Catholic School** — are faith schools that admit across the whole city and so sit outside the geographic catchment framework; they are combined here as **Religious schools**.
