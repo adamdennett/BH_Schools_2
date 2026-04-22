@@ -2078,7 +2078,11 @@ Reading this chart: each bar tells you how many *more* (green) or *fewer* (red) 
 
 The chart below splits the same-cohort comparison out by catchment. Each panel shows, for a single catchment, the Reception offers made to a cohort (blue) alongside the Year 7 offers made to that same cohort seven years later (red). Primary schools are assigned to a catchment by point-in-polygon on the six `optionZ` catchment polygons; **Cardinal Newman** and **Kings School** at secondary, and all **Catholic primaries**, are combined into a single **Religious schools** panel (they admit city-wide rather than on geography). Primaries that fall outside all six catchment polygons are excluded from this breakdown.
 
-```{r, fig.width=12, fig.height=9, out.width="100%"}
+```{r}
+#| column: page
+#| fig-width: 14
+#| fig-height: 9
+#| out-width: "100%"
 # Reuse the hidden `schools_with_catchment` lookup (built earlier, before
 # the City-Wide section). Join primary_all and secondary_all to it to get
 # a CatchmentGroup per school, then aggregate as in the whole-city
@@ -2159,7 +2163,17 @@ p_cohort_catch <- ggplot(cohort_long_catch,
         strip.text = element_text(face = "bold"))
 
 ggplotly(p_cohort_catch, tooltip = "text") %>%
-  plotly::layout(legend = list(orientation = "h", x = 0, y = 1.05))
+  plotly::layout(
+    autosize = TRUE,
+    legend = list(
+      orientation = "v",
+      x = 0.68, y = 0.28,
+      xanchor = "left", yanchor = "top",
+      bgcolor = "rgba(255,255,255,0.7)",
+      bordercolor = "rgba(0,0,0,0.15)",
+      borderwidth = 1
+    )
+  )
 ```
 
 Each panel's y-axis is independent (`free_y`), so the *shape* of the lines is directly comparable between catchments even where the absolute numbers differ a lot (e.g. Longhill is much smaller than Varndean / Dorothy Stringer). Within a panel, a red line *below* the blue line means the catchment lost pupils from the state sector between Reception and Year 7 for that cohort; a red line *above* means it gained them. The Religious-schools panel behaves differently from the geographic ones because primaries and secondaries in that group draw from across the city rather than a shared footprint — the comparison there is best read as "Catholic-sector Reception offers vs Kings + Cardinal Newman Y7 offers" rather than a flow within a single area.
@@ -2696,13 +2710,22 @@ p_proj <- ggplot(series_all,
 ```
 
 ```{r}
-#| column: screen-inset
-#| fig-width: 16
+#| column: page
+#| fig-width: 14
 #| fig-height: 9
 #| out-width: "100%"
 ggplotly(p_proj, tooltip = "text") %>%
-  plotly::layout(autosize = TRUE,
-                 legend = list(orientation = "h", x = 0, y = 1.05))
+  plotly::layout(
+    autosize = TRUE,
+    legend = list(
+      orientation = "v",
+      x = 0.68, y = 0.28,
+      xanchor = "left", yanchor = "top",
+      bgcolor = "rgba(255,255,255,0.7)",
+      bordercolor = "rgba(0,0,0,0.15)",
+      borderwidth = 1
+    )
+  )
 ```
 
 **Reading the chart:**
