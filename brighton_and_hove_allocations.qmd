@@ -12,6 +12,8 @@ library(DT)
 library(ggplot2)
 library(plotly)
 library(wesanderson)
+library(crosstalk)
+library(htmltools)
 
 # Helper to split "N (M)" cells into two numeric columns.
 split_nm <- function(df, col) {
@@ -463,12 +465,35 @@ datatable(
 
 ## Interactive Time Series — Secondary Applications and Offers
 
+The checkboxes below toggle schools in **all three** charts in this section (Total Applications, Applications per Preference Slot, Total Offers). All schools are selected by default. (You can also click a school in a plot legend to hide/show it there, or double-click to isolate a single school.)
+
+```{r}
+sec_schools <- secondary_all %>%
+  filter(School != "Total") %>%
+  mutate(
+    slots   = ifelse(Year >= 2026, 4L, 3L),
+    PerSlot = Total / slots
+  )
+
+sec_shared <- SharedData$new(sec_schools, key = ~School, group = "sec-main")
+
+sec_filter <- filter_checkbox(
+  id         = "sec_school_filter",
+  label      = "Schools",
+  sharedData = sec_shared,
+  group      = ~School,
+  inline     = TRUE
+)
+```
+
+```{r}
+sec_filter
+```
+
 ### Total Applications by School
 
 ```{r}
-sec_schools <- secondary_all %>% filter(School != "Total")
-
-p_apps <- ggplot(sec_schools,
+p_apps <- ggplot(sec_shared,
                  aes(x = Year, y = Total, color = School, group = School,
                      text = paste0(School, "<br>Year: ", Year,
                                    "<br>Applications: ", Total,
@@ -481,7 +506,9 @@ p_apps <- ggplot(sec_schools,
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-ggplotly(p_apps, tooltip = "text")
+ggplotly(p_apps, tooltip = "text") %>%
+  highlight(on = "plotly_click", off = "plotly_doubleclick",
+            persistent = FALSE, dynamic = FALSE)
 ```
 
 ### Applications per Preference Slot
@@ -489,14 +516,8 @@ ggplotly(p_apps, tooltip = "text")
 From 2010 to 2025 Brighton & Hove families could list up to **three** preferences on the secondary-transfer form, so "total applications" for a school was the sum of 1st, 2nd and 3rd preferences. From **2026** onwards the council added a **4th** preference slot, which mechanically inflates the "total applications" figure because every family now has one more slot to fill. To separate that mechanical jump from any real change in demand, the chart below divides each school's total applications by the number of preference slots available in that year.
 
 ```{r}
-# Number of preference slots per year: 3 for 2010-2025, 4 from 2026.
-sec_std <- sec_schools %>%
-  mutate(
-    slots   = ifelse(Year >= 2026, 4L, 3L),
-    PerSlot = Total / slots
-  )
-
-p_apps_std <- ggplot(sec_std,
+# slots / PerSlot already present in sec_shared (built once above).
+p_apps_std <- ggplot(sec_shared,
                  aes(x = Year, y = PerSlot, color = School, group = School,
                      text = paste0(School, "<br>Year: ", Year,
                                    "<br>Slots available: ", slots,
@@ -512,7 +533,9 @@ p_apps_std <- ggplot(sec_std,
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-ggplotly(p_apps_std, tooltip = "text")
+ggplotly(p_apps_std, tooltip = "text") %>%
+  highlight(on = "plotly_click", off = "plotly_doubleclick",
+            persistent = FALSE, dynamic = FALSE)
 ```
 
 On this slot-standardised basis a line that is broadly flat between 2025 and 2026 indicates that the jump in the raw total is almost entirely the extra slot — not a genuine surge in demand. A school whose 2026 point is still clearly higher than its 2025 point is picking up genuine extra preferences per slot.
@@ -520,7 +543,7 @@ On this slot-standardised basis a line that is broadly flat between 2025 and 202
 ### Total Offers by School
 
 ```{r}
-p_offers <- ggplot(sec_schools,
+p_offers <- ggplot(sec_shared,
                    aes(x = Year, y = Total_offer, color = School, group = School,
                        text = paste0(School, "<br>Year: ", Year,
                                      "<br>Offers: ", Total_offer))) +
@@ -532,7 +555,9 @@ p_offers <- ggplot(sec_schools,
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-ggplotly(p_offers, tooltip = "text")
+ggplotly(p_offers, tooltip = "text") %>%
+  highlight(on = "plotly_click", off = "plotly_doubleclick",
+            persistent = FALSE, dynamic = FALSE)
 ```
 
 ### Preference Composition (Faceted by School)
