@@ -2806,6 +2806,104 @@ What the retention ratio absorbs — all in one number, without any attempt to d
 
 Because the ratio is held constant when projecting forward, the method implicitly assumes the mix of those mechanisms stays the same as it was over the 2014–2019 Reception cohorts (roughly: pre-pandemic with two pandemic-affected cohorts mixed in). If any of them shift materially — say, more families leaving for independents, or Kings / CN attracting a larger share of non-Catholic primary pupils — the projection will drift from reality. The SD column in the retention-ratio table is the simplest read on how stable each catchment's ratio has been over the six cohorts: low for Hove Park / Blatchington Mill (0.04), Patcham (0.02) and Varndean / Stringer (0.03); noticeably higher for BACA (0.23) and Longhill (0.13).
 
+### Worked example: applying the method to the Patcham catchment
+
+To make the method concrete, here is the whole calculation for a single catchment. We pick **Patcham** because it is the simplest case — a single primary group feeding a single secondary school (Patcham High) — and because its cohort-to-cohort retention ratio has the lowest standard deviation of any catchment (0.02), so the "mean" figure is genuinely representative. The figures below are computed live from the same underlying dataset used elsewhere in this document.
+
+```{r}
+#| echo: false
+# Worked example: Patcham catchment only. Self-contained so the chunk
+# does not depend on retention / projection objects built further down.
+worked_catch <- "Patcham"
+LAG_WE <- 7L
+
+we_primary <- primary_all %>%
+  dplyr::filter(School != "Total", !is.na(Total_offer)) %>%
+  dplyr::inner_join(
+    schools_with_catchment %>%
+      dplyr::filter(Phase == "Primary", !is.na(CatchmentGroup),
+                    CatchmentGroup == worked_catch) %>%
+      dplyr::select(School, CatchmentGroup),
+    by = "School"
+  ) %>%
+  dplyr::group_by(Year) %>%
+  dplyr::summarise(Primary_offers = sum(Total_offer, na.rm = TRUE),
+                   .groups = "drop")
+
+we_secondary <- secondary_all %>%
+  dplyr::filter(School != "Total", !is.na(Total_offer)) %>%
+  dplyr::inner_join(
+    schools_with_catchment %>%
+      dplyr::filter(Phase == "Secondary", !is.na(CatchmentGroup),
+                    CatchmentGroup == worked_catch) %>%
+      dplyr::select(School, CatchmentGroup),
+    by = "School"
+  ) %>%
+  dplyr::group_by(Year) %>%
+  dplyr::summarise(Secondary_offers = sum(Total_offer, na.rm = TRUE),
+                   .groups = "drop")
+
+we_pairs <- we_primary %>%
+  dplyr::mutate(Secondary_year = Year + LAG_WE) %>%
+  dplyr::inner_join(we_secondary,
+                    by = c("Secondary_year" = "Year")) %>%
+  dplyr::rename(Primary_year = Year) %>%
+  dplyr::mutate(Ratio = Secondary_offers / Primary_offers) %>%
+  dplyr::arrange(Primary_year)
+
+we_mean <- mean(we_pairs$Ratio, na.rm = TRUE)
+we_sd   <- sd(we_pairs$Ratio,   na.rm = TRUE)
+
+knitr::kable(
+  we_pairs %>%
+    dplyr::transmute(
+      `Reception year (Y)`          = Primary_year,
+      `Reception offers (P_Y)`      = Primary_offers,
+      `Y7 year (Y+7)`               = Secondary_year,
+      `Y7 offers (S_{Y+7})`         = Secondary_offers,
+      `Ratio S_{Y+7} / P_Y`         = round(Ratio, 3)
+    ),
+  align  = "rrrrr",
+  format.args = list(big.mark = ","),
+  caption = sprintf(
+    "Step 1 — Patcham: six cohort pairs observed in the data. Mean retention ratio = %.3f (SD %.3f).",
+    we_mean, we_sd)
+)
+```
+
+**What this table shows.** Each row is one cohort. For the Reception 2014 cohort, Patcham's primaries made `P_2014` offers; seven years later those same children were in Y7 and Patcham High made `S_2021` offers. The ratio `S_2021 / P_2014` is how many Year 7 Patcham-catchment offers that catchment ended up with for every Reception offer it made seven years earlier. Doing this for all six overlapping cohorts and taking the mean gives Patcham's fitted retention ratio, reported at the bottom of the caption.
+
+```{r}
+#| echo: false
+# Apply the Patcham ratio to its 2020..2026 Reception offers to
+# project 2027..2033 Y7. Uses the same we_primary object built above.
+we_project <- we_primary %>%
+  dplyr::filter(Year >= 2020L, Year <= 2026L) %>%
+  dplyr::arrange(Year) %>%
+  dplyr::transmute(
+    `Reception year (Y)`                         = Year,
+    `Reception offers (P_Y)`                     = Primary_offers,
+    `Retention ratio (r)`                        = sprintf("%.3f", we_mean),
+    `Projected Y7 offers = P_Y x r`              = round(Primary_offers * we_mean),
+    `Y7 year (Y+7)`                              = Year + LAG_WE
+  )
+
+knitr::kable(
+  we_project,
+  align  = "rrrrr",
+  format.args = list(big.mark = ","),
+  caption = sprintf(
+    "Step 2 — Patcham: apply the fitted ratio (r = %.3f) to Reception cohorts 2020-2026 to project Y7 2027-2033.",
+    we_mean)
+)
+```
+
+**Reading the projection.** Each row takes a real Reception-year offer count that has already been observed in Patcham's primary admissions, multiplies it by the single fitted ratio `r`, and lands the resulting number in the corresponding Y7 year seven years later. So, for example, the Reception 2023 cohort (`P_2023`) is already in Y3 at real Patcham-area primaries today; our projection simply assumes it will reach Y7 in 2030 at roughly the same rate its predecessor cohorts did, and reports `P_2023 × r` rounded to the nearest pupil. No demographic re-estimation, no census layer, no leakage percentage — everything is contained in the single empirical `r`.
+
+**Why this is informative and where it can go wrong.** For Patcham, the six historic cohort pairs gave ratios clustered tightly around 0.83–0.87 (SD 0.02), meaning Patcham High has reliably ended up recruiting roughly 85 % of the children that the catchment's primaries took on seven years earlier — the missing ~15 % is the combined net effect of private-sector leakage, the Catholic-schools flow, a little cross-catchment movement, and families leaving the city. If *any* of those components shifts in a future cohort — for example if the combined FSM + Open Allocation stack discussed elsewhere in this document starts pulling more Patcham children into Varndean / Stringer than it has historically — the real 2030 figure will come in below the projected one. The projection is therefore only as good as the assumption that the 2014–2019 cohorts' mixture of drivers is a reasonable stand-in for the 2020–2026 cohorts' future. For catchments with low SD (Patcham, HP / BMS, V / DS) that assumption is well-supported by the data; for catchments with higher SD (BACA, Longhill) the point projection is less reliable and the spread of possible outcomes is wider.
+
+The rest of this section generalises the same two-step calculation to every catchment at once.
+
 ### How the council's method appears to work
 
 The Appendix 6 PDF is explicit about its main inputs. For each catchment the council starts with the raw number of children in each primary year group of the **Oct 2024 school census** who are resident in that catchment (column header "school Census by year in Oct 24"). These seven columns become the seven years of the Y7 forecast (R → 2031, Year 6 → 2025).
@@ -3213,7 +3311,7 @@ These four mechanisms do not add up independently — OA, sibling and FSM priori
 
 The staggered timing matters for how we read the data:
 
--   **The 2024 FOI is a pre-policy baseline.** None of the reforms above had yet bitten the 2024 Year 7 intake. The ~25–30 offers going from Longhill catchment to the four central-catchment schools in 2024 (Dorothy Stringer 12, Hove Park 8, plus small numbers to BMS and Varndean — about 10 % of the catchment's offers) was happening *before* FSM priority, *before* Open Allocation, and *before* the sibling uplift existed. That is a useful reference point: even under the old rules, around one in ten Longhill-catchment pupils was already ending up at a central-catchment school through the general ranking of preferences. The new reforms sit on top of that flow, not in place of it.
+-   **The 2024 FOI is a pre-policy baseline.** None of the reforms above had yet bitten the 2024 Year 7 intake. The \~25–30 offers going from Longhill catchment to the four central-catchment schools in 2024 (Dorothy Stringer 12, Hove Park 8, plus small numbers to BMS and Varndean — about 10 % of the catchment's offers) was happening *before* FSM priority, *before* Open Allocation, and *before* the sibling uplift existed. That is a useful reference point: even under the old rules, around one in ten Longhill-catchment pupils was already ending up at a central-catchment school through the general ranking of preferences. The new reforms sit on top of that flow, not in place of it.
 -   **The 2025 and 2026 Longhill Y7 actuals are the first two ticks of the new policy stack.** Longhill's Y7 offer count fell from **97 in 2025** to **81 in 2026**, a 16-pupil drop in one admissions round. The 2025 figure is the first intake under the FSM out-of-catchment priority, with Whitehawk still formally in the Longhill catchment. The 2026 figure is the first intake under Open Allocation *and* the first intake after the Whitehawk removal — though, as noted above, around a third of Whitehawk families continued to name Longhill in 2026 despite the boundary change. The 16-pupil drop is therefore a combined read of at least three concurrent effects: the FSM channel widening in its second year, OA opening for the first time, and Whitehawk partially leaving. We cannot attribute the 2025-to-2026 step cleanly to any single reform from the public data — cohort-size change and random variation also contribute — but the direction and order of magnitude match what the policies were designed to do.
 -   **2027 onwards is when the stack matures.** OA-linked sibling admissions begin, the residual Whitehawk-to-Longhill share comes under pressure as the older-sibling effect fades, and the Oct-25 council census shows smaller primary-catchment year groups working their way up the system. Each of these individually nudges Longhill's Y7 count downward; together they arrive in a compressed window.
 
