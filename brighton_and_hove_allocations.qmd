@@ -2900,7 +2900,7 @@ knitr::kable(
 
 **Reading the projection.** Each row takes a real Reception-year offer count that has already been observed in Patcham's primary admissions, multiplies it by the single fitted ratio `r`, and lands the resulting number in the corresponding Y7 year seven years later. So, for example, the Reception 2023 cohort (`P_2023`) is already in Y3 at real Patcham-area primaries today; our projection simply assumes it will reach Y7 in 2030 at roughly the same rate its predecessor cohorts did, and reports `P_2023 × r` rounded to the nearest pupil. No demographic re-estimation, no census layer, no leakage percentage — everything is contained in the single empirical `r`.
 
-**Why this is informative and where it can go wrong.** For Patcham, the six historic cohort pairs gave ratios clustered tightly around 0.83–0.87 (SD 0.02), meaning Patcham High has reliably ended up recruiting roughly 85 % of the children that the catchment's primaries took on seven years earlier — the missing ~15 % is the combined net effect of private-sector leakage, the Catholic-schools flow, a little cross-catchment movement, and families leaving the city. If *any* of those components shifts in a future cohort — for example if the combined FSM + Open Allocation stack discussed elsewhere in this document starts pulling more Patcham children into Varndean / Stringer than it has historically — the real 2030 figure will come in below the projected one. The projection is therefore only as good as the assumption that the 2014–2019 cohorts' mixture of drivers is a reasonable stand-in for the 2020–2026 cohorts' future. For catchments with low SD (Patcham, HP / BMS, V / DS) that assumption is well-supported by the data; for catchments with higher SD (BACA, Longhill) the point projection is less reliable and the spread of possible outcomes is wider.
+**Why this is informative and where it can go wrong.** For Patcham, the six historic cohort pairs gave ratios clustered tightly around 0.83–0.87 (SD 0.02), meaning Patcham High has reliably ended up recruiting roughly 85 % of the children that the catchment's primaries took on seven years earlier — the missing \~15 % is the combined net effect of private-sector leakage, the Catholic-schools flow, a little cross-catchment movement, and families leaving the city. If *any* of those components shifts in a future cohort — for example if the combined FSM + Open Allocation stack discussed elsewhere in this document starts pulling more Patcham children into Varndean / Stringer than it has historically — the real 2030 figure will come in below the projected one. The projection is therefore only as good as the assumption that the 2014–2019 cohorts' mixture of drivers is a reasonable stand-in for the 2020–2026 cohorts' future. For catchments with low SD (Patcham, HP / BMS, V / DS) that assumption is well-supported by the data; for catchments with higher SD (BACA, Longhill) the point projection is less reliable and the spread of possible outcomes is wider.
 
 The rest of this section generalises the same two-step calculation to every catchment at once.
 
@@ -3109,10 +3109,11 @@ p_proj <- ggplot(series_all,
 ```
 
 ```{r}
+#| label: projections_by_catchment
 #| column: page
-#| fig-width: 14
 #| fig-height: 9
-#| out-width: "100%"
+#| fig-width: 14
+#| out-width: 100%
 ggplotly(p_proj, tooltip = "text") %>%
   plotly::layout(
     autosize = TRUE,
@@ -3126,6 +3127,156 @@ ggplotly(p_proj, tooltip = "text") %>%
     )
   )
 ```
+
+```{r}
+#| label: projections_by_catchment_xlsx
+#| include: false
+#| message: false
+#| warning: false
+
+# Build an Excel workbook that contains:
+#   * a README sheet explaining each series and column
+#   * a tidy long-format "Data (long)" sheet with every point the chart uses
+#   * one sheet per catchment with a wide table (Year, Actual offers,
+#     Our projection, Council Oct-25, Council Oct-24, PAN) and an embedded
+#     PNG of the single-catchment plot
+#   * a "Dashboard" sheet containing a PNG of the full faceted chart
+# The file is written to docs/ so it is served alongside the rendered HTML.
+
+if (requireNamespace("openxlsx", quietly = TRUE)) {
+
+  out_dir  <- "docs"
+  if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
+  out_path <- file.path(out_dir, "projections_by_catchment.xlsx")
+
+  # --- Long and wide data ---------------------------------------------------
+  data_long <- series_all %>%
+    dplyr::arrange(CatchmentGroup, Series, Year) %>%
+    dplyr::mutate(Offers = round(Offers, 1))
+
+  data_wide <- data_long %>%
+    tidyr::pivot_wider(names_from = Series, values_from = Offers) %>%
+    dplyr::left_join(pan_df, by = "CatchmentGroup") %>%
+    dplyr::arrange(CatchmentGroup, Year)
+
+  # Reorder columns to a predictable layout
+  wide_cols <- c("CatchmentGroup", "Year",
+                 "Actual offers",
+                 "Our projection (cohort-aged)",
+                 "Council forecast (Oct-25, Appendix 7)",
+                 "Council forecast (Oct-24, Appendix 6)",
+                 "PAN")
+  data_wide <- data_wide[, intersect(wide_cols, names(data_wide))]
+
+  # --- Workbook -------------------------------------------------------------
+  wb <- openxlsx::createWorkbook()
+
+  header_style <- openxlsx::createStyle(textDecoration = "bold",
+                                        fgFill = "#f0f0f0",
+                                        border = "bottom")
+
+  # README
+  openxlsx::addWorksheet(wb, "README")
+  readme <- data.frame(Field = c(
+    "Chart", "Source file",
+    "Actual offers",
+    "Our projection (cohort-aged)",
+    "Council forecast (Oct-25, Appendix 7)",
+    "Council forecast (Oct-24, Appendix 6)",
+    "PAN",
+    "Catchment groups",
+    "Note"
+  ), Description = c(
+    "Y7 offers: actuals, cohort-aged projection, and the council's two forecasts (by catchment).",
+    "brighton_and_hove_allocations.qmd (chunk: projections_by_catchment).",
+    "Actual Y7 offers recorded in the document (2010, 2012, 2013-2026).",
+    "Primary Y6 offers for cohort Y multiplied by the mean historical retention ratio to secondary Y7 offers (Y+7).",
+    "Council's current forecast, published Oct-25 (Appendix 7), 2026-2032.",
+    "Council's previous forecast, published Oct-24 (Appendix 6), 2025-2031; retained for comparison.",
+    "Published Admission Number for the catchment (sum across schools in the catchment group).",
+    "BACA; Hove Park / Blatchington Mill; Longhill; PACA; Patcham; Varndean / Dorothy Stringer; Religious schools (Kings + CN).",
+    "For the Religious schools panel there is no single PAN; the PAN column is blank."
+  ), stringsAsFactors = FALSE)
+  openxlsx::writeData(wb, "README", readme, headerStyle = header_style)
+  openxlsx::setColWidths(wb, "README", cols = 1:2, widths = c(42, 110))
+
+  # Data (long)
+  openxlsx::addWorksheet(wb, "Data (long)")
+  openxlsx::writeData(wb, "Data (long)", data_long, headerStyle = header_style)
+  openxlsx::setColWidths(wb, "Data (long)", cols = 1:4, widths = c(32, 8, 42, 10))
+  openxlsx::freezePane(wb, "Data (long)", firstRow = TRUE)
+
+  # Data (wide)
+  openxlsx::addWorksheet(wb, "Data (wide)")
+  openxlsx::writeData(wb, "Data (wide)", data_wide, headerStyle = header_style)
+  openxlsx::setColWidths(wb, "Data (wide)", cols = 1:ncol(data_wide),
+                         widths = c(32, 8, rep(18, ncol(data_wide) - 2)))
+  openxlsx::freezePane(wb, "Data (wide)", firstRow = TRUE)
+
+  # Dashboard with full chart
+  openxlsx::addWorksheet(wb, "Dashboard")
+  openxlsx::writeData(wb, "Dashboard",
+                      data.frame(Chart = "Y7 offers by catchment - actuals, our projection, council forecasts"),
+                      headerStyle = header_style)
+  print(p_proj)
+  openxlsx::insertPlot(wb, "Dashboard", width = 14, height = 9,
+                       startRow = 3, startCol = 1,
+                       fileType = "png", units = "in", dpi = 150)
+
+  # One sheet per catchment, with native Excel chart
+  catchments <- levels(series_all$CatchmentGroup)
+  catchments <- catchments[catchments %in% unique(series_all$CatchmentGroup)]
+
+  # Openxlsx can't draw native Excel charts, so per-catchment sheets get an
+  # embedded PNG of that catchment's subset plot, plus the wide table for that
+  # catchment so the user can rebuild the chart natively if they want.
+  safe_sheet <- function(x) {
+    x <- gsub("[\\\\/?*\\[\\]:]", "-", x, perl = TRUE)
+    substr(x, 1, 31)
+  }
+
+  for (cg in catchments) {
+    sheet_name <- safe_sheet(cg)
+    openxlsx::addWorksheet(wb, sheet_name)
+
+    cg_wide <- data_wide[data_wide$CatchmentGroup == cg, , drop = FALSE]
+    openxlsx::writeData(wb, sheet_name, cg_wide, headerStyle = header_style)
+    openxlsx::setColWidths(wb, sheet_name, cols = 1:ncol(cg_wide),
+                           widths = c(32, 8, rep(18, ncol(cg_wide) - 2)))
+
+    cg_series <- series_all %>% dplyr::filter(CatchmentGroup == cg)
+    cg_pan    <- pan_df     %>% dplyr::filter(CatchmentGroup == cg)
+
+    p_cg <- ggplot(cg_series, aes(x = Year, y = Offers, colour = Series, group = Series)) +
+      { if (nrow(cg_pan)) geom_hline(data = cg_pan, aes(yintercept = PAN),
+                                     linetype = "dotted", colour = "grey30",
+                                     linewidth = 0.4, inherit.aes = FALSE) } +
+      geom_line(linewidth = 0.9) +
+      geom_point(size = 1.8) +
+      scale_colour_manual(values = c(
+        "Actual offers"                           = "#1f78b4",
+        "Our projection (cohort-aged)"            = "#33a02c",
+        "Council forecast (Oct-25, Appendix 7)"   = "#e31a1c",
+        "Council forecast (Oct-24, Appendix 6)"   = "#fb9a99"
+      )) +
+      labs(title = paste0("Y7 offers - ", cg),
+           subtitle = "Dotted grey = catchment PAN",
+           x = NULL, y = "Y7 offers", colour = NULL) +
+      theme_minimal(base_size = 11) +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1),
+            legend.position = "bottom")
+
+    print(p_cg)
+    openxlsx::insertPlot(wb, sheet_name, width = 9, height = 5.2,
+                         startRow = nrow(cg_wide) + 4, startCol = 1,
+                         fileType = "png", units = "in", dpi = 150)
+  }
+
+  openxlsx::saveWorkbook(wb, out_path, overwrite = TRUE)
+}
+```
+
+[Download the data and chart as Excel](projections_by_catchment.xlsx)
 
 **Reading the chart:**
 
