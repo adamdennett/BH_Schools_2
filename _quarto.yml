@@ -17,8 +17,6 @@ website:
     background: primary
     search: true
     left:
-      - text: "Data Processing"
-        href: data_processing_scripts.qmd
       - text: "Allocations (2013–2026)"
         href: brighton_and_hove_allocations.qmd
       - about.qmd
