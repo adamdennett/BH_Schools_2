@@ -1881,47 +1881,68 @@ The map below shows the same over- / under-subscription picture spatially, with 
 ```{r}
 library(leaflet)
 
-# ---- CARTO basemap API key -------------------------------------------
-# CARTO now require a key on their raster tiles; without one the tiles
-# carry an "API key required" watermark. leaflet-providers has no slot
-# for a key, so this wraps addProviderTiles(): CartoDB providers are
-# rebuilt as a keyed addTiles() call and everything else is passed
-# straight through to leaflet. Attribution is set explicitly, because
-# addTiles() does not inherit the provider's and keeping the CARTO and
-# OpenStreetMap credits visible is a condition of the free tier.
-# The key is read from CARTO_KEY in ~/.Renviron. If it is unset the maps
-# still render, just watermarked, so clones and CI are unaffected.
+# ---- Basemap, no API key ---------------------------------------------
+# CARTO require a key on their raster tiles, and without one the tiles
+# carry an "API key required" watermark. That failed in the only way
+# that really matters: silently. Any render from a shell without
+# CARTO_KEY in its environment produced watermarked maps and no other
+# symptom, so the fault was found by eye or not at all.
+#
+# So the tiles come from Esri's World Gray Canvas instead, which needs
+# no key. Of the keyless alternatives it is the one that actually is
+# keyless: Stadia's tiles return 401 without a key and Jawg's return
+# 400, both having moved to requiring one.
+#
+# This still wraps addProviderTiles() so that no call site has to
+# change. A CartoDB.* provider is served from Esri; anything else is
+# passed straight through to leaflet. Esri splits the canvas and the
+# place names into two services where CARTO bakes them into one, so the
+# Positron-style variants map onto one or both of them, and the
+# DarkMatter ones onto Esri's dark canvas.
+#
+# maxNativeZoom is set because Esri publishes these canvases to zoom 16
+# and above that the server returns a grey tile reading "Map data not
+# yet available" rather than a 404 - a silent failure again. Leaflet
+# upsamples level 16 instead of asking for 17, so the basemap softens
+# past that point and the data drawn over it stays sharp.
 addProviderTiles <- function(map, provider, ...) {
-  variants <- c(
-    Positron             = "light_all",
-    PositronNoLabels     = "light_nolabels",
-    PositronOnlyLabels   = "light_only_labels",
-    DarkMatter           = "dark_all",
-    DarkMatterNoLabels   = "dark_nolabels",
-    DarkMatterOnlyLabels = "dark_only_labels",
-    Voyager              = "rastertiles/voyager",
-    VoyagerNoLabels      = "rastertiles/voyager_nolabels",
-    VoyagerOnlyLabels    = "rastertiles/voyager_only_labels",
-    VoyagerLabelsUnder   = "rastertiles/voyager_labels_under")
-  key <- Sys.getenv("CARTO_KEY", "")
-  nm  <- as.character(provider)[1]
-  if (startsWith(nm, "CartoDB.")) nm <- substring(nm, 9L)
-  if (!nzchar(key) || !nm %in% names(variants))
+  nm <- as.character(provider)[1]
+  if (!startsWith(nm, "CartoDB."))
     return(leaflet::addProviderTiles(map, provider, ...))
+  nm <- substring(nm, 9L)
+
+  dark <- startsWith(nm, "DarkMatter")
+  shade <- if (dark) "Dark" else "Light"
+  esri <- function(part) sprintf(paste0(
+    "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/",
+    "World_%s_Gray_%s/MapServer/tile/{z}/{y}/{x}"), shade, part)
+
+  want_base   <- !grepl("OnlyLabels$", nm)
+  want_labels <- !grepl("NoLabels$", nm)
+
   dots <- list(...)
-  opts <- leaflet::tileOptions(subdomains = "abcd", maxZoom = 20)
+  opts <- leaflet::tileOptions(maxNativeZoom = 16, maxZoom = 20)
   if (!is.null(dots$options)) {
     opts <- utils::modifyList(opts, dots$options); dots$options <- NULL
   }
-  do.call(leaflet::addTiles, c(list(
-    map,
-    urlTemplate = sprintf(
-      "https://{s}.basemaps.cartocdn.com/%s/{z}/{x}/{y}{r}.png?key=%s",
-      variants[[nm]], key),
-    attribution = paste0(
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      ' contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'),
-    options = opts), dots))
+  attrib <- paste0(
+    'Tiles &copy; <a href="https://www.esri.com/">Esri</a> &mdash; Esri, ',
+    'HERE, Garmin, &copy; ',
+    '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    ' contributors')
+
+  if (want_base)
+    map <- do.call(leaflet::addTiles, c(list(
+      map, urlTemplate = esri("Base"), attribution = attrib,
+      options = opts), dots))
+  # Only one of the two layers carries the credit, or every map would
+  # print it twice in the corner.
+  if (want_labels)
+    map <- do.call(leaflet::addTiles, c(list(
+      map, urlTemplate = esri("Reference"),
+      attribution = if (want_base) "" else attrib,
+      options = opts), dots))
+  map
 }
 # ----------------------------------------------------------------------
 library(htmltools)
@@ -2501,9 +2522,9 @@ A [2024 FOI request](https://www.whatdotheyknow.com/request/schools_admissions_b
 
 For the 2024 cohort, the city-level figures are:
 
--   **2,468** Y7 offers made to children resident in B&H catchments (plus a small out-of-LEA group).
--   **2,306** children from those same catchments attending a B&H or neighbouring-LEA state school in the autumn.
--   **−162** pupils — the difference BHCC describes in its FOI response as "the vast majority" going to independent schools.
+- **2,468** Y7 offers made to children resident in B&H catchments (plus a small out-of-LEA group).
+- **2,306** children from those same catchments attending a B&H or neighbouring-LEA state school in the autumn.
+- **−162** pupils — the difference BHCC describes in its FOI response as "the vast majority" going to independent schools.
 
 That 162-pupil autumn fall-off is the *genuinely out-of-state* leakage for 2024, which is roughly **6.5 %** of the offers made. It is *not* the same quantity as the Reception-to-Y7 gaps plotted above: those gaps compound seven years of movement (independent-sector switches, families moving in or out of Brighton, home-ed, SEND placements, as well as churn between state schools), whereas the FOI figure is a single-year snapshot of the post-offer step only. But the ordering is informative. In 2024, the biggest autumn fall-offs came from **Hove Park / Blatchington Mill (−69 pupils, ≈ −9 %)** and **Varndean / Dorothy Stringer (−38, ≈ −5 %)** — the two catchments that are roughly balanced on the Reception-to-Y7 chart above. That is consistent with the interpretation that most of what shows up as a seven-year same-cohort *loss* in the geographic catchments is *not* leakage to the private sector but **movement across the state sector into Kings / Cardinal Newman**. The FOI confirms CN and Kings are net receivers in every catchment — in 2024 alone they absorbed **24 PACA pupils, 255 Hove Park / BMS pupils, 71 Varndean / DS pupils, 64 Longhill pupils, 22 BACA pupils, 27 Patcham pupils and 53 Out-of-LEA pupils at offer stage** (treating CN and Kings as "in-catchment" only for the Hove Park / BMS area as the FOI sheet does). The out-of-state component is real but relatively small; the far larger flow is within-state reallocation towards the two faith schools.
 
@@ -2642,8 +2663,8 @@ A line that is broadly flat between 2025 and 2026 on this chart means the catchm
 
 The council has now published **two successive** Year-7 pupil forecasts, built with the same method but from different census snapshots:
 
--   [Appendix 6 — Oct 2024 forecast](https://democracy.brighton-hove.gov.uk/documents/s211108/Appendix%206%20-%20Secondary%20School%20Pupil%20Forecast.pdf) (secondary entry **2025–2031**).
--   [Appendix 7 — Oct 2025 forecast](https://democracy.brighton-hove.gov.uk/documents/s212430/School%20Admission%20Arrangements%202027-28%20APX.%20n%207.pdf) (secondary entry **2026–2032**).
+- [Appendix 6 — Oct 2024 forecast](https://democracy.brighton-hove.gov.uk/documents/s211108/Appendix%206%20-%20Secondary%20School%20Pupil%20Forecast.pdf) (secondary entry **2025–2031**).
+- [Appendix 7 — Oct 2025 forecast](https://democracy.brighton-hove.gov.uk/documents/s212430/School%20Admission%20Arrangements%202027-28%20APX.%20n%207.pdf) (secondary entry **2026–2032**).
 
 The Oct 2025 forecast is the council's current view and is used as the primary reference below; the Oct 2024 forecast is retained because it supplies the only council-published projection for **2025** (now an actual offer year) and because comparing the two reveals how the council has revised its outlook year-on-year.
 
@@ -2736,8 +2757,8 @@ Positive values = spare capacity; negative values = demand exceeds PAN. In the O
 
 Two caveats on comparability:
 
--   The council's "adjusted for CN & Kings" figure is a projected demand from children *living in* the catchment who are expected to seek a state non-faith place. Our "actual offers" is the number of Y7 places *issued at* the catchment's schools — which will include some cross-catchment pupils and excludes in-catchment children who were offered a place elsewhere. Offers are also hard-capped at PAN.
--   The Kings + Cardinal Newman totals aren't broken out as a catchment row. Instead each geographic catchment's projection is reduced each year by a *per-year* estimate of how many of its resident pupils will go to Cardinal Newman and Kings. In the Oct-25 forecast this is **355 / yr** to CN and **170 / yr** to Kings — **525 / yr** combined, vs PAN of **540** (CN 360 + Kings 180). The PDFs therefore implicitly assume the two faith schools run essentially full, with any residual places filled from outside the six geographic catchments (out-of-city faith applicants, etc.). The Oct-24 forecast had slightly lower implied CN + Kings demand (330 + 167 = **497 / yr**).
+- The council's "adjusted for CN & Kings" figure is a projected demand from children *living in* the catchment who are expected to seek a state non-faith place. Our "actual offers" is the number of Y7 places *issued at* the catchment's schools — which will include some cross-catchment pupils and excludes in-catchment children who were offered a place elsewhere. Offers are also hard-capped at PAN.
+- The Kings + Cardinal Newman totals aren't broken out as a catchment row. Instead each geographic catchment's projection is reduced each year by a *per-year* estimate of how many of its resident pupils will go to Cardinal Newman and Kings. In the Oct-25 forecast this is **355 / yr** to CN and **170 / yr** to Kings — **525 / yr** combined, vs PAN of **540** (CN 360 + Kings 180). The PDFs therefore implicitly assume the two faith schools run essentially full, with any residual places filled from outside the six geographic catchments (out-of-city faith applicants, etc.). The Oct-24 forecast had slightly lower implied CN + Kings demand (330 + 167 = **497 / yr**).
 
 ```{r}
 # Our actual offers per catchment per year, reusing the `catchment_offers`
@@ -2814,13 +2835,13 @@ knitr::kable(relig_actual,
 
 **Headline read for 2025 and 2026:**
 
--   **Varndean / Dorothy Stringer** — both forecasts under-estimated demand. In 2025 the Oct-24 forecast was 581 vs actual 630 (PAN cap, Δ +49). In 2026 the Oct-24 forecast was 624 and the *revised* Oct-25 forecast is **601** — actual still hit PAN of **630** (Δ +29 against Oct-25). So the council revised demand *down* by 23 pupils between the two forecasts, but actual offers went the other way. These two schools stay full regardless of what the in-catchment demand model says — out-of-catchment demand tops them up.
--   **Longhill** — the most dramatic forecast-vs-actual gap. Oct-24 forecast **175** for 2026; Oct-25 revised to **162**; actual **81** (Δ –81 against Oct-25). Offers are less than **half** what the council now models, and well under PAN 210. The Oct-25 revision moves in the right direction but still over-estimates actual demand by a factor of two. Backing out an implied leakage from 2026 actuals gives roughly 67 %, vs the 23.89 % leakage baked into the Oct-25 forecast.
--   **BACA** — 2025 actual (**89**) fell well below the Oct-24 forecast of **134**, but 2026 flipped: actual **146** against forecasts of **129** (Oct-24) / **128** (Oct-25), i.e. +17–18 above both. The Oct-25 revision kept BACA essentially unchanged from Oct-24 — the council didn't update its view here, and the 2026 bounce-back in offers isn't picked up by either forecast.
--   **PACA** — consistently below forecast and below PAN. 2025 actual **190** (Oct-24 forecast 206, PAN 220). 2026 actual **183** against Oct-24 forecast **221** and Oct-25 forecast **218** — Δ –35 against the revised forecast. The Oct-25 revision barely changes the 2026 view (–3 vs Oct-24) but real-world demand was a further 35 below that.
--   **Hove Park / Blatchington Mill** — 2025 tracked the Oct-24 forecast closely (offers 501 vs forecast 512, both near PAN 510, Δ –11). 2026 is the striking case: the Oct-24 forecast projected a sharp drop to 434; Oct-25 revised **down further** to **424**; actual offers came in at **466**, i.e. **+42** above the Oct-25 forecast. The council is increasingly bearish on Hove Park / Blatch demand, but out-of-catchment pull-in is propping up offers.
--   **Patcham** — Oct-24 was the most accurate forecast on the table (198 / 205 against 202 / 204 actual, Δ +4 / –1). Oct-25 revised 2026 demand **down by 11** to **194**, but actual 2026 offers were **204** — so the revision moved *away* from reality by about 10 pupils.
--   **Religious schools (Kings + CN)** — both schools are at PAN in both years (CN 360 + Kings 180 = **540**). The Oct-24 forecast's implied demand of 497 / yr rose to **525 / yr** in the Oct-25 forecast, closing the gap with PAN. The council has (rightly) calibrated the faith-school draw upward, but both forecasts still under-state what actually happens there — the 15-pupil residual is the outside-catchment faith intake (out-of-city applicants, siblings, late admits) that no catchment-based model can see.
+- **Varndean / Dorothy Stringer** — both forecasts under-estimated demand. In 2025 the Oct-24 forecast was 581 vs actual 630 (PAN cap, Δ +49). In 2026 the Oct-24 forecast was 624 and the *revised* Oct-25 forecast is **601** — actual still hit PAN of **630** (Δ +29 against Oct-25). So the council revised demand *down* by 23 pupils between the two forecasts, but actual offers went the other way. These two schools stay full regardless of what the in-catchment demand model says — out-of-catchment demand tops them up.
+- **Longhill** — the most dramatic forecast-vs-actual gap. Oct-24 forecast **175** for 2026; Oct-25 revised to **162**; actual **81** (Δ –81 against Oct-25). Offers are less than **half** what the council now models, and well under PAN 210. The Oct-25 revision moves in the right direction but still over-estimates actual demand by a factor of two. Backing out an implied leakage from 2026 actuals gives roughly 67 %, vs the 23.89 % leakage baked into the Oct-25 forecast.
+- **BACA** — 2025 actual (**89**) fell well below the Oct-24 forecast of **134**, but 2026 flipped: actual **146** against forecasts of **129** (Oct-24) / **128** (Oct-25), i.e. +17–18 above both. The Oct-25 revision kept BACA essentially unchanged from Oct-24 — the council didn't update its view here, and the 2026 bounce-back in offers isn't picked up by either forecast.
+- **PACA** — consistently below forecast and below PAN. 2025 actual **190** (Oct-24 forecast 206, PAN 220). 2026 actual **183** against Oct-24 forecast **221** and Oct-25 forecast **218** — Δ –35 against the revised forecast. The Oct-25 revision barely changes the 2026 view (–3 vs Oct-24) but real-world demand was a further 35 below that.
+- **Hove Park / Blatchington Mill** — 2025 tracked the Oct-24 forecast closely (offers 501 vs forecast 512, both near PAN 510, Δ –11). 2026 is the striking case: the Oct-24 forecast projected a sharp drop to 434; Oct-25 revised **down further** to **424**; actual offers came in at **466**, i.e. **+42** above the Oct-25 forecast. The council is increasingly bearish on Hove Park / Blatch demand, but out-of-catchment pull-in is propping up offers.
+- **Patcham** — Oct-24 was the most accurate forecast on the table (198 / 205 against 202 / 204 actual, Δ +4 / –1). Oct-25 revised 2026 demand **down by 11** to **194**, but actual 2026 offers were **204** — so the revision moved *away* from reality by about 10 pupils.
+- **Religious schools (Kings + CN)** — both schools are at PAN in both years (CN 360 + Kings 180 = **540**). The Oct-24 forecast's implied demand of 497 / yr rose to **525 / yr** in the Oct-25 forecast, closing the gap with PAN. The council has (rightly) calibrated the faith-school draw upward, but both forecasts still under-state what actually happens there — the 15-pupil residual is the outside-catchment faith intake (out-of-city applicants, siblings, late admits) that no catchment-based model can see.
 
 **The Oct-25 revision, in one paragraph.** The new forecast is **almost uniformly lower** than its predecessor for every catchment-year overlap. For 2026 specifically, the revisions are: Hove Park / Blatch −10, Varndean / Stringer −23, Longhill −13, Patcham −11, BACA −1, PACA −3. Compared with actual 2026 offers, the Oct-25 revision is closer to reality at **PACA** and **Longhill** (where the Oct-24 forecast was too high), and *further from reality* at **Hove Park / Blatch, Varndean / Stringer, BACA and Patcham** (where actual offers ran above both forecasts). The pattern is consistent with the council's method being a **residential-demand** model: when overall city demand falls, every forecast drops, but actual **offers** at individual schools are governed by where families apply — and Hove Park / Blatch, Varndean / Stringer and Patcham continue to attract more pupils than their own catchment produces.
 
@@ -2842,11 +2863,11 @@ The method is a single-step **empirical flow ratio**:
 
 What the retention ratio absorbs — all in one number, without any attempt to decompose them:
 
--   **State-to-private and similar sector leakage** between ages 4 and 11 (children who start Reception at a state primary and later move to independents, home-ed, or out of the city).
--   **Cross-sector Y7 flow** towards Cardinal Newman and Kings (whose intake at Y7 is larger than the Catholic-primary intake at Reception seven years earlier — that's why the Religious schools ratio comes out above 2).
--   **Cross-catchment Y7 flow** between geographic catchments, where a child lives in one catchment and lists a different one as their first preference.
--   **PAN capping** at Y7. Where a catchment runs at PAN regardless of underlying demand (historically Varndean / Dorothy Stringer and the religious schools), the fitted ratio is effectively PAN ÷ primary-offer volume — future projections will therefore predict more-of-the-same-PAN-filling unless the primary feeder shrinks enough that primary × ratio drops below PAN.
--   **Geographic mismatch between the primary and secondary "catchment"**. Primary admissions aren't organised by secondary catchment — families apply to individual primary schools, each of which has its own much smaller admission area. Our per-catchment primary-offers number is therefore the sum of offers at all primary schools whose site happens to fall inside a given secondary catchment polygon, which is a reasonable but imperfect proxy for "children resident in the catchment at age 4".
+- **State-to-private and similar sector leakage** between ages 4 and 11 (children who start Reception at a state primary and later move to independents, home-ed, or out of the city).
+- **Cross-sector Y7 flow** towards Cardinal Newman and Kings (whose intake at Y7 is larger than the Catholic-primary intake at Reception seven years earlier — that's why the Religious schools ratio comes out above 2).
+- **Cross-catchment Y7 flow** between geographic catchments, where a child lives in one catchment and lists a different one as their first preference.
+- **PAN capping** at Y7. Where a catchment runs at PAN regardless of underlying demand (historically Varndean / Dorothy Stringer and the religious schools), the fitted ratio is effectively PAN ÷ primary-offer volume — future projections will therefore predict more-of-the-same-PAN-filling unless the primary feeder shrinks enough that primary × ratio drops below PAN.
+- **Geographic mismatch between the primary and secondary "catchment"**. Primary admissions aren't organised by secondary catchment — families apply to individual primary schools, each of which has its own much smaller admission area. Our per-catchment primary-offers number is therefore the sum of offers at all primary schools whose site happens to fall inside a given secondary catchment polygon, which is a reasonable but imperfect proxy for "children resident in the catchment at age 4".
 
 Because the ratio is held constant when projecting forward, the method implicitly assumes the mix of those mechanisms stays the same as it was over the 2014–2019 Reception cohorts (roughly: pre-pandemic with two pandemic-affected cohorts mixed in). If any of them shift materially — say, more families leaving for independents, or Kings / CN attracting a larger share of non-Catholic primary pupils — the projection will drift from reality. The SD column in the retention-ratio table is the simplest read on how stable each catchment's ratio has been over the six cohorts: low for Hove Park / Blatchington Mill (0.04), Patcham (0.02) and Varndean / Stringer (0.03); noticeably higher for BACA (0.23) and Longhill (0.13).
 
@@ -3324,23 +3345,23 @@ if (requireNamespace("openxlsx", quietly = TRUE)) {
 
 **Reading the chart:**
 
--   Blue = actual Y7 offers we have in this document (2010, 2012, 2013–2026).
--   Green = our cohort-aged projection (2027–2033, seven years ahead of the latest primary cohorts).
--   Red = the council's current Oct-25 forecast (Appendix 7, published 2026–2032).
--   Pink = the council's earlier Oct-24 forecast (Appendix 6, published 2025–2031), retained here so the revision between the two is visible.
--   Dotted grey line = catchment PAN (not plotted for the Religious schools panel, which has no single PAN).
+- Blue = actual Y7 offers we have in this document (2010, 2012, 2013–2026).
+- Green = our cohort-aged projection (2027–2033, seven years ahead of the latest primary cohorts).
+- Red = the council's current Oct-25 forecast (Appendix 7, published 2026–2032).
+- Pink = the council's earlier Oct-24 forecast (Appendix 6, published 2025–2031), retained here so the revision between the two is visible.
+- Dotted grey line = catchment PAN (not plotted for the Religious schools panel, which has no single PAN).
 
 **The first thing to look at** is where the red (Oct-25) line sits relative to the pink (Oct-24) line: for almost every catchment the council has revised its view **downward** between the two forecasts. Where the revision was biggest — Longhill, Varndean / Stringer, Hove Park / Blatchington Mill — the Oct-25 forecast has moved partway towards our cohort-aged projection, though at Longhill it still sits well above what the 2025/2026 actuals and our projection imply.
 
 **Catchment-by-catchment read (2027-2032 overlap):**
 
--   **Longhill** — the clearest disagreement. Our projection is 17-34 % below the council's Oct-25 line in every year of the overlap (e.g. 2028: 112 vs 160; 2031: 98 vs 148). The Oct-25 revision lowered Longhill by \~5-15 pupils/year vs the Oct-24 view, but the gap to our method is still large and one-sided.
--   **BACA** — our projection is 12-24 % below the council's in five of six overlap years, with 2032 the only year the two lines touch (108 vs 103). The Oct-25 Longhill-style revision didn't really happen at BACA — the council's line barely moved.
--   **PACA** — our projection is 10-26 % below the council's in five of six overlap years, and identical in 2031 (both 147). Oct-25 revised PACA down modestly from Oct-24.
--   **Hove Park / Blatchington Mill** — our projection is *above* the council's in every year of the overlap, by 3-24 %. This is the one catchment where we consistently forecast *more* demand than the council. The Oct-25 revision lowered the council's line here too, widening the gap.
--   **Varndean / Dorothy Stringer** — the two methods are close everywhere (within ±4 % in every year). This was the catchment where Oct-24 most obviously disagreed with our projection; the Oct-25 revision has largely closed that gap.
--   **Patcham** — also close, with the two methods within ±9 % in every year and no systematic direction.
--   **Religious schools (Kings + CN)** — the council's Appendix 7 row for "Kings + CN" is 355 + 170 = 525/year flat (up from 330 + 167 = 497/year in Oct-24); our cohort-aged projection for the Religious schools row varies by cohort. No direct per-catchment line in the chart above for this since the council publishes only a flat 525 assumption.
+- **Longhill** — the clearest disagreement. Our projection is 17-34 % below the council's Oct-25 line in every year of the overlap (e.g. 2028: 112 vs 160; 2031: 98 vs 148). The Oct-25 revision lowered Longhill by \~5-15 pupils/year vs the Oct-24 view, but the gap to our method is still large and one-sided.
+- **BACA** — our projection is 12-24 % below the council's in five of six overlap years, with 2032 the only year the two lines touch (108 vs 103). The Oct-25 Longhill-style revision didn't really happen at BACA — the council's line barely moved.
+- **PACA** — our projection is 10-26 % below the council's in five of six overlap years, and identical in 2031 (both 147). Oct-25 revised PACA down modestly from Oct-24.
+- **Hove Park / Blatchington Mill** — our projection is *above* the council's in every year of the overlap, by 3-24 %. This is the one catchment where we consistently forecast *more* demand than the council. The Oct-25 revision lowered the council's line here too, widening the gap.
+- **Varndean / Dorothy Stringer** — the two methods are close everywhere (within ±4 % in every year). This was the catchment where Oct-24 most obviously disagreed with our projection; the Oct-25 revision has largely closed that gap.
+- **Patcham** — also close, with the two methods within ±9 % in every year and no systematic direction.
+- **Religious schools (Kings + CN)** — the council's Appendix 7 row for "Kings + CN" is 355 + 170 = 525/year flat (up from 330 + 167 = 497/year in Oct-24); our cohort-aged projection for the Religious schools row varies by cohort. No direct per-catchment line in the chart above for this since the council publishes only a flat 525 assumption.
 
 ## Whole-City Aggregate: Our Projection vs the Council's
 
@@ -3464,8 +3485,8 @@ Put another way: the council's method carries a built-in assumption that the rel
 
 It's hard to tell from outside the council whether this is (a) deliberately cautious forecasting — "let's not project too fast a decline in case we need the capacity" — or (b) a consequence of the method itself, where a fixed leakage percentage naturally lags when real-world leakage is rising. I think **(b) is the more likely explanation**, for two reasons:
 
--   The 23.89 % Longhill leakage (raised from 22.61 % in the Oct-25 revision) is already the highest by a wide margin, which suggests the council has tried to calibrate for the specific problem.
--   A method that decomposes census → fixed leakage % → fixed CN/Kings annual number will, by construction, propagate whatever the recent calibrated leakage was forward. If leakage is rising year-on-year (as Longhill's 2021–2026 actuals suggest it has been), the fitted percentage will lag behind reality until the calibration is revisited. The Oct-25 update has revisited it once — but only by 1.28 percentage points, against 2025/26 actuals implying a real rate around three times that. That's a structural property of the method, not a judgement call.
+- The 23.89 % Longhill leakage (raised from 22.61 % in the Oct-25 revision) is already the highest by a wide margin, which suggests the council has tried to calibrate for the specific problem.
+- A method that decomposes census → fixed leakage % → fixed CN/Kings annual number will, by construction, propagate whatever the recent calibrated leakage was forward. If leakage is rising year-on-year (as Longhill's 2021–2026 actuals suggest it has been), the fitted percentage will lag behind reality until the calibration is revisited. The Oct-25 update has revisited it once — but only by 1.28 percentage points, against 2025/26 actuals implying a real rate around three times that. That's a structural property of the method, not a judgement call.
 
 But the *effect* is the same either way. For planning purposes, decisions about Longhill's future — whether to reduce PAN, consolidate provision, adjust catchment boundaries — will be taken on the basis of forecast demand figures that **both our method and the 2025/26 actuals suggest are still optimistic by 30–50 pupils per year** even after the Oct-25 revision. Whether one calls this "hope" or "methodological lag" is partly a matter of framing, but the practical implication is that if the council's Appendix 7 surplus numbers feel uncomfortable already, the underlying surplus at Longhill is very likely larger still.
 
@@ -3483,15 +3504,15 @@ It is worth being explicit about what kind of claim this is: it is a *behavioura
 
 From the cohort-by-catchment chart above and the 2024 FOI crosscheck:
 
--   **Longhill has the worst retention in the city by some margin.** In 2024, 263 Year 7 offers were made to Longhill-catchment children; 98 of those (**37 %**) were offers to Longhill High itself. Every other geographic catchment retained 60–92 % of its own offers in-catchment. The rest of Longhill's 2024 flow was: **64 to Cardinal Newman (\~24 %)**, **38 to Priory School in Lewes (\~14 %)**, **27 to BACA**, **12 to Dorothy Stringer**, **8 to Hove Park**, and a long tail. Only **\~19** of the catchment's offers (≈ 7 %) were lost to the independent sector outright.
--   **The same-cohort gap is deepening year on year.** Reception-to-Y7 offers for the Longhill catchment have moved further into deficit across every cohort we have data for, from modest net loss for the 2014 cohort to sharp net loss for the 2019 cohort (Y7 2026).
--   **The underlying primary-age population is shrinking.** The council's own Oct-25 census for the Longhill primary catchment shows fewer children in every R–Y6 year group than the equivalent figure from the Oct-24 revision, and year groups currently in Key Stage 1 are smaller still. This is a demographic fact about the resident base, independent of any catchment-boundary decision.
--   **The religious-schools flow is the largest non-catchment outflow for every catchment, not just Longhill.** What is distinctive about Longhill is not the direction of the outflow but the *rate*: \~24 % going to CN alone is roughly double what BACA or Patcham lose to CN+Kings combined.
+- **Longhill has the worst retention in the city by some margin.** In 2024, 263 Year 7 offers were made to Longhill-catchment children; 98 of those (**37 %**) were offers to Longhill High itself. Every other geographic catchment retained 60–92 % of its own offers in-catchment. The rest of Longhill's 2024 flow was: **64 to Cardinal Newman (\~24 %)**, **38 to Priory School in Lewes (\~14 %)**, **27 to BACA**, **12 to Dorothy Stringer**, **8 to Hove Park**, and a long tail. Only **\~19** of the catchment's offers (≈ 7 %) were lost to the independent sector outright.
+- **The same-cohort gap is deepening year on year.** Reception-to-Y7 offers for the Longhill catchment have moved further into deficit across every cohort we have data for, from modest net loss for the 2014 cohort to sharp net loss for the 2019 cohort (Y7 2026).
+- **The underlying primary-age population is shrinking.** The council's own Oct-25 census for the Longhill primary catchment shows fewer children in every R–Y6 year group than the equivalent figure from the Oct-24 revision, and year groups currently in Key Stage 1 are smaller still. This is a demographic fact about the resident base, independent of any catchment-boundary decision.
+- **The religious-schools flow is the largest non-catchment outflow for every catchment, not just Longhill.** What is distinctive about Longhill is not the direction of the outflow but the *rate*: \~24 % going to CN alone is roughly double what BACA or Patcham lose to CN+Kings combined.
 
 ### What the data cannot say
 
--   The FOI data does not disaggregate by **ward within catchment**. We can see that Longhill catchment as a whole sends 24 % of its offers to Cardinal Newman and 14 % to Priory — but we cannot tell from this data whether those families are disproportionately Whitehawk residents, or Woodingdean / Rottingdean / Saltdean residents, or a broadly even mix. The ward-level split is exactly the question the policy hypothesis hinges on, and the public data doesn't answer it.
--   The data also cannot say what Whitehawk parents themselves currently do. If Whitehawk families send their children to Longhill at *higher* rates than the rest of the catchment (plausible: fewer private alternatives, less car access, stronger proximity preference), then removing Whitehawk from the catchment *reduces* Longhill's intake base without producing any offsetting behavioural shift from the remaining wards. If Whitehawk families send their children elsewhere at *higher* rates than the rest of the catchment, removing Whitehawk would have the opposite effect. Without ward-level data we cannot tell which of these two worlds we are in — and the two have opposite implications for whether the policy helps or hurts.
+- The FOI data does not disaggregate by **ward within catchment**. We can see that Longhill catchment as a whole sends 24 % of its offers to Cardinal Newman and 14 % to Priory — but we cannot tell from this data whether those families are disproportionately Whitehawk residents, or Woodingdean / Rottingdean / Saltdean residents, or a broadly even mix. The ward-level split is exactly the question the policy hypothesis hinges on, and the public data doesn't answer it.
+- The data also cannot say what Whitehawk parents themselves currently do. If Whitehawk families send their children to Longhill at *higher* rates than the rest of the catchment (plausible: fewer private alternatives, less car access, stronger proximity preference), then removing Whitehawk from the catchment *reduces* Longhill's intake base without producing any offsetting behavioural shift from the remaining wards. If Whitehawk families send their children elsewhere at *higher* rates than the rest of the catchment, removing Whitehawk would have the opposite effect. Without ward-level data we cannot tell which of these two worlds we are in — and the two have opposite implications for whether the policy helps or hurts.
 
 ### The Whitehawk change doesn't sit in isolation: a staggered stack of admissions reforms pulling the same direction
 
@@ -3506,9 +3527,9 @@ These four mechanisms do not add up independently — OA, sibling and FSM priori
 
 The staggered timing matters for how we read the data:
 
--   **The 2024 FOI is a pre-policy baseline.** None of the reforms above had yet bitten the 2024 Year 7 intake. The \~25–30 offers going from Longhill catchment to the four central-catchment schools in 2024 (Dorothy Stringer 12, Hove Park 8, plus small numbers to BMS and Varndean — about 10 % of the catchment's offers) was happening *before* FSM priority, *before* Open Allocation, and *before* the sibling uplift existed. That is a useful reference point: even under the old rules, around one in ten Longhill-catchment pupils was already ending up at a central-catchment school through the general ranking of preferences. The new reforms sit on top of that flow, not in place of it.
--   **The 2025 and 2026 Longhill Y7 actuals are the first two ticks of the new policy stack.** Longhill's Y7 offer count fell from **97 in 2025** to **81 in 2026**, a 16-pupil drop in one admissions round. The 2025 figure is the first intake under the FSM out-of-catchment priority, with Whitehawk still formally in the Longhill catchment. The 2026 figure is the first intake under Open Allocation *and* the first intake after the Whitehawk removal — though, as noted above, around a third of Whitehawk families continued to name Longhill in 2026 despite the boundary change. The 16-pupil drop is therefore a combined read of at least three concurrent effects: the FSM channel widening in its second year, OA opening for the first time, and Whitehawk partially leaving. We cannot attribute the 2025-to-2026 step cleanly to any single reform from the public data — cohort-size change and random variation also contribute — but the direction and order of magnitude match what the policies were designed to do.
--   **2027 onwards is when the stack matures.** OA-linked sibling admissions begin, the residual Whitehawk-to-Longhill share comes under pressure as the older-sibling effect fades, and the Oct-25 council census shows smaller primary-catchment year groups working their way up the system. Each of these individually nudges Longhill's Y7 count downward; together they arrive in a compressed window.
+- **The 2024 FOI is a pre-policy baseline.** None of the reforms above had yet bitten the 2024 Year 7 intake. The \~25–30 offers going from Longhill catchment to the four central-catchment schools in 2024 (Dorothy Stringer 12, Hove Park 8, plus small numbers to BMS and Varndean — about 10 % of the catchment's offers) was happening *before* FSM priority, *before* Open Allocation, and *before* the sibling uplift existed. That is a useful reference point: even under the old rules, around one in ten Longhill-catchment pupils was already ending up at a central-catchment school through the general ranking of preferences. The new reforms sit on top of that flow, not in place of it.
+- **The 2025 and 2026 Longhill Y7 actuals are the first two ticks of the new policy stack.** Longhill's Y7 offer count fell from **97 in 2025** to **81 in 2026**, a 16-pupil drop in one admissions round. The 2025 figure is the first intake under the FSM out-of-catchment priority, with Whitehawk still formally in the Longhill catchment. The 2026 figure is the first intake under Open Allocation *and* the first intake after the Whitehawk removal — though, as noted above, around a third of Whitehawk families continued to name Longhill in 2026 despite the boundary change. The 16-pupil drop is therefore a combined read of at least three concurrent effects: the FSM channel widening in its second year, OA opening for the first time, and Whitehawk partially leaving. We cannot attribute the 2025-to-2026 step cleanly to any single reform from the public data — cohort-size change and random variation also contribute — but the direction and order of magnitude match what the policies were designed to do.
+- **2027 onwards is when the stack matures.** OA-linked sibling admissions begin, the residual Whitehawk-to-Longhill share comes under pressure as the older-sibling effect fades, and the Oct-25 council census shows smaller primary-catchment year groups working their way up the system. Each of these individually nudges Longhill's Y7 count downward; together they arrive in a compressed window.
 
 This reframes two of the points in the next section. Point 3 below ("the next-biggest leakage is part-geographic, part-policy") needs its timing made explicit: through 2024, the non-faith flow out of the Longhill catchment was **not** policy-driven, but from 2025 onwards a growing share of it will be. And point 4 needs strengthening on the same grounds: the residual non-Whitehawk Longhill catchment will not only inherit a longer track record of not choosing Longhill, it will face formal mechanisms pulling it into central catchment schools that weren't operating a year or two ago.
 
@@ -3924,15 +3945,15 @@ build_year_map(
 
 Notes on the maps:
 
--   Each map has its own year slider. Dragging the slider redraws the circles on that map only — school **positions stay fixed**, but **radii change** because the circles are re-drawn from scratch at the selected year's counts. Radius is computed as `count^0.72 × k`: the exponent is slightly above strict area-proportional scaling (0.5) to exaggerate perceived differences between small and large schools, while still being monotonic and keeping cross-year comparisons honest.
--   Secondary maps show the 2025/26 catchment polygons as a reference. Primary maps are plotted on a neutral basemap (no national primary catchments exist — primary admission uses home-to-school distance).
--   West Hove Infant has two intake sites (Holland Road and Portland Road) plotted at their respective postcodes (BN3 1JL and BN3 5JA).
--   Historic infant schools that amalgamated into primaries (Hangleton Infant, Hertford Infant) are plotted at their successor primary's location. Fully closed schools (Davigdor Infant to 2015, St Bartholomew's, St Peter's Community) are plotted at their original postcodes so pre-closure years render correctly.
+- Each map has its own year slider. Dragging the slider redraws the circles on that map only — school **positions stay fixed**, but **radii change** because the circles are re-drawn from scratch at the selected year's counts. Radius is computed as `count^0.72 × k`: the exponent is slightly above strict area-proportional scaling (0.5) to exaggerate perceived differences between small and large schools, while still being monotonic and keeping cross-year comparisons honest.
+- Secondary maps show the 2025/26 catchment polygons as a reference. Primary maps are plotted on a neutral basemap (no national primary catchments exist — primary admission uses home-to-school distance).
+- West Hove Infant has two intake sites (Holland Road and Portland Road) plotted at their respective postcodes (BN3 1JL and BN3 5JA).
+- Historic infant schools that amalgamated into primaries (Hangleton Infant, Hertford Infant) are plotted at their successor primary's location. Fully closed schools (Davigdor Infant to 2015, St Bartholomew's, St Peter's Community) are plotted at their original postcodes so pre-closure years render correctly.
 
 # Notes on Data Quality
 
--   Secondary figures include on-time applications only. Late applications and post-allocation adjustments are excluded.
--   2026 is the first secondary year reporting a 4th preference; earlier years show `NA` in 4th-preference columns in the combined dataset.
--   Older primary factsheets (2014–2018) were retrieved from the Internet Archive (web.archive.org) as the council has removed them from the live site.
--   School name harmonisation (e.g. *Hangleton Infant* → *Hangleton Primary*, *West Hove Connaught Road* → *West Hove Infant, Holland Road*) is applied in the combined dataset only; original per-year tables preserve the names as published.
--   PAN values in the combined primary dataset are as published each year. PAN reductions (e.g. Balfour 120 → 90, Brunswick 120 → 90, Davigdor closure in 2015) are real and reflect council decisions.
+- Secondary figures include on-time applications only. Late applications and post-allocation adjustments are excluded.
+- 2026 is the first secondary year reporting a 4th preference; earlier years show `NA` in 4th-preference columns in the combined dataset.
+- Older primary factsheets (2014–2018) were retrieved from the Internet Archive (web.archive.org) as the council has removed them from the live site.
+- School name harmonisation (e.g. *Hangleton Infant* → *Hangleton Primary*, *West Hove Connaught Road* → *West Hove Infant, Holland Road*) is applied in the combined dataset only; original per-year tables preserve the names as published.
+- PAN values in the combined primary dataset are as published each year. PAN reductions (e.g. Balfour 120 → 90, Brunswick 120 → 90, Davigdor closure in 2015) are real and reflect council decisions.
