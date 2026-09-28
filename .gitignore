@@ -13,3 +13,5 @@ api_key.R
 rjavaenv/
 .Rprofile
 **/*.quarto_ipynb
+# Claude Code worktrees (never track these)
+.claude/
