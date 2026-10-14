@@ -19,3 +19,7 @@ rjavaenv/
 
 # R temp dumps
 .RDataTmp*
+
+# Scraped GIAS contacts - named individuals, repo is public
+_gias_scraped.csv
+bh_school_contacts.xlsx
