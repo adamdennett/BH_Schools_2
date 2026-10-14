@@ -15,3 +15,4 @@ rjavaenv/
 **/*.quarto_ipynb
 # Claude Code worktrees (never track these)
 .claude/
+.positai

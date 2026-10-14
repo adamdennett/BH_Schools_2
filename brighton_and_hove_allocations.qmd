@@ -1972,7 +1972,7 @@ d_json_bal <- balance_map_data %>%
 data_json_bal <- jsonlite::toJSON(d_json_bal, na = "null", dataframe = "rows")
 
 m_bal <- leaflet(width = "100%", height = 560) |>
-  addProviderTiles(providers$CartoDB.Positron) |>
+  addProviderTiles(providers$Esri.WorldGrayCanvas, options = providerTileOptions(maxNativeZoom = 16, maxZoom = 20)) |>
   setView(lng = -0.155, lat = 50.835, zoom = 12)
 
 data_tag_bal <- htmltools::tags$script(
@@ -3681,7 +3681,7 @@ build_year_map <- function(map_data, value_col, colour, fill_opacity, radius_k,
 
   # Bare leaflet — no markers added in R. Catchments are permanent polygons.
   m <- leaflet(width = "100%", height = height) |>
-    addProviderTiles(providers$CartoDB.Positron) |>
+    addProviderTiles(providers$Esri.WorldGrayCanvas, options = providerTileOptions(maxNativeZoom = 16, maxZoom = 20)) |>
     setView(lng = -0.155, lat = 50.835, zoom = 12)
 
   if (show_catchments) {
