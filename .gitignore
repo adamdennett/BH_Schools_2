@@ -16,3 +16,6 @@ rjavaenv/
 # Claude Code worktrees (never track these)
 .claude/
 .positai
+
+# R temp dumps
+.RDataTmp*
