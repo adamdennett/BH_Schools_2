@@ -652,6 +652,193 @@ p_small <- ggplot(small_schools,
 ggplotly(p_small, tooltip = "text")
 ```
 
+## Offers by Admission Priority — Community Schools
+
+From 2025 the council's factsheet also breaks down the six community schools' offers (Blatchington Mill, Dorothy Stringer, Hove Park, Longhill, Patcham and Varndean) by **admission priority**: how many places went to looked-after children, siblings, children eligible for free school meals (FSM), the catchment and others. The two academies (BACA, PACA) and the two faith schools (Cardinal Newman, King's) set their own arrangements and do not publish this.
+
+The priorities were **renumbered for 2026**, when an open-admissions quota (5% of places, by lottery) was added as priority 6:
+
+| | 2025 | 2026 |
+|---|---|---|
+| Looked-after children | 1 | 1 |
+| Exceptional reasons | 2 | 2 |
+| Sibling link | 3 | 3 |
+| FSM, in catchment | 4 | 4 |
+| FSM, out of catchment | 5 | 5 |
+| Open admissions | — | 6 |
+| In catchment | 6 | 7 |
+| Out of catchment / other children | 7 | 8 |
+
+Children with an Education, Health and Care Plan (EHCP) are offered the school named in their plan before any priority and are shown separately. FSM priorities 4 and 5 together are capped at 30% of the published admission number (PAN). These are **national offer day** figures (March), before late applications, appeals and directions.
+
+::: panel-tabset
+### 2026
+
+<https://www.brighton-hove.gov.uk/schools-and-learning/school-policies-reports-strategies-and-other-documents/allocation-factsheet-year-7-places-september-2026>
+
+```{r}
+prio_2026 <- tibble::tribble(
+  ~School,             ~PAN, ~EHCP, ~P1, ~P2, ~P3, ~P4, ~P5, ~P6, ~P7, ~P8,
+  "Blatchington Mill",  330,     7,   3,   0,  73,  45,  14,  17, 171,   0,
+  "Dorothy Stringer",   330,    11,   3,   2,  65,  35,  32,  17, 148,  17,
+  "Hove Park",          180,    11,   3,   0,  22,  18,  19,   9,  42,  12,
+  "Longhill High",      210,     2,   0,   0,  17,  18,   9,   1,  28,   6,
+  "Patcham High",       225,    12,   3,   0,  54,  17,  18,   8,  87,   5,
+  "Varndean",           300,    19,   8,   1,  70,  61,   5,  15, 121,   0
+) |> mutate(Total = EHCP + P1 + P2 + P3 + P4 + P5 + P6 + P7 + P8)
+stopifnot(prio_2026$Total == c(330, 330, 136, 81, 204, 300))   # matches each school's offers in Table 1
+
+datatable(prio_2026 |> rename(`1 Looked after` = P1, `2 Exceptional` = P2, `3 Sibling` = P3,
+                              `4 FSM in catchment` = P4, `5 FSM out of catchment` = P5,
+                              `6 Open admissions` = P6, `7 In catchment` = P7, `8 Other` = P8),
+          extensions = 'Buttons', options = dt_opts, rownames = FALSE,
+          caption = "Offers by admission priority, September 2026 (national offer day).")
+```
+
+```{r}
+fsm_2026 <- tibble::tribble(
+  ~School,             ~PAN, ~FSM_places_available, ~FSM_offered_P1to3, ~P4, ~P5, ~FSM_offered_total,
+  "Blatchington Mill",  330,  99, 15, 45, 14, 74,
+  "Dorothy Stringer",   330,  99, 18, 35, 31, 84,
+  "Hove Park",          180,  54, 11, 18, 19, 48,
+  "Longhill High",      210,  63, 12, 19,  9, 40,
+  "Patcham High",       225,  68, 20, 17, 18, 55,
+  "Varndean",           300,  90, 24, 61,  5, 90)
+open_2026 <- tibble::tribble(
+  ~School,             ~Open_places_available, ~Open_places_offered,
+  "Blatchington Mill",  17, 17,
+  "Dorothy Stringer",   17, 17,
+  "Hove Park",           9,  9,
+  "Longhill High",      11,  1,
+  "Patcham High",       11,  9,
+  "Varndean",           15, 15)
+datatable(left_join(fsm_2026, open_2026, by = "School"), extensions = 'Buttons', options = dt_opts, rownames = FALSE,
+          caption = "FSM places (priorities 1 to 5) and open-admission places (priority 6), September 2026.")
+```
+
+The council notes that every school admitted every child from priority 4, and every school except Varndean every child from priority 5. Varndean filled its whole FSM allowance (90 of 90) with FSM children from priorities 1 to 4.
+
+The factsheet's own tables do not quite agree in three places: Dorothy Stringer's priority 5 offers are 31 in the FSM table and 32 in the priority table; Longhill's priority 4 offers are 19 and 18; and Patcham's open-admission offers are 9 and 8. The priority table is used above, since it adds up to each school's total offers.
+
+### 2025
+
+<https://www.brighton-hove.gov.uk/schools-and-learning/school-policies-reports-strategies-and-other-documents/allocation-factsheet-year-7-places-september-2025>
+
+The 2025 factsheet also gives the number of **applications** under each priority (any preference rank), so it shows how far down each school's priorities its places ran.
+
+```{r}
+prio_2025 <- tibble::tribble(
+  ~School,            ~Priority,                       ~Applications, ~Offers,
+  "Blatchington Mill", "EHCP",                               8,   8,
+  "Blatchington Mill", "1 Looked after",                     9,   1,
+  "Blatchington Mill", "2 Exceptional",                      0,   0,
+  "Blatchington Mill", "3 Sibling",                         71,  65,
+  "Blatchington Mill", "4 FSM in catchment",                75,  38,
+  "Blatchington Mill", "5 FSM out of catchment",            36,   9,
+  "Blatchington Mill", "6 In catchment",                   490, 209,
+  "Blatchington Mill", "7 Out of catchment",               145,   0,
+  "Dorothy Stringer",  "EHCP",                               7,   7,
+  "Dorothy Stringer",  "1 Looked after",                    13,   2,
+  "Dorothy Stringer",  "2 Exceptional",                      3,   3,
+  "Dorothy Stringer",  "3 Sibling",                         77,  66,
+  "Dorothy Stringer",  "4 FSM in catchment",                85,  26,
+  "Dorothy Stringer",  "5 FSM out of catchment",            73,  23,
+  "Dorothy Stringer",  "6 In catchment",                   373, 166,
+  "Dorothy Stringer",  "7 Out of catchment",               291,  37,
+  "Hove Park",         "EHCP",                              10,  10,
+  "Hove Park",         "1 Looked after",                    11,   1,
+  "Hove Park",         "2 Exceptional",                      1,   1,
+  "Hove Park",         "3 Sibling",                         34,  27,
+  "Hove Park",         "4 FSM in catchment",                52,  19,
+  "Hove Park",         "5 FSM out of catchment",            41,  12,
+  "Hove Park",         "6 In catchment",                   332,  72,
+  "Hove Park",         "7 Out of catchment",               165,  29,
+  "Longhill High",     "EHCP",                               3,   3,
+  "Longhill High",     "1 Looked after",                     5,   4,
+  "Longhill High",     "2 Exceptional",                      0,   0,
+  "Longhill High",     "3 Sibling",                         26,  23,
+  "Longhill High",     "4 FSM in catchment",                18,  12,
+  "Longhill High",     "5 FSM out of catchment",             4,   2,
+  "Longhill High",     "6 In catchment",                    77,  43,
+  "Longhill High",     "7 Out of catchment",                18,  10,
+  "Patcham High",      "EHCP",                              12,  12,
+  "Patcham High",      "1 Looked after",                     5,   0,
+  "Patcham High",      "2 Exceptional",                      1,   1,
+  "Patcham High",      "3 Sibling",                         57,  56,
+  "Patcham High",      "4 FSM in catchment",                19,  10,
+  "Patcham High",      "5 FSM out of catchment",            62,  14,
+  "Patcham High",      "6 In catchment",                    99,  83,
+  "Patcham High",      "7 Out of catchment",               220,  26,
+  "Varndean",          "EHCP",                              15,  15,
+  "Varndean",          "1 Looked after",                    16,   6,
+  "Varndean",          "2 Exceptional",                      2,   2,
+  "Varndean",          "3 Sibling",                         92,  90,
+  "Varndean",          "4 FSM in catchment",                96,  53,
+  "Varndean",          "5 FSM out of catchment",           101,  35,
+  "Varndean",          "6 In catchment",                   365,  99,
+  "Varndean",          "7 Out of catchment",               322,   0)
+stopifnot(tapply(prio_2025$Offers, prio_2025$School, sum)[c("Blatchington Mill", "Dorothy Stringer", "Hove Park", "Longhill High", "Patcham High", "Varndean")] ==
+            c(330, 330, 171, 97, 202, 300))   # each school's offers in Table 1
+datatable(prio_2025, extensions = 'Buttons', options = dt_opts, rownames = FALSE,
+          caption = "Applications (any preference) and offers by admission priority, September 2025 (national offer day).")
+```
+
+```{r}
+fsm_2025 <- tibble::tribble(
+  ~School,             ~PAN, ~FSM_places_available, ~FSM_offered_P4_P5,
+  "Blatchington Mill",  330,  99, 47,
+  "Dorothy Stringer",   330,  99, 49,
+  "Hove Park",          180,  54, 31,
+  "Longhill High",      270,  81, 14,
+  "Patcham High",       225,  68, 24,
+  "Varndean",           300,  90, 88)
+datatable(fsm_2025, extensions = 'Buttons', options = dt_opts, rownames = FALSE,
+          caption = "FSM places, September 2025: places available under the 30% cap, and offered under priorities 4 and 5.")
+```
+
+In 2025 every school admitted every child from priorities 4 and 5 (a child not offered under them was offered a higher preference). Blatchington Mill and Varndean filled up within the catchment (priority 6): 11 in-catchment children could not be offered Blatchington Mill or a higher preference, and 112 could not be offered Varndean. Dorothy Stringer reached into out-of-catchment (priority 7), where 52 children could not be offered it or a higher preference. Hove Park, Longhill and Patcham admitted everyone who applied under priorities 1 to 7 and had not been offered a higher preference.
+
+### 2025 and 2026 compared
+
+```{r}
+#| fig-height: 6
+harm <- c("EHCP", "Looked after", "Exceptional", "Sibling", "FSM in catchment", "FSM out of catchment",
+          "Open admissions", "In catchment", "Out of catchment / other")
+p26 <- prio_2026 |> select(School, EHCP, P1:P8) |>
+  pivot_longer(-School, names_to = "p", values_to = "Offers") |>
+  mutate(Category = harm[match(p, c("EHCP", paste0("P", 1:8)))], Year = "2026")
+# 2025 numbering -> the harmonised categories (2025 had no open admissions)
+map25 <- c("EHCP" = "EHCP", "1 Looked after" = "Looked after", "2 Exceptional" = "Exceptional", "3 Sibling" = "Sibling",
+           "4 FSM in catchment" = "FSM in catchment", "5 FSM out of catchment" = "FSM out of catchment",
+           "6 In catchment" = "In catchment", "7 Out of catchment" = "Out of catchment / other")
+p25 <- prio_2025 |> mutate(Category = unname(map25[Priority]), Year = "2025") |> select(School, Category, Offers, Year)
+both <- bind_rows(p26 |> select(School, Category, Offers, Year), p25) |>
+  mutate(Category = factor(Category, harm))
+cat_col <- c("EHCP" = "#9e9ac8", "Looked after" = "#6a51a3", "Exceptional" = "#3f007d", "Sibling" = "#fdae6b",
+             "FSM in catchment" = "#1b7837", "FSM out of catchment" = "#7fbf7b", "Open admissions" = "#e7298a",
+             "In catchment" = "#2171b5", "Out of catchment / other" = "#bdbdbd")
+p_both <- ggplot(both, aes(x = Offers, y = Year, fill = Category,
+                           text = paste0(School, " ", Year, "<br>", Category, ": ", Offers))) +
+  geom_col(position = position_stack(reverse = TRUE), colour = "white", linewidth = 0.2) +
+  facet_wrap(~School, ncol = 1, strip.position = "left") +
+  scale_fill_manual(values = cat_col, drop = FALSE) +
+  labs(title = "Year 7 offers by admission priority, community schools, 2025 and 2026",
+       x = "Offers (national offer day)", y = NULL, fill = NULL) +
+  theme_minimal() + theme(strip.text.y.left = element_text(angle = 0, hjust = 1), legend.position = "bottom")
+ggplotly(p_both, tooltip = "text") |> layout(legend = list(orientation = "h", y = -0.15))
+```
+
+```{r}
+cmp <- both |> group_by(Year, Category) |> summarise(Offers = sum(Offers), .groups = "drop") |>
+  pivot_wider(names_from = Year, values_from = Offers, values_fill = 0) |>
+  mutate(Change = `2026` - `2025`) |> arrange(Category)
+datatable(cmp, options = list(dom = 't', pageLength = 20), rownames = FALSE,
+          caption = "All six community schools: offers by harmonised priority, 2025 and 2026.")
+```
+
+Across the six schools, the main shifts from 2025 to 2026 are the new open-admissions quota (`r sum(p26$Offers[p26$Category == "Open admissions"])` places, taken from the catchment and out-of-catchment tiers), more FSM offers (`r sum(p26$Offers[grepl("^FSM", p26$Category)])` against `r sum(p25$Offers[grepl("^FSM", p25$Category)])`), and fewer sibling offers (`r sum(p26$Offers[p26$Category == "Sibling"])` against `r sum(p25$Offers[p25$Category == "Sibling"])`). Total offers at the six fell from 1,430 to 1,381, mostly at Hove Park and Longhill. The cohorts differ, so these are changes in outcome, not the effect of the new rules alone.
+:::
+
 # Primary Schools — Reception Allocations
 
 Data transcribed from Brighton & Hove City Council Infant & Primary School Reception Allocation Factsheets. Most years report three preferences; 2026 adds a 4th. Older factsheets (2014-2018) were recovered from the Internet Archive. Data for 2013 could not be located.
